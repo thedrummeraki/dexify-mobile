@@ -5,10 +5,6 @@ import {Home} from '../screens';
 
 const Stack = createNativeStackNavigator();
 
-// const NavigationHeader = ({scene, previous, navigation}) => {
-
-// }
-
 export default function Navigation() {
   return (
     <Stack.Navigator
