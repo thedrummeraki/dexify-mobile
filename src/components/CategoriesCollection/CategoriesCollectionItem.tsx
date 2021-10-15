@@ -1,6 +1,6 @@
 import React from 'react';
-import {View} from 'react-native';
-import {Text} from 'react-native-paper';
+import {FlatList, View} from 'react-native';
+import {Card, Paragraph, Text, Title} from 'react-native-paper';
 import {Chapter, Manga, PagedResultsList} from '../../api/mangadex/types';
 import {useGetRequest} from '../../api/utils';
 import {UICategory, UIChapterCategory, UIMangaCategory} from '../../categories';
@@ -22,16 +22,38 @@ function MangaCategoryItem({category}: {category: UIMangaCategory}) {
   const {data, loading} = useGetRequest<PagedResultsList<Manga>>(url(category));
 
   if (loading) {
-    return <Text>loading..</Text>;
+    return (
+      <Card>
+        <Card.Content>
+          <Title>{category.title}</Title>
+          <Paragraph>{category.description}</Paragraph>
+          <Paragraph>Loading...</Paragraph>
+        </Card.Content>
+      </Card>
+    );
   }
 
   if (data?.result === 'ok') {
     return (
-      <View>
-        <Text>
-          {category.title}: {data.data.map(manga => manga.id).join(', ')}
-        </Text>
-      </View>
+      <Card>
+        <Card.Content>
+          <Title>{category.title}</Title>
+          {category.description && (
+            <Paragraph>{category.description}</Paragraph>
+          )}
+          <FlatList
+            horizontal
+            data={data.data}
+            renderItem={({item}) => (
+              <View
+                key={item.id}
+                style={{height: 200, width: 150, backgroundColor: '#000'}}>
+                <Text style={{color: '#fff'}}>text</Text>
+              </View>
+            )}
+          />
+        </Card.Content>
+      </Card>
     );
   }
 
@@ -39,7 +61,7 @@ function MangaCategoryItem({category}: {category: UIMangaCategory}) {
 }
 
 function ChapterCategoryItem({category}: {category: UIChapterCategory}) {
-  const {data, loading, error} = useGetRequest<PagedResultsList<Chapter>>(
+  const {data, loading} = useGetRequest<PagedResultsList<Chapter>>(
     url(category),
   );
 
@@ -57,9 +79,6 @@ function ChapterCategoryItem({category}: {category: UIChapterCategory}) {
       </View>
     );
   }
-
-  console.error(data?.errors || error);
-  console.log(url(category));
 
   return null;
 }
