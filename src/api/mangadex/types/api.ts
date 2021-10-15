@@ -51,9 +51,15 @@ export interface GenericResponse<T> {
   relationships: Array<Relationship>;
 }
 
+interface GenericAttributes {
+  [key: string]: string;
+}
+
 export interface Relationship {
   id: string;
   type: string;
+  related: string;
+  attributes?: GenericAttributes;
 }
 
 export type Order<K extends keyof any> = {

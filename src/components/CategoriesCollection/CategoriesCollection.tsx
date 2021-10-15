@@ -11,6 +11,7 @@ export default function CategoriesCollection({categories}: Props) {
   return (
     <FlatList
       data={categories}
+      contentContainerStyle={{marginTop: 10}}
       renderItem={({item}) => <CategoriesCollectionItem category={item} />}
     />
   );

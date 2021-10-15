@@ -1,7 +1,10 @@
+import {Relationship} from '.';
+
 export interface Chapter {
   id: string;
   type: 'chapter';
   attributes: ChapterAttributes;
+  relationships: Relationship[];
 }
 
 export interface ChapterAttributes {

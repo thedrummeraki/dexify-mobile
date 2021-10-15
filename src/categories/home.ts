@@ -1,4 +1,3 @@
-import {Manga} from '../api/mangadex/types';
 import {UICategory} from './types';
 
 export function useHomeCategories(): UICategory[] {
@@ -7,18 +6,18 @@ export function useHomeCategories(): UICategory[] {
       title: 'Currently reading',
       type: 'manga',
       requiresAuth: true,
-      url: 'https://api.mangadex.org/manga/status?status=reading&limit=4',
+      url: 'https://api.mangadex.org/manga/status?status=reading&limit=10',
     },
     {
-      title: 'Top 10 manga',
+      title: 'Most popular titles',
       type: 'manga',
       description: 'Most popular manga on Mangadex.',
-      url: 'https://api.mangadex.org/manga?order%5BfollowedCount%5D=desc&limit=4',
+      url: 'https://api.mangadex.org/manga?order%5BfollowedCount%5D=desc&limit=20&includes[]=cover_art',
     },
     {
-      title: 'Seasonal manga',
+      title: 'Fall 2021 Seasonal manga',
       type: 'manga',
-      description: 'These titles have an anime airing right now!',
+      description: 'These titles have an anime airing this season.',
       ids: [
         'a96676e5-8ae2-425e-b549-7f15dd34a6d8',
         'bd6d0982-0091-4945-ad70-c028ed3c0917',
@@ -26,7 +25,9 @@ export function useHomeCategories(): UICategory[] {
         '6670ee28-f26d-4b61-b49c-d71149cd5a6e',
         'b49fd121-19bf-4344-a8e1-d1be7ca04e08',
       ],
-      limit: 4,
+      params: {
+        'includes[]': 'cover_art',
+      },
     },
     {
       title: 'Latest chapters',

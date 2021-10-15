@@ -5,10 +5,16 @@ export function url(category: UICategory) {
     return category.url;
   }
 
-  const params = category.ids!.map(id => `ids[]=${id}`);
-  if (category.limit) {
-    params.push(`limit=${category.limit}`);
-  }
+  const additionalParams = category.params
+    ? new URLSearchParams(category.params).toString()
+    : '';
 
-  return `https://api.mangadex.org/${category.type}?${params.join('&')}`;
+  const idParams = category.ids
+    ? category.ids.map(id => `ids[]=${id}`).join('&')
+    : '';
+  const params = [idParams, additionalParams]
+    .filter(params => Boolean(params))
+    .join('&');
+
+  return `https://api.mangadex.org/${category.type}?${params}`;
 }

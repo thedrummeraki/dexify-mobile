@@ -1,3 +1,5 @@
+type Params = string[][] | Record<string, string> | string;
+
 interface UIBaseCategory {
   type: UICategoryType;
   title: string;
@@ -5,20 +7,20 @@ interface UIBaseCategory {
   viewMore?: string;
   url?: string;
   ids?: Array<string>;
-  limit?: number;
+  params?: Params;
   requiresAuth?: boolean;
 }
 
 interface UICategoryWithURL extends UIBaseCategory {
   url: string;
   ids?: undefined;
-  limit?: undefined;
+  params?: undefined;
 }
 
 interface UICategoryWithResourceIds extends UIBaseCategory {
   ids: Array<string>;
   url?: undefined;
-  limit: number;
+  params?: Params;
 }
 
 type UIUntypedCategory = UICategoryWithResourceIds | UICategoryWithURL;
