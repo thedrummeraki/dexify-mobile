@@ -27,7 +27,8 @@ export default function ChapterCategoryItem({
         <Thumbnail
           imageUrl={chapterImage(item) || '/'}
           title={item.attributes.title}
-          {...dimensions}
+          width={dimensions.size || dimensions.width!}
+          height={dimensions.size || dimensions.height!}
         />
       )}
     />

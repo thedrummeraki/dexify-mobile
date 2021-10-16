@@ -1,6 +1,6 @@
-import React, {useCallback} from 'react';
+import React from 'react';
 import {FlatList} from 'react-native';
-import {UICategory, UICategoryType} from '../../categories';
+import {UICategory} from '../../categories';
 import CategoriesCollectionItem from './CategoriesCollectionItem';
 
 interface Props {

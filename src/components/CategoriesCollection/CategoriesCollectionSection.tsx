@@ -3,10 +3,25 @@ import {FlatList, View} from 'react-native';
 import {Title} from 'react-native-paper';
 import {ThumbnailSkeleton} from '../../foundation/Thumbnail';
 
-interface ImageDimensions {
+interface BasicImageDimensions {
+  width?: number;
+  height?: number;
+  size?: number;
+}
+
+interface ImageDimensions2D extends BasicImageDimensions {
   width: number;
   height: number;
+  size?: undefined;
 }
+
+interface ImageDimensionsSimple extends BasicImageDimensions {
+  size: number;
+  width?: undefined;
+  height?: undefined;
+}
+
+type ImageDimensions = ImageDimensions2D | ImageDimensionsSimple;
 
 interface Props<T> {
   title: string;
@@ -24,12 +39,16 @@ interface Props<T> {
 export default function CategoriesCollectionSection<T>({
   title,
   data,
-  dimensions,
+  dimensions: imageDimensions,
   loading,
   viewMore,
   skeletonLength = 5,
   renderItem,
 }: Props<T>) {
+  const dimensions: ImageDimensions2D = imageDimensions.size
+    ? {width: imageDimensions.size, height: imageDimensions.size}
+    : (imageDimensions as ImageDimensions2D);
+
   if (loading) {
     return (
       <View style={{marginTop: 5}}>
