@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {PropsWithChildren} from 'react';
 import {View, Image, TouchableNativeFeedback} from 'react-native';
 import {Text, TouchableRipple} from 'react-native-paper';
 
@@ -24,11 +24,7 @@ export default function Thumbnail({
 }: Props & DimensionsProps) {
   return (
     <View style={{width, flex: 1, flexDirection: 'column'}}>
-      <TouchableNativeFeedback
-        useForeground
-        onLongPress={onLongPress}
-        onPress={onPress}
-        background={TouchableNativeFeedback.Ripple('#fff', false)}>
+      <MaybeTouchableNativeFeedback onLongPress={onLongPress} onPress={onPress}>
         <View>
           <Image
             source={{uri: imageUrl}}
@@ -36,10 +32,30 @@ export default function Thumbnail({
             resizeMode="cover"
           />
         </View>
-      </TouchableNativeFeedback>
+      </MaybeTouchableNativeFeedback>
       <Text numberOfLines={2}>{title}</Text>
     </View>
   );
+}
+
+function MaybeTouchableNativeFeedback({
+  onPress,
+  onLongPress,
+  children,
+}: PropsWithChildren<Pick<Props, 'onPress' | 'onLongPress'>>) {
+  if (onPress || onLongPress) {
+    return (
+      <TouchableNativeFeedback
+        useForeground
+        onLongPress={onLongPress}
+        onPress={onPress}
+        background={TouchableNativeFeedback.Ripple('#fff', false)}>
+        {children}
+      </TouchableNativeFeedback>
+    );
+  } else {
+    return <View>{children}</View>;
+  }
 }
 
 export function ThumbnailSkeleton({width, height}: DimensionsProps) {
