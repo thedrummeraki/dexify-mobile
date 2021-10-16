@@ -3,8 +3,9 @@ import {View, Image, TouchableNativeFeedback} from 'react-native';
 import {Text, TouchableRipple} from 'react-native-paper';
 
 interface DimensionsProps {
-  width: number;
-  height: number;
+  width: number | string;
+  height?: number | string;
+  aspectRatio?: number;
 }
 
 interface Props {
@@ -19,6 +20,7 @@ export default function Thumbnail({
   title,
   width,
   height,
+  aspectRatio,
   onPress,
   onLongPress,
 }: Props & DimensionsProps) {
@@ -28,7 +30,7 @@ export default function Thumbnail({
         <View>
           <Image
             source={{uri: imageUrl}}
-            style={{height, zIndex: -1}}
+            style={{height, aspectRatio, zIndex: -1}}
             resizeMode="cover"
           />
         </View>
