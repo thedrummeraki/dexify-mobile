@@ -1,17 +1,11 @@
 import React, {useState} from 'react';
-import {CategoriesCollection} from '../../components';
 import {useHeader} from '../../prodivers';
-import {useHomeCategories} from '../../categories';
-import {BottomNavigation, Text} from 'react-native-paper';
-
-const MainRoute = () => {
-  const categories = useHomeCategories();
-  return <CategoriesCollection categories={categories} />;
-};
-
-const BrowseRoute = () => <Text>Seaerching for...</Text>;
-const LoginRoute = () => <Text>Log in</Text>;
-const LogoutRoute = () => <Text>Logout</Text>;
+import {BottomNavigation} from 'react-native-paper';
+import {
+  BrowseNavigationScreen,
+  LoginNavigationScreen,
+  MainNavigationScreen,
+} from './screens';
 
 export default function Home() {
   useHeader({title: 'Dexify ~ Browse', showSearch: false});
@@ -24,9 +18,9 @@ export default function Home() {
   ]);
 
   const renderScene = BottomNavigation.SceneMap({
-    main: MainRoute,
-    browse: BrowseRoute,
-    login: LoginRoute,
+    main: MainNavigationScreen,
+    browse: BrowseNavigationScreen,
+    login: LoginNavigationScreen,
   });
 
   return (

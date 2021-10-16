@@ -57,7 +57,7 @@ export default function CategoriesCollectionSection<T>({
         data={data}
         style={{marginTop: 10}}
         showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{marginHorizontal: 10}}
+        contentContainerStyle={{marginHorizontal: 20}}
         renderItem={({item}) => (
           <View style={{marginRight: 10}}>{renderItem(item, dimensions)}</View>
         )}
