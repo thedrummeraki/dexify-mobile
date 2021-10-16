@@ -1,6 +1,6 @@
 import React from 'react';
-import {View, Image} from 'react-native';
-import {Text} from 'react-native-paper';
+import {View, Image, TouchableNativeFeedback} from 'react-native';
+import {Text, TouchableRipple} from 'react-native-paper';
 
 interface DimensionsProps {
   width: number;
@@ -10,6 +10,8 @@ interface DimensionsProps {
 interface Props {
   imageUrl: string;
   title: string;
+  onPress?: () => void;
+  onLongPress?: () => void;
 }
 
 export default function Thumbnail({
@@ -17,11 +19,25 @@ export default function Thumbnail({
   title,
   width,
   height,
+  onPress,
+  onLongPress,
 }: Props & DimensionsProps) {
   return (
     <View style={{width, flex: 1, flexDirection: 'column'}}>
-      <Image source={{uri: imageUrl}} style={{height}} resizeMode="cover" />
-      {/* <Text style={{flexWrap: 'wrap', height: 40}}>{title}</Text> */}
+      <TouchableNativeFeedback
+        useForeground
+        onLongPress={onLongPress}
+        onPress={onPress}
+        background={TouchableNativeFeedback.Ripple('#fff', false)}>
+        <View>
+          <Image
+            source={{uri: imageUrl}}
+            style={{height, zIndex: -1}}
+            resizeMode="cover"
+          />
+        </View>
+      </TouchableNativeFeedback>
+      <Text numberOfLines={2}>{title}</Text>
     </View>
   );
 }

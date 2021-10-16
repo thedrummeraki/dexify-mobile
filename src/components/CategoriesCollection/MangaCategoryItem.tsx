@@ -1,5 +1,5 @@
 import React from 'react';
-import {Touchable} from 'react-native';
+import {Touchable, TouchableNativeFeedback, View} from 'react-native';
 import {TouchableRipple} from 'react-native-paper';
 import {mangaImage} from '../../api';
 import {Manga, PagedResultsList} from '../../api/mangadex/types';
@@ -28,16 +28,12 @@ export default function MangaCategoryItem({
       data={sectionData}
       dimensions={{width: 120, height: 160}}
       renderItem={(item, dimensions) => (
-        <TouchableRipple
+        <Thumbnail
           key={item.id}
-          onPress={() => {}}
-          rippleColor="rgba(0, 0, 0, .32)">
-          <Thumbnail
-            imageUrl={mangaImage(item) || '/'}
-            title={item.attributes.title.en}
-            {...dimensions}
-          />
-        </TouchableRipple>
+          imageUrl={mangaImage(item) || '/'}
+          title={item.attributes.title.en}
+          {...dimensions}
+        />
       )}
     />
   );

@@ -9,11 +9,12 @@ interface ImageDimensions {
 }
 
 interface Props<T> {
-  loading?: boolean;
   title: string;
-  viewMore?: boolean;
   data: T[];
   dimensions: ImageDimensions;
+  loading?: boolean;
+  viewMore?: boolean;
+  skeletonLength?: number;
   renderItem: (
     item: T,
     dimensions: ImageDimensions,
@@ -21,11 +22,12 @@ interface Props<T> {
 }
 
 export default function CategoriesCollectionSection<T>({
-  loading,
   title,
-  viewMore,
   data,
   dimensions,
+  loading,
+  viewMore,
+  skeletonLength = 5,
   renderItem,
 }: Props<T>) {
   if (loading) {
@@ -34,7 +36,7 @@ export default function CategoriesCollectionSection<T>({
         <Title style={{marginHorizontal: 20}}>{title}</Title>
         <FlatList
           horizontal
-          data={[1, 2, 3, 4, 5]} // 5 skeleton items
+          data={Array.from({length: skeletonLength})} // 5 skeleton items
           style={{marginTop: 10}}
           contentContainerStyle={{marginHorizontal: 5}}
           renderItem={() => (

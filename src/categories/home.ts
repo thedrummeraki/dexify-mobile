@@ -37,3 +37,13 @@ export function useHomeCategories(): UICategory[] {
     },
   ];
 }
+
+export function useBrowseCategories(search: string): UICategory[] {
+  return [
+    {
+      title: 'Browse manga',
+      url: `https://api.mangadex.org/manga?order%5BcreatedAt%5D=desc`,
+      type: 'manga',
+    },
+  ];
+}
