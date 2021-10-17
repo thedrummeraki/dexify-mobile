@@ -22,6 +22,8 @@ export default function Header({title, subtitle, goBack}: Props) {
     }
   }, [goBack]);
 
+  return null;
+
   return (
     <Appbar.Header>
       {goBack && !showSearchbar && <Appbar.BackAction onPress={handleGoBack} />}
