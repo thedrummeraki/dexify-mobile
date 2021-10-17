@@ -1,7 +1,8 @@
 import React from 'react';
 import {Touchable, TouchableNativeFeedback, View} from 'react-native';
 import {TouchableRipple} from 'react-native-paper';
-import {mangaImage} from '../../api';
+import {useDexifyNavigation} from 'src/foundation/Navigation';
+import {mangaImage, preferredMangaTitle} from '../../api';
 import {Manga, PagedResultsList} from '../../api/mangadex/types';
 import {useGetRequest} from '../../api/utils';
 import {UIMangaCategory} from '../../categories';
@@ -14,6 +15,7 @@ export default function MangaCategoryItem({
 }: {
   category: UIMangaCategory;
 }) {
+  const navigation = useDexifyNavigation();
   const {data, loading} = useGetRequest<PagedResultsList<Manga>>(url(category));
   const sectionData = data?.result === 'ok' ? data.data : [];
 
@@ -31,8 +33,10 @@ export default function MangaCategoryItem({
         <Thumbnail
           key={item.id}
           imageUrl={mangaImage(item) || '/'}
-          title={item.attributes.title.en}
-          {...dimensions}
+          title={preferredMangaTitle(item)}
+          width={dimensions.size || dimensions.width!}
+          height={dimensions.size || dimensions.height!}
+          onPress={() => navigation.navigate('ShowManga', {id: item.id})}
         />
       )}
     />

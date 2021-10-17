@@ -6,6 +6,10 @@ export enum CoverSize {
   Small = '.256.jpg',
 }
 
+export function preferredMangaTitle(manga: Manga) {
+  return Object.entries(manga.attributes.title)[0][1];
+}
+
 export function mangaImage(manga: Manga, options?: {size?: CoverSize}): string {
   const cover = manga.relationships.find(
     relationship => relationship.type === 'cover_art',

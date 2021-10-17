@@ -14,11 +14,11 @@ interface MangaDexError {
   detail: string;
 }
 
-interface BasicPagedResults<T> {
+interface BasicResultsResponse {
   result: 'ok' | 'error';
 }
 
-interface SuccessPagedResults<T> extends BasicPagedResults<T> {
+interface SuccessPagedResults<T> extends BasicResultsResponse {
   result: 'ok';
   response: 'collection';
   data: Array<T>;
@@ -27,12 +27,12 @@ interface SuccessPagedResults<T> extends BasicPagedResults<T> {
   total: number;
 }
 
-interface ErrorPagedResults<T> extends BasicPagedResults<T> {
+interface ErrorResponse extends BasicResultsResponse {
   result: 'error';
   errors: Array<MangaDexError>;
 }
 
-export type PagedResultsList<T> = SuccessPagedResults<T> | ErrorPagedResults<T>;
+export type PagedResultsList<T> = SuccessPagedResults<T> | ErrorResponse;
 
 interface SuccessActionResult {
   result: 'ok';
@@ -45,11 +45,13 @@ interface ErrorActionResult {
 
 export type ActionResult = SuccessActionResult | ErrorActionResult;
 
-export interface GenericResponse<T> {
-  result: 'ok' | 'ko';
+export interface SuccessEntityResponse<T> extends BasicResultsResponse {
+  result: 'ok';
+  response: 'entity';
   data: T;
-  relationships: Array<Relationship>;
 }
+
+export type EntityResponse<T> = SuccessEntityResponse<T> | ErrorResponse;
 
 interface GenericAttributes {
   [key: string]: string;

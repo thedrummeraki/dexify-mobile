@@ -46,8 +46,8 @@ export function useBrowseCategories(): UICategory[] {
       type: 'tag',
     },
     {
-      title: 'Browse manga',
-      url: `https://api.mangadex.org/manga?order%5BcreatedAt%5D=desc`,
+      title: 'Recently added on Mangadex',
+      url: `https://api.mangadex.org/manga?order%5BcreatedAt%5D=desc&includes[]=cover_art&limit=50`,
       type: 'manga',
     },
     {
