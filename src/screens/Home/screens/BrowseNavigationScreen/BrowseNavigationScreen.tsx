@@ -16,7 +16,7 @@ export function BrowseNavigationScreen() {
         onChangeText={setSearchInput}
         autoCapitalize="none"
         placeholder="Browse manga, authors..."
-        style={{marginTop: 10, marginHorizontal: 5}}
+        style={{marginTop: 5, marginHorizontal: 5}}
       />
       <View>
         {query ? <BrowseResults query={query} /> : <BrowseDefaultState />}

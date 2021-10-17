@@ -4,7 +4,7 @@ import {
   NativeStackNavigationProp,
   NativeStackScreenProps,
 } from '@react-navigation/native-stack';
-import {Home, ShowManga} from 'src/screens';
+import {Home, ShowChapter, ShowManga} from 'src/screens';
 import {
   RouteProp,
   useNavigation as useReactNavigation,
@@ -16,14 +16,13 @@ import {HeaderContext} from 'src/prodivers';
 type RootStackParamList = {
   Home: undefined;
   ShowManga: {id: string};
+  ShowChapter: {id: string};
 };
 
 type DexifyNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
   'Home'
 >;
-
-type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -39,12 +38,17 @@ export default function Navigation() {
             goBack={navigation.canGoBack() ? navigation.goBack : undefined}
             title={headerContext.title || options.title || route.name}
             subtitle={headerContext.subtitle || undefined}
+            hideHeader={headerContext.hideHeader}
           />
         ),
       }}
       screenListeners={{
         beforeRemove: () =>
-          headerContext.setState(state => ({...state, title: ''})),
+          headerContext.setState(state => ({
+            ...state,
+            title: '',
+            hideHeader: true,
+          })),
       }}>
       <Stack.Screen name="Home" component={Home} />
       <Stack.Screen
@@ -52,6 +56,7 @@ export default function Navigation() {
         component={ShowManga}
         options={{title: 'Loading...'}}
       />
+      <Stack.Screen name="ShowChapter" component={ShowChapter} />
     </Stack.Navigator>
   );
 }
@@ -62,4 +67,8 @@ export function useDexifyNavigation() {
 
 export function useShowMangaRoute() {
   return useRoute<RouteProp<RootStackParamList, 'ShowManga'>>();
+}
+
+export function useShowChapterRoute() {
+  return useRoute<RouteProp<RootStackParamList, 'ShowChapter'>>();
 }

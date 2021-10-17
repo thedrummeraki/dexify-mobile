@@ -10,15 +10,14 @@ import {
 } from 'src/api/mangadex/types';
 import {useGetRequest} from 'src/api/utils';
 import {useHeader} from 'src/prodivers';
+import ShowMangaChapterItem from './ShowMangaChapterItem';
 
 interface Props {
-  mangaData: SuccessEntityResponse<Manga>;
+  manga: Manga;
 }
 
-export default function ShowMangaDetails({mangaData}: Props) {
-  const manga = mangaData.data;
+export default function ShowMangaDetails({manga}: Props) {
   const title = Object.entries(manga.attributes.title)[0][1];
-  useHeader({title});
 
   const [showFullImage, setShowFullImage] = useState(false);
   const aspectRatio = showFullImage ? 1 : 2;
@@ -59,18 +58,12 @@ export default function ShowMangaDetails({mangaData}: Props) {
               title={`Chapters (${
                 (data?.result === 'ok' && data.total) || '...'
               })`}>
-              {Object.entries(chapters).map(([chapterNumber, chaptersList]) => (
-                <List.Accordion
-                  key={String(chapterNumber)}
-                  title={`Chapter ${chapterNumber}`}
-                  left={props => <List.Icon {...props} icon="folder" />}>
-                  {chaptersList.map(chapter => (
-                    <List.Item
-                      key={chapter.id}
-                      title={chapter.attributes.translatedLanguage}
-                    />
-                  ))}
-                </List.Accordion>
+              {Object.entries(chapters).map(([number, list]) => (
+                <ShowMangaChapterItem
+                  key={number}
+                  number={number}
+                  list={list}
+                />
               ))}
             </List.Section>
           </View>

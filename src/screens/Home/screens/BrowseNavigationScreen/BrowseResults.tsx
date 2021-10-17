@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {ScrollView, StyleProp, View, ViewStyle} from 'react-native';
 import {Title, ActivityIndicator} from 'react-native-paper';
 import {CoverSize, mangaImage} from 'src/api';
@@ -6,6 +6,7 @@ import {Author, Manga, PagedResultsList} from 'src/api/mangadex/types';
 import {useLazyGetRequest} from 'src/api/utils';
 import BasicList from 'src/components/BasicList';
 import CategoriesCollectionItem from 'src/components/CategoriesCollection/CategoriesCollectionItem';
+import {useDexifyNavigation} from 'src/foundation/Navigation';
 import Thumbnail from 'src/foundation/Thumbnail';
 import {useScreenOrientation} from 'src/utils';
 
@@ -16,7 +17,12 @@ interface Props {
 
 export default function BrowseResults({query}: Props) {
   const orientation = useScreenOrientation();
+  const navigation = useDexifyNavigation();
+  const endReachedRef = useRef(false);
+
   const [results, setResults] = useState<Manga[]>([]);
+  const [offset, setOffset] = useState(0);
+  const [hasMoreManga, setHasMoreManga] = useState(false);
   const [authorIds, setAuthorIds] = useState<string[]>([]);
   const [getMangas, {data, loading, error}] =
     useLazyGetRequest<PagedResultsList<Manga>>();
@@ -25,9 +31,18 @@ export default function BrowseResults({query}: Props) {
 
   useEffect(() => {
     if (data?.result === 'ok') {
-      setResults(data.data);
+      setResults(results => results.concat(data.data));
     }
   }, [data]);
+  useEffect(() => {
+    if (data?.result === 'ok') {
+      setHasMoreManga(data.total > results.length);
+    }
+  }, [data, results]);
+  useEffect(
+    () => setResults(data?.result === 'ok' ? data.data : []),
+    [data, query],
+  );
   useEffect(() => {
     if (authorsData?.result === 'ok') {
       setAuthorIds(authorsData.data.map(author => author.id));
@@ -36,8 +51,10 @@ export default function BrowseResults({query}: Props) {
 
   useEffect(() => {
     getMangas(
-      `https://api.mangadex.org/manga?title=${query}&includes[]=cover_art&order[followedCount]=desc&limit=100`,
+      `https://api.mangadex.org/manga?title=${query}&includes[]=cover_art&order[followedCount]=desc&limit=100&offset=${offset}`,
     );
+  }, [query, offset]);
+  useEffect(() => {
     getAuthors(`https://api.mangadex.org/author?name=${query}&limit=100`);
   }, [query]);
 
@@ -45,10 +62,30 @@ export default function BrowseResults({query}: Props) {
     return <Title>Error while searching for "{query}"</Title>;
   }
 
-  const totalResultsCount = !loading && data && `(${data.total})`;
+  const isCloseToBottom = ({
+    layoutMeasurement,
+    contentOffset,
+    contentSize,
+  }: any) => {
+    const paddingToBottom = 200;
+    return (
+      layoutMeasurement.height + contentOffset.y >=
+      contentSize.height - paddingToBottom
+    );
+  };
 
   return (
-    <ScrollView>
+    <ScrollView
+      onScroll={({nativeEvent}) => {
+        if (!endReachedRef.current && isCloseToBottom(nativeEvent)) {
+          endReachedRef.current = true;
+          if (hasMoreManga) {
+            setOffset(offset => offset + 100);
+          }
+        } else if (endReachedRef.current && !isCloseToBottom(nativeEvent)) {
+          endReachedRef.current = false;
+        }
+      }}>
       <View>
         <CategoriesCollectionItem
           category={{title: 'Authors', type: 'author', ids: authorIds}}
@@ -60,19 +97,18 @@ export default function BrowseResults({query}: Props) {
               style={{flexShrink: 1, marginRight: 5}}
             />
           )}
-          <Title style={{flexGrow: 1}}>
-            Search results for "{query}" {totalResultsCount}
-          </Title>
         </View>
         <BasicList
           data={results}
           aspectRatio={orientation === 'portrait' ? 1 / 3 : 0.25}
+          style={{marginTop: 5}}
           renderItem={manga => (
             <Thumbnail
               imageUrl={mangaImage(manga, {size: CoverSize.Small}) || '/'}
               title={manga.attributes.title.en}
               width="100%"
               aspectRatio={0.8}
+              onPress={() => navigation.navigate('ShowManga', {id: manga.id})}
             />
           )}
         />

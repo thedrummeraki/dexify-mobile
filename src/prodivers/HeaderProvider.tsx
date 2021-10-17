@@ -15,6 +15,7 @@ interface HeaderState {
   title: string;
   subtitle?: string;
   showSearch?: boolean;
+  hideHeader?: boolean;
   menuItems?: HeaderMenuItem[];
 }
 
@@ -29,6 +30,7 @@ type HeaderContextState = HeaderState & {
 const defaultState: HeaderState = {
   title: 'Dexify',
   showSearch: false,
+  hideHeader: false,
   menuItems: [],
   subtitle: '',
 };

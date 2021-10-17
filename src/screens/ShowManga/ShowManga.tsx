@@ -3,9 +3,11 @@ import {Text, Title} from 'react-native-paper';
 import {EntityResponse, Manga} from 'src/api/mangadex/types';
 import {useGetRequest} from 'src/api/utils';
 import {useShowMangaRoute} from 'src/foundation/Navigation';
+import {useHeader} from 'src/prodivers';
 import ShowMangaDetails from './ShowMangaDetails';
 
 export default function ShowManga() {
+  useHeader({title: '', hideHeader: true});
   const route = useShowMangaRoute();
   const {data, error, loading} = useGetRequest<EntityResponse<Manga>>(
     `https://api.mangadex.org/manga/${route.params.id}?includes[]=cover_art&includes[]=authors`,
@@ -20,7 +22,7 @@ export default function ShowManga() {
   }
 
   if (data.result === 'ok') {
-    return <ShowMangaDetails mangaData={data} />;
+    return <ShowMangaDetails manga={data.data} />;
   }
 
   return null;

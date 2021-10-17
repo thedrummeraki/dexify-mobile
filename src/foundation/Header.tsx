@@ -5,11 +5,12 @@ import {HeaderContext} from '../prodivers';
 interface Props {
   title?: string;
   subtitle?: string;
+  hideHeader?: boolean;
   goBack?: () => void;
   onSearch?: (query: string) => void;
 }
 
-export default function Header({title, subtitle, goBack}: Props) {
+export default function Header({title, subtitle, hideHeader, goBack}: Props) {
   const headerContext = useContext(HeaderContext);
   const [showSearchbar, setShowSearchbar] = useState(false);
 
@@ -22,7 +23,9 @@ export default function Header({title, subtitle, goBack}: Props) {
     }
   }, [goBack]);
 
-  return null;
+  if (hideHeader) {
+    return null;
+  }
 
   return (
     <Appbar.Header>
