@@ -1,6 +1,9 @@
-import React from 'react';
-import {chapterImage} from '../../api';
-import {Chapter, PagedResultsList} from '../../api/mangadex/types';
+import React, {useState} from 'react';
+import {View} from 'react-native';
+import {Badge, Checkbox, Text} from 'react-native-paper';
+import {useDexifyNavigation} from 'src/foundation/Navigation';
+import {chapterImage, preferredMangaTitle} from '../../api';
+import {Chapter, Manga, PagedResultsList} from '../../api/mangadex/types';
 import {useGetRequest} from '../../api/utils';
 import {UIChapterCategory} from '../../categories';
 import Thumbnail from '../../foundation/Thumbnail';
@@ -12,6 +15,7 @@ export default function ChapterCategoryItem({
 }: {
   category: UIChapterCategory;
 }) {
+  const navigation = useDexifyNavigation();
   const {data, loading} = useGetRequest<PagedResultsList<Chapter>>(
     url(category),
   );
@@ -23,14 +27,37 @@ export default function ChapterCategoryItem({
       title={category.title}
       data={sectionData}
       dimensions={{width: 120, height: 160}}
-      renderItem={(item, dimensions) => (
-        <Thumbnail
-          imageUrl={chapterImage(item) || '/'}
-          title={item.attributes.title}
-          width={dimensions.size || dimensions.width!}
-          height={dimensions.size || dimensions.height!}
-        />
-      )}
+      renderItem={(item, dimensions) => {
+        const {chapter, volume, title: chapterTitle} = item.attributes;
+        const mangaRelationship = item.relationships.find(
+          relationship => relationship.type === 'manga',
+        );
+        const manga = mangaRelationship?.attributes
+          ? (mangaRelationship as any as Manga)
+          : undefined;
+
+        const title = manga ? preferredMangaTitle(manga) : chapterTitle;
+        const onPress = manga
+          ? () => navigation.navigate('ShowManga', {id: manga?.id})
+          : undefined;
+
+        return (
+          <Thumbnail
+            TopComponent={
+              <Badge style={{borderRadius: 0, borderBottomRightRadius: 7}}>
+                {(chapter && `Ch. ${chapter}`) ||
+                  (volume && `Vol. ${volume}`) ||
+                  'N/A'}
+              </Badge>
+            }
+            imageUrl={chapterImage(item) || '/'}
+            title={title}
+            width={dimensions.size || dimensions.width!}
+            height={dimensions.size || dimensions.height!}
+            onPress={onPress}
+          />
+        );
+      }}
     />
   );
 }

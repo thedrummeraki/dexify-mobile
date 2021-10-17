@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {ScrollView, StyleProp, View, ViewStyle} from 'react-native';
+import {Keyboard, ScrollView, StyleProp, View, ViewStyle} from 'react-native';
 import {Title, ActivityIndicator} from 'react-native-paper';
 import {CoverSize, mangaImage} from 'src/api';
 import {Author, Manga, PagedResultsList} from 'src/api/mangadex/types';
@@ -28,6 +28,8 @@ export default function BrowseResults({query}: Props) {
     useLazyGetRequest<PagedResultsList<Manga>>();
   const [getAuthors, {data: authorsData}] =
     useLazyGetRequest<PagedResultsList<Author>>();
+
+  useEffect(() => Keyboard.dismiss(), [loading]);
 
   useEffect(() => {
     if (data?.result === 'ok') {
@@ -75,44 +77,45 @@ export default function BrowseResults({query}: Props) {
   };
 
   return (
-    <ScrollView
-      onScroll={({nativeEvent}) => {
-        if (!endReachedRef.current && isCloseToBottom(nativeEvent)) {
-          endReachedRef.current = true;
-          if (hasMoreManga) {
-            setOffset(offset => offset + 100);
-          }
-        } else if (endReachedRef.current && !isCloseToBottom(nativeEvent)) {
-          endReachedRef.current = false;
-        }
-      }}>
-      <View>
-        <CategoriesCollectionItem
-          category={{title: 'Authors', type: 'author', ids: authorIds}}
-        />
-        <View style={{flex: 1, flexDirection: 'row', paddingHorizontal: 20}}>
-          {loading && (
-            <ActivityIndicator
-              size="small"
-              style={{flexShrink: 1, marginRight: 5}}
-            />
-          )}
-        </View>
-        <BasicList
-          data={results}
-          aspectRatio={orientation === 'portrait' ? 1 / 3 : 0.25}
-          style={{marginTop: 5}}
-          renderItem={manga => (
-            <Thumbnail
-              imageUrl={mangaImage(manga, {size: CoverSize.Small}) || '/'}
-              title={manga.attributes.title.en}
-              width="100%"
-              aspectRatio={0.8}
-              onPress={() => navigation.navigate('ShowManga', {id: manga.id})}
-            />
-          )}
-        />
+    <View>
+      <View style={{marginBottom: 10}}>
+        <CategoriesCollectionItem category={{type: 'author', ids: authorIds}} />
       </View>
-    </ScrollView>
+      <ScrollView
+        onScroll={({nativeEvent}) => {
+          if (!endReachedRef.current && isCloseToBottom(nativeEvent)) {
+            endReachedRef.current = true;
+            if (hasMoreManga) {
+              setOffset(offset => offset + 100);
+            }
+          } else if (endReachedRef.current && !isCloseToBottom(nativeEvent)) {
+            endReachedRef.current = false;
+          }
+        }}>
+        <View>
+          <View style={{flex: 1, flexDirection: 'row', paddingHorizontal: 20}}>
+            {loading && (
+              <ActivityIndicator
+                size="small"
+                style={{flexShrink: 1, marginRight: 5}}
+              />
+            )}
+          </View>
+          <BasicList
+            data={results}
+            aspectRatio={orientation === 'portrait' ? 1 / 3 : 0.25}
+            renderItem={manga => (
+              <Thumbnail
+                imageUrl={mangaImage(manga, {size: CoverSize.Small}) || '/'}
+                title={manga.attributes.title.en}
+                width="100%"
+                aspectRatio={0.8}
+                onPress={() => navigation.navigate('ShowManga', {id: manga.id})}
+              />
+            )}
+          />
+        </View>
+      </ScrollView>
+    </View>
   );
 }

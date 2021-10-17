@@ -22,6 +22,18 @@ export default function ScanlationGroupCategoryItem({
       title={category.title}
       data={sectionData}
       dimensions={{size: 24}}
+      skeletonLength={2}
+      SkeletonItem={
+        <Chip
+          avatar={
+            <Avatar.Image
+              source={{uri: 'https://mangadex.org/avatar.png'}}
+              size={24}
+            />
+          }>
+          Loading...
+        </Chip>
+      }
       renderItem={item => (
         <Chip
           avatar={

@@ -21,7 +21,9 @@ export default function TagCategoryItem({category}: {category: UITagCategory}) {
       title={category.title}
       data={sectionData}
       dimensions={{size: 24}}
-      renderItem={item => <Chip>{item.attributes.name.en}</Chip>}
+      skeletonLength={1}
+      SkeletonItem={<Chip icon="tag">Loading...</Chip>}
+      renderItem={item => <Chip icon="tag">{item.attributes.name.en}</Chip>}
     />
   );
 }

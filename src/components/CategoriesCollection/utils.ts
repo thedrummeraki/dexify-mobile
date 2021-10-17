@@ -12,7 +12,11 @@ export function url(category: UICategory) {
   const idParams = category.ids
     ? category.ids.map(id => `ids[]=${id}`).join('&')
     : '';
-  const params = [idParams, additionalParams]
+  const params = [
+    idParams,
+    `limit=${category.ids?.length || 10}`,
+    additionalParams,
+  ]
     .filter(params => Boolean(params))
     .join('&');
 

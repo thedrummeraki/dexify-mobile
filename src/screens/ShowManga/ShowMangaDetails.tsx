@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {Image, ScrollView, TouchableNativeFeedback, View} from 'react-native';
 import {Chip, List, Title, TouchableRipple} from 'react-native-paper';
-import {CoverSize, mangaImage} from 'src/api';
+import {CoverSize, mangaImage, preferredMangaTitle} from 'src/api';
 import {
   Chapter,
   Manga,
@@ -51,6 +51,7 @@ export default function ShowMangaDetails({manga}: Props) {
           />
         </View>
       </TouchableNativeFeedback>
+      <Title style={{padding: 5}}>{preferredMangaTitle(manga)}</Title>
       <ScrollView>
         <View>
           <View>

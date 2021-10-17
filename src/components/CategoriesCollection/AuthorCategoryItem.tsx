@@ -25,6 +25,18 @@ export default function AuthorCategoryItem({
       title={category.title}
       data={sectionData}
       dimensions={{size: 24}}
+      skeletonLength={1}
+      SkeletonItem={
+        <Chip
+          avatar={
+            <Avatar.Image
+              source={{uri: 'https://mangadex.org/avatar.png'}}
+              size={24}
+            />
+          }>
+          Loading...
+        </Chip>
+      }
       renderItem={item => (
         <Chip
           avatar={

@@ -1,6 +1,6 @@
 import React, {PropsWithChildren} from 'react';
 import {View, Image, TouchableNativeFeedback} from 'react-native';
-import {Text, TouchableRipple} from 'react-native-paper';
+import {Caption, Text, TouchableRipple} from 'react-native-paper';
 
 interface DimensionsProps {
   width: number | string;
@@ -10,7 +10,9 @@ interface DimensionsProps {
 
 interface Props {
   imageUrl: string;
-  title: string;
+  title?: string;
+  hideTitle?: boolean;
+  TopComponent?: React.ReactElement;
   onPress?: () => void;
   onLongPress?: () => void;
 }
@@ -18,9 +20,11 @@ interface Props {
 export default function Thumbnail({
   imageUrl,
   title,
+  hideTitle,
   width,
   height,
   aspectRatio,
+  TopComponent,
   onPress,
   onLongPress,
 }: Props & DimensionsProps) {
@@ -28,6 +32,7 @@ export default function Thumbnail({
     <View style={{width, flex: 1, flexDirection: 'column'}}>
       <MaybeTouchableNativeFeedback onLongPress={onLongPress} onPress={onPress}>
         <View>
+          <View style={{position: 'absolute'}}>{TopComponent}</View>
           <Image
             source={{uri: imageUrl}}
             style={{height, aspectRatio, zIndex: -1}}
@@ -35,7 +40,9 @@ export default function Thumbnail({
           />
         </View>
       </MaybeTouchableNativeFeedback>
-      <Text numberOfLines={2}>{title}</Text>
+      {title && !hideTitle ? (
+        <Caption numberOfLines={2}>{title}</Caption>
+      ) : undefined}
     </View>
   );
 }

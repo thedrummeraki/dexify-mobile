@@ -2,7 +2,8 @@ type Params = string[][] | Record<string, string> | string;
 
 interface UIBaseCategory {
   type: UICategoryType;
-  title: string;
+  title?: string;
+  hideTitle?: boolean;
   description?: string;
   viewMore?: string;
   url?: string;

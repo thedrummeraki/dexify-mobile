@@ -24,12 +24,13 @@ interface ImageDimensionsSimple extends BasicImageDimensions {
 type ImageDimensions = ImageDimensions2D | ImageDimensionsSimple;
 
 interface Props<T> {
-  title: string;
+  title?: string;
   data: T[];
   dimensions: ImageDimensions;
   loading?: boolean;
   viewMore?: boolean;
   skeletonLength?: number;
+  SkeletonItem?: React.ReactElement;
   renderItem: (
     item: T,
     dimensions: ImageDimensions,
@@ -43,6 +44,7 @@ export default function CategoriesCollectionSection<T>({
   loading,
   viewMore,
   skeletonLength = 5,
+  SkeletonItem,
   renderItem,
 }: Props<T>) {
   const dimensions: ImageDimensions2D = imageDimensions.size
@@ -51,17 +53,19 @@ export default function CategoriesCollectionSection<T>({
 
   if (loading) {
     return (
-      <View style={{marginTop: 5}}>
-        <Title style={{marginHorizontal: 20}}>{title}</Title>
+      <View style={{marginTop: 5, marginBottom: title ? 15 : 5}}>
+        {title ? (
+          <Title style={{marginHorizontal: 20}}>{title}</Title>
+        ) : undefined}
         <FlatList
           horizontal
-          data={Array.from({length: skeletonLength})} // 5 skeleton items
+          data={Array.from({length: skeletonLength}).map((_, index) => index)} // 5 skeleton items
           style={{marginTop: 10}}
           showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{marginHorizontal: 10}}
-          renderItem={() => (
-            <View style={{marginLeft: 10}}>
-              <ThumbnailSkeleton {...dimensions} />
+          contentContainerStyle={{marginHorizontal: title ? 20 : 5}}
+          renderItem={({item}) => (
+            <View key={String(item)} style={{marginRight: 10}}>
+              {SkeletonItem || <ThumbnailSkeleton {...dimensions} />}
             </View>
           )}
         />
@@ -69,14 +73,16 @@ export default function CategoriesCollectionSection<T>({
     );
   }
   return (
-    <View style={{marginTop: 5, marginBottom: 15}}>
-      <Title style={{marginHorizontal: 20}}>{title}</Title>
+    <View style={{marginTop: 5, marginBottom: title ? 15 : 5}}>
+      {title ? (
+        <Title style={{marginHorizontal: 20}}>{title}</Title>
+      ) : undefined}
       <FlatList
         horizontal
         data={data}
         style={{marginTop: 10}}
         showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{marginHorizontal: 20}}
+        contentContainerStyle={{marginHorizontal: title ? 20 : 5}}
         renderItem={({item}) => (
           <View style={{marginRight: 10}}>{renderItem(item, dimensions)}</View>
         )}

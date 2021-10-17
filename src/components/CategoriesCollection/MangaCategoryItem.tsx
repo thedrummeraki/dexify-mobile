@@ -34,6 +34,7 @@ export default function MangaCategoryItem({
           key={item.id}
           imageUrl={mangaImage(item) || '/'}
           title={preferredMangaTitle(item)}
+          hideTitle={category.hideTitle}
           width={dimensions.size || dimensions.width!}
           height={dimensions.size || dimensions.height!}
           onPress={() => navigation.navigate('ShowManga', {id: item.id})}
