@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import {
   Dimensions,
+  FlatList,
   Image,
   ScrollView,
   TouchableWithoutFeedback,
@@ -28,20 +29,27 @@ export default function ShowChapterPages({pages}: Props) {
   return (
     <View style={{position: 'absolute', top: 0, right: 0, bottom: 0, left: 0}}>
       {loading && <ActivityIndicator style={{flex: 1}} size="large" />}
-      <TouchableWithoutFeedback onPress={() => setFullWidth(!fullWidth)}>
-        <View>
-          <Image
-            onLoadStart={() => setLoading(true)}
-            onLoadEnd={() => setLoading(false)}
-            style={{
-              width: fullWidth ? '100%' : width,
-              height: '100%',
-              resizeMode: 'contain',
-            }}
-            source={{uri: currentPage.dataSaverImageUrl}}
-          />
-        </View>
-      </TouchableWithoutFeedback>
+      <FlatList
+        horizontal
+        data={pages}
+        renderItem={({item: page}) => (
+          <TouchableWithoutFeedback onPress={() => setFullWidth(!fullWidth)}>
+            <View>
+              <Image
+                onLoadStart={() => setLoading(true)}
+                onLoadEnd={() => setLoading(false)}
+                style={{
+                  width,
+                  height: '100%',
+                  aspectRatio: 1,
+                  resizeMode: 'contain',
+                }}
+                source={{uri: page.dataSaverImageUrl}}
+              />
+            </View>
+          </TouchableWithoutFeedback>
+        )}
+      />
     </View>
   );
 }

@@ -1,8 +1,23 @@
 import React, {useState} from 'react';
 import {Image, ScrollView, TouchableNativeFeedback, View} from 'react-native';
-import {Chip, List, Title, TouchableRipple} from 'react-native-paper';
-import {CoverSize, mangaImage, preferredMangaTitle} from 'src/api';
 import {
+  Caption,
+  Chip,
+  List,
+  Subheading,
+  Title,
+  TouchableRipple,
+} from 'react-native-paper';
+import {
+  CoverSize,
+  findRelationship,
+  findRelationships,
+  mangaImage,
+  preferredMangaTitle,
+} from 'src/api';
+import {
+  Artist,
+  Author,
   Chapter,
   Manga,
   PagedResultsList,
@@ -38,6 +53,13 @@ export default function ShowMangaDetails({manga}: Props) {
     }
   }
 
+  const altTitle = manga.attributes.altTitles.find(
+    title => title[manga.attributes.originalLanguage] || title.en,
+  );
+
+  const authors = findRelationships<Author>(manga, 'author');
+  const artists = findRelationships<Artist>(manga, 'artist');
+
   return (
     <View>
       <TouchableNativeFeedback
@@ -51,9 +73,22 @@ export default function ShowMangaDetails({manga}: Props) {
           />
         </View>
       </TouchableNativeFeedback>
-      <Title style={{padding: 5}}>{preferredMangaTitle(manga)}</Title>
+      <View style={{padding: 5}}>
+        <Title>{preferredMangaTitle(manga)}</Title>
+        <Caption>
+          {altTitle[manga.attributes.originalLanguage] || altTitle.en}
+        </Caption>
+        <Subheading>
+          Written by: {authors.map(a => a.attributes.name).join(', ')}
+        </Subheading>
+      </View>
       <ScrollView>
         <View>
+          <View style={{paddingHorizontal: 5}}>
+            <Subheading>
+              Illustration by: {artists.map(a => a.attributes.name).join(', ')}
+            </Subheading>
+          </View>
           <View>
             <List.Section
               title={`Chapters (${

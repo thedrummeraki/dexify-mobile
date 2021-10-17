@@ -1,3 +1,4 @@
+import {CoverArt, ScanlationGroup} from '.';
 import {Order, Relationship} from './api';
 import {Author} from './author';
 import {Maybe} from './utils';
@@ -28,7 +29,7 @@ export interface Manga {
   id: string;
   type: 'manga';
   attributes: MangaAttributes;
-  relationships: Relationship[];
+  relationships: Relationship<Author | ScanlationGroup | CoverArt>[];
 }
 
 export interface MangaAttributes {

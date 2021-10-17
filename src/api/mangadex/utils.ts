@@ -1,4 +1,13 @@
-import {Chapter, Manga} from './types';
+import {
+  Author,
+  Chapter,
+  CoverArt,
+  Manga,
+  PossibleRelationship,
+  PossibleRelationshipTypes,
+  Relationship,
+  ScanlationGroup,
+} from './types';
 
 export enum CoverSize {
   Original = '',
@@ -7,13 +16,45 @@ export enum CoverSize {
 }
 
 export function preferredMangaTitle(manga: Manga) {
-  return Object.entries(manga.attributes.title)[0][1];
+  return (
+    manga.attributes.title[manga.attributes.originalLanguage] ||
+    manga.attributes.title.en
+  );
+}
+
+export function anyValidRelationship(
+  resource: {relationships: Relationship[]},
+  type: unknown,
+): type is PossibleRelationshipTypes {
+  return Boolean(resource.relationships.find(r => r.type === type));
+}
+
+export function findRelationship<T extends PossibleRelationship>(
+  resource: {
+    relationships: Relationship[];
+  },
+  type: PossibleRelationshipTypes,
+) {
+  if (anyValidRelationship(resource, type)) {
+    return resource.relationships.find(r => r.type === type) as T;
+  }
+  return null;
+}
+
+export function findRelationships<T extends PossibleRelationship>(
+  resource: {
+    relationships: Relationship[];
+  },
+  type: PossibleRelationshipTypes,
+) {
+  if (anyValidRelationship(resource, type)) {
+    return resource.relationships.filter(r => r.type === type) as T[];
+  }
+  return [];
 }
 
 export function mangaImage(manga: Manga, options?: {size?: CoverSize}): string {
-  const cover = manga.relationships.find(
-    relationship => relationship.type === 'cover_art',
-  );
+  const cover = findRelationship<CoverArt>(manga, 'cover_art');
 
   if (!cover?.attributes) {
     return 'https://mangadex.org/avatar.png';

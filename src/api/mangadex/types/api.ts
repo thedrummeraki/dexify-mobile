@@ -1,3 +1,5 @@
+import {Artist, Author, CoverArt, Manga, ScanlationGroup} from '.';
+
 export function defaultPagedResults<T>() {
   return {
     results: [] as Array<T>,
@@ -57,12 +59,28 @@ interface GenericAttributes {
   [key: string]: string;
 }
 
-export interface Relationship {
-  id: string;
-  type: string;
-  related: string;
-  attributes?: GenericAttributes;
-}
+type B = string | number;
+type C = Exclude<B, string>;
+
+export type PossibleRelationship =
+  | Manga
+  | Author
+  | Artist
+  | CoverArt
+  | ScanlationGroup;
+export type PossibleRelationshipTypes = Pick<
+  PossibleRelationship,
+  'type'
+>['type'];
+
+export type Relationship<T = PossibleRelationship> =
+  | {
+      id: string;
+      type: PossibleRelationshipTypes;
+      related: string;
+      attributes?: GenericAttributes;
+    }
+  | T;
 
 export type Order<K extends keyof any> = {
   [P in K]?: 'asc' | 'desc';

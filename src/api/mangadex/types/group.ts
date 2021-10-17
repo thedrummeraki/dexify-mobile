@@ -1,6 +1,6 @@
 export interface ScanlationGroup {
   id: string;
-  type: 'author';
+  type: 'group';
   attributes: ScanlationGroupAttributes;
 }
 

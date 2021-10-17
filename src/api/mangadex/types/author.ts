@@ -4,6 +4,12 @@ export interface Author {
   attributes: AuthorAttributes;
 }
 
+export interface Artist {
+  id: string;
+  type: 'artist';
+  attributes: AuthorAttributes;
+}
+
 export interface AuthorAttributes {
   name: string;
   imageUrl: string | null;
