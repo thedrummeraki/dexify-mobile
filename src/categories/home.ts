@@ -38,12 +38,22 @@ export function useHomeCategories(): UICategory[] {
   ];
 }
 
-export function useBrowseCategories(search: string): UICategory[] {
+export function useBrowseCategories(): UICategory[] {
   return [
+    {
+      title: 'Browse by tag',
+      url: 'https://api.mangadex.org/manga/tag',
+      type: 'tag',
+    },
     {
       title: 'Browse manga',
       url: `https://api.mangadex.org/manga?order%5BcreatedAt%5D=desc`,
       type: 'manga',
+    },
+    {
+      title: 'Browse Scanlation groups',
+      url: 'https://api.mangadex.org/group',
+      type: 'group',
     },
   ];
 }

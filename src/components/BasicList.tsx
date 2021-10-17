@@ -1,5 +1,5 @@
 import React from 'react';
-import {View} from 'react-native';
+import {StyleProp, View, ViewStyle} from 'react-native';
 
 interface BasicResource {
   id: any;
@@ -8,18 +8,20 @@ interface BasicResource {
 interface Props<T extends BasicResource> {
   data: T[];
   aspectRatio: number; // decimal numbers only
+  style?: StyleProp<ViewStyle>;
   renderItem: (item: T) => React.ReactNode;
 }
 
 export default function BasicList<T extends BasicResource>({
   data,
   aspectRatio,
+  style,
   renderItem,
 }: Props<T>) {
   const flexBasis = aspectRatio < 1 ? `${aspectRatio * 100}%` : '50%';
 
   return (
-    <View style={{paddingHorizontal: 10}}>
+    <View style={style}>
       <View style={{flex: 1, flexDirection: 'row', flexWrap: 'wrap'}}>
         {data.map(item => (
           <View

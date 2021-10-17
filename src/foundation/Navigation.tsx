@@ -9,14 +9,7 @@ export default function Navigation() {
   return (
     <Stack.Navigator
       initialRouteName="Dexify"
-      screenOptions={{
-        header: ({navigation, route}) => (
-          <Header
-            title={route.name}
-            goBack={navigation.canGoBack() ? navigation.pop : undefined}
-          />
-        ),
-      }}>
+      screenOptions={{headerShown: false}}>
       <Stack.Screen name="Home" component={Home} />
     </Stack.Navigator>
   );

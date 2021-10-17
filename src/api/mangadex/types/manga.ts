@@ -41,7 +41,7 @@ export interface MangaAttributes {
   status?: Maybe<MangaStatus>;
   year?: Maybe<number>;
   contentRating?: Maybe<ContentRating>;
-  tags: Array<MangaTag>;
+  tags: Array<Manga.Tag>;
   originalLanguage: string;
   version: number;
   createdAt: string;
@@ -56,6 +56,22 @@ export type Title = {
 export type Description = {
   [key: string]: string;
 };
+
+export namespace Manga {
+  export interface Tag {
+    id: string;
+    type: 'tag';
+    attributes: TagAttributes;
+    relationships: Relationship[];
+  }
+
+  export interface TagAttributes {
+    name: Title;
+    version: number;
+    group: string;
+    description: any[];
+  }
+}
 
 export type MangaLinks = {
   al?: string;
@@ -73,17 +89,6 @@ export type MangaLinks = {
 };
 
 export type MangaLinkKey = keyof MangaLinks;
-
-export interface MangaTag {
-  id: string;
-  type: 'tag';
-  attributes: MangaTagAttributes;
-}
-
-export interface MangaTagAttributes {
-  name: Title;
-  version: number;
-}
 
 export enum TagMode {
   AND = 'AND',
@@ -113,9 +118,9 @@ export interface MangaSearchOptions {
   artists: Author[];
   authors: Author[];
   year: Maybe<number>;
-  includedTags: MangaTag[];
+  includedTags: Manga.Tag[];
   includedTagsMode: TagMode[];
-  excludedTags: MangaTag[];
+  excludedTags: Manga.Tag[];
   excludedTagsMode: TagMode[];
   status: MangaStatus[];
   originalLanguage: string[];

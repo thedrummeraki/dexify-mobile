@@ -8,7 +8,7 @@ import {
 } from './screens';
 
 export default function Home() {
-  useHeader({title: 'Dexify ~ Browse', showSearch: false});
+  useHeader({title: 'Dexify', showSearch: false});
 
   const [index, setIndex] = useState(0);
   const [routes] = useState([

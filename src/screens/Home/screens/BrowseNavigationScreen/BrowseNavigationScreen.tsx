@@ -1,36 +1,26 @@
 import React, {useState} from 'react';
-import {ScrollView, View} from 'react-native';
-import {Searchbar, TextInput} from 'react-native-paper';
-import {Container} from '../../../../components';
-import {useDebouncedValue} from '../../../../utils';
+import {View} from 'react-native';
+import {Searchbar} from 'react-native-paper';
+import {useDebouncedValue} from 'src/utils';
 import BrowseDefaultState from './BrowseDefaultState';
 import BrowseResults from './BrowseResults';
 
 export function BrowseNavigationScreen() {
   const [searchInput, setSearchInput] = useState('');
-  const [loading, setLoading] = useState(false);
   const query = useDebouncedValue(searchInput, 500);
 
   return (
-    <ScrollView>
+    <View style={{flex: 1, flexDirection: 'column', padding: 5}}>
+      <Searchbar
+        value={searchInput}
+        onChangeText={setSearchInput}
+        autoCapitalize="none"
+        placeholder="Browse manga, authors..."
+        style={{marginTop: 10, marginHorizontal: 5}}
+      />
       <View>
-        <View style={{flex: 1, flexDirection: 'row', padding: 5}}>
-          <Searchbar
-            value={searchInput}
-            onChangeText={setSearchInput}
-            autoCapitalize="none"
-            placeholder="Browse manga, authors..."
-            style={{flexGrow: 1}}
-          />
-        </View>
-        <View>
-          {query ? (
-            <BrowseResults query={query} onLoading={setLoading} />
-          ) : (
-            <BrowseDefaultState />
-          )}
-        </View>
+        {query ? <BrowseResults query={query} /> : <BrowseDefaultState />}
       </View>
-    </ScrollView>
+    </View>
   );
 }

@@ -35,6 +35,17 @@ export type UIChapterCategory = UIUntypedCategory & {
 export type UIAuthorCategory = UIUntypedCategory & {
   type: 'author';
 };
+export type UITagCategory = UIUntypedCategory & {
+  type: 'tag';
+};
+export type UIScanlationGroupCategory = UIUntypedCategory & {
+  type: 'group';
+};
 
-export type UICategory = UIMangaCategory | UIChapterCategory | UIAuthorCategory;
-export type UICategoryType = 'manga' | 'chapter' | 'author';
+export type UICategory =
+  | UIMangaCategory
+  | UIChapterCategory
+  | UIAuthorCategory
+  | UITagCategory
+  | UIScanlationGroupCategory;
+export type UICategoryType = 'manga' | 'chapter' | 'author' | 'tag' | 'group';
