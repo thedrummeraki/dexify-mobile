@@ -4,6 +4,8 @@ import {Chapter, Manga} from 'src/api/mangadex/types';
 import {useDexifyNavigation} from 'src/foundation/Navigation';
 import ShowChapterPagesHeader from './ShowChapterPagesHeader';
 
+import SwipeableViews from 'react-swipeable-views-native';
+
 interface Page {
   number: number;
   originalImageUrl: string;
@@ -65,10 +67,13 @@ export default function ShowChapterPages({pages, chapter}: Props) {
         subtitle={headerCaptionContents}
         onPress={navigation.goBack}
         hidden={!showHeader}
-        autoHideDelay={3000}
       />
-      <View style={{flex: 1}}>
-        {pages.map((page, index) => {
+      <SwipeableViews
+        style={{flex: 1}}
+        onChangeIndex={index => {
+          setCurrentPage(pages[index]);
+        }}>
+        {pages.map(page => {
           return (
             <TouchableWithoutFeedback
               key={page.number}
@@ -89,10 +94,7 @@ export default function ShowChapterPages({pages, chapter}: Props) {
                 //   setCurrentPage(pages[page.number]);
                 // }
               }}>
-              <View
-                style={{
-                  display: page.number === currentPage.number ? 'flex' : 'none',
-                }}>
+              <View>
                 <Image
                   onLoadEnd={() => setLoading(false)}
                   style={{
@@ -106,7 +108,7 @@ export default function ShowChapterPages({pages, chapter}: Props) {
             </TouchableWithoutFeedback>
           );
         })}
-      </View>
+      </SwipeableViews>
     </View>
   );
 }

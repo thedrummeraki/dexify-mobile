@@ -12,8 +12,6 @@ import {Caption, IconButton, Subheading} from 'react-native-paper';
 interface Props {
   title: string;
   subtitle: string;
-  fadeOutOnRender?: boolean;
-  autoHideDelay?: number;
   hidden?: boolean;
   style?: StyleProp<ViewStyle>;
   onPress: () => void;
@@ -22,8 +20,6 @@ interface Props {
 export default function ShowChapterPagesHeader({
   title,
   subtitle,
-  fadeOutOnRender,
-  autoHideDelay = 1500,
   hidden,
   style,
   onPress,
