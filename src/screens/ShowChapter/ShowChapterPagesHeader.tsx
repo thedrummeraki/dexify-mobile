@@ -1,4 +1,4 @@
-import React, {useEffect, useRef} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
   Animated,
   Easing,
@@ -12,6 +12,7 @@ import {Caption, IconButton, Subheading} from 'react-native-paper';
 interface Props {
   title: string;
   subtitle: string;
+  fadeOutOnRender?: boolean;
   autoHideDelay?: number;
   hidden?: boolean;
   style?: StyleProp<ViewStyle>;
@@ -21,29 +22,50 @@ interface Props {
 export default function ShowChapterPagesHeader({
   title,
   subtitle,
-  autoHideDelay = 5000,
+  fadeOutOnRender,
+  autoHideDelay = 1500,
   hidden,
   style,
   onPress,
 }: Props) {
   const isDarkTheme = useColorScheme() === 'dark';
-  const fadeAnim = useRef(new Animated.Value(1)).current;
+  const opacity = useState(new Animated.Value(hidden ? 0 : 1))[0];
+  const canPerformAnimation = useRef(false);
+
+  function fadeIn() {
+    Animated.timing(opacity, {
+      useNativeDriver: true,
+      toValue: 1,
+      duration: 400,
+    }).start();
+  }
+
+  function fadeOut() {
+    Animated.timing(opacity, {
+      useNativeDriver: true,
+      toValue: 0,
+      duration: 400,
+    }).start();
+  }
 
   useEffect(() => {
-    Animated.timing(fadeAnim, {
-      toValue: 0,
-      duration: 1000,
-      easing: Easing.cubic,
-      delay: autoHideDelay,
-      useNativeDriver: true,
-    }).start();
-  }, [fadeAnim]);
+    if (!canPerformAnimation.current) {
+      canPerformAnimation.current = true;
+      return;
+    }
+
+    if (hidden) {
+      fadeOut();
+    } else {
+      fadeIn();
+    }
+  }, [hidden]);
 
   return (
     <Animated.View
       style={Object.assign(
         {
-          opacity: fadeAnim,
+          opacity,
           zIndex: 1,
           backgroundColor: isDarkTheme ? '#222' : '#ddd',
           height: 48,

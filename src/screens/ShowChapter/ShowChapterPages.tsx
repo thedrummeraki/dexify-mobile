@@ -1,22 +1,5 @@
-import React, {useEffect, useState} from 'react';
-import {
-  Dimensions,
-  Image,
-  ScrollView,
-  StyleSheet,
-  TouchableWithoutFeedback,
-  useColorScheme,
-  View,
-} from 'react-native';
-import {
-  ActivityIndicator,
-  Button,
-  Caption,
-  IconButton,
-  Subheading,
-  Text,
-} from 'react-native-paper';
-import {findRelationship, preferredMangaTitle} from 'src/api';
+import React, {useEffect, useRef, useState} from 'react';
+import {Dimensions, Image, TouchableWithoutFeedback, View} from 'react-native';
 import {Chapter, Manga} from 'src/api/mangadex/types';
 import {useDexifyNavigation} from 'src/foundation/Navigation';
 import ShowChapterPagesHeader from './ShowChapterPagesHeader';
@@ -35,15 +18,14 @@ interface Props {
 export default function ShowChapterPages({pages, chapter}: Props) {
   const navigation = useDexifyNavigation();
 
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(pages[0]);
   const [fullWidth, setFullWidth] = useState(false);
   const [showHeader, setShowHeader] = useState(true);
-
-  const isDarkTheme = useColorScheme() === 'dark';
+  const [readyToHideHeader, setReadyToHideHeader] = useState(false);
+  const hasHiddenHeaderOnFirstRender = useRef(false);
 
   const width = Dimensions.get('screen').width;
-  const manga = findRelationship<Manga>(chapter, 'manga');
 
   const headerCaptionContents = [
     chapter.attributes.volume
@@ -57,12 +39,24 @@ export default function ShowChapterPages({pages, chapter}: Props) {
     .join(' - ');
 
   useEffect(() => {
+    if (!loading) {
+      setReadyToHideHeader(true);
+    }
+  }, [loading]);
+
+  useEffect(() => {
+    if (!readyToHideHeader || hasHiddenHeaderOnFirstRender.current) {
+      return;
+    }
+
     const timer = setTimeout(() => {
       setShowHeader(false);
+      // not sure if this will beed needed but adding in case
+      hasHiddenHeaderOnFirstRender.current = true;
     }, 2000);
 
     return () => clearTimeout(timer);
-  }, []);
+  }, [readyToHideHeader]);
 
   return (
     <View style={{flex: 1}}>
@@ -70,9 +64,8 @@ export default function ShowChapterPages({pages, chapter}: Props) {
         title={`Page ${currentPage.number}/${pages.length}`}
         subtitle={headerCaptionContents}
         onPress={navigation.goBack}
-        style={{
-          display: showHeader ? 'flex' : 'none',
-        }}
+        hidden={!showHeader}
+        autoHideDelay={3000}
       />
       <View style={{flex: 1}}>
         {pages.map((page, index) => {
@@ -101,7 +94,6 @@ export default function ShowChapterPages({pages, chapter}: Props) {
                   display: page.number === currentPage.number ? 'flex' : 'none',
                 }}>
                 <Image
-                  onLoadStart={() => setLoading(true)}
                   onLoadEnd={() => setLoading(false)}
                   style={{
                     width: fullWidth ? '100%' : width,
