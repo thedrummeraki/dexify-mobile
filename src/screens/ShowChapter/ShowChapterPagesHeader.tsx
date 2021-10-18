@@ -1,10 +1,19 @@
-import React from 'react';
-import {StyleProp, useColorScheme, View, ViewStyle} from 'react-native';
+import React, {useEffect, useRef} from 'react';
+import {
+  Animated,
+  Easing,
+  StyleProp,
+  useColorScheme,
+  View,
+  ViewStyle,
+} from 'react-native';
 import {Caption, IconButton, Subheading} from 'react-native-paper';
 
 interface Props {
   title: string;
   subtitle: string;
+  autoHideDelay?: number;
+  hidden?: boolean;
   style?: StyleProp<ViewStyle>;
   onPress: () => void;
 }
@@ -12,15 +21,29 @@ interface Props {
 export default function ShowChapterPagesHeader({
   title,
   subtitle,
+  autoHideDelay = 5000,
+  hidden,
   style,
   onPress,
 }: Props) {
   const isDarkTheme = useColorScheme() === 'dark';
+  const fadeAnim = useRef(new Animated.Value(1)).current;
+
+  useEffect(() => {
+    Animated.timing(fadeAnim, {
+      toValue: 0,
+      duration: 1000,
+      easing: Easing.cubic,
+      delay: autoHideDelay,
+      useNativeDriver: true,
+    }).start();
+  }, [fadeAnim]);
 
   return (
-    <View
+    <Animated.View
       style={Object.assign(
         {
+          opacity: fadeAnim,
           zIndex: 1,
           backgroundColor: isDarkTheme ? '#222' : '#ddd',
           height: 48,
@@ -62,6 +85,6 @@ export default function ShowChapterPagesHeader({
           </View>
         </View>
       </View>
-    </View>
+    </Animated.View>
   );
 }
