@@ -9,7 +9,7 @@ import ShowChapterDetails from './ShowChapterDetails';
 export default function ShowChapter() {
   const route = useShowChapterRoute();
   const {data, loading, error} = useGetRequest<EntityResponse<Chapter>>(
-    `https://api.mangadex.org/chapter/${route.params.id}`,
+    `https://api.mangadex.org/chapter/${route.params.id}?includes[]=manga`,
   );
 
   if (loading) {
