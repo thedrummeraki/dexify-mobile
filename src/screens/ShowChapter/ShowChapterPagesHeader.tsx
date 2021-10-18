@@ -54,11 +54,7 @@ export default function ShowChapterPagesHeader({
       return;
     }
 
-    if (hidden) {
-      fadeOut();
-    } else {
-      fadeIn();
-    }
+    hidden ? fadeOut() : fadeIn();
   }, [hidden]);
 
   return (
@@ -84,7 +80,12 @@ export default function ShowChapterPagesHeader({
           alignItems: 'center',
         }}>
         <View>
-          <IconButton icon="arrow-left" onPress={onPress} />
+          <IconButton
+            icon="arrow-left"
+            size={20}
+            onPress={onPress}
+            style={{marginHorizontal: 10}}
+          />
         </View>
         <View
           style={{
