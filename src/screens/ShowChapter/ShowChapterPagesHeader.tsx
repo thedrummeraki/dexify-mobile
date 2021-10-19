@@ -60,7 +60,7 @@ export default function ShowChapterPagesHeader({
           opacity,
           zIndex: 1,
           backgroundColor: isDarkTheme ? '#222' : '#ddd',
-          height: 48,
+          height: 60,
           position: 'absolute',
           top: 0,
           right: 0,
@@ -89,7 +89,7 @@ export default function ShowChapterPagesHeader({
             height: '100%',
           }}>
           <Subheading
-            style={{marginTop: 5, paddingVertical: 0, marginVertical: 0}}>
+            style={{marginTop: 10, paddingVertical: 0, marginVertical: 0}}>
             {title}
           </Subheading>
           <View
