@@ -24,9 +24,10 @@ interface ImageDimensionsSimple extends BasicImageDimensions {
 type ImageDimensions = ImageDimensions2D | ImageDimensionsSimple;
 
 interface Props<T> {
+  horizontal?: boolean;
   title?: string;
   data: T[];
-  dimensions: ImageDimensions;
+  dimensions?: ImageDimensions;
   loading?: boolean;
   viewMore?: boolean;
   skeletonLength?: number;
@@ -38,6 +39,7 @@ interface Props<T> {
 }
 
 export default function CategoriesCollectionSection<T>({
+  horizontal = true,
   title,
   data,
   dimensions: imageDimensions,
@@ -47,9 +49,11 @@ export default function CategoriesCollectionSection<T>({
   SkeletonItem,
   renderItem,
 }: Props<T>) {
-  const dimensions: ImageDimensions2D = imageDimensions.size
-    ? {width: imageDimensions.size, height: imageDimensions.size}
-    : (imageDimensions as ImageDimensions2D);
+  const dimensions: ImageDimensions2D = imageDimensions
+    ? imageDimensions.size
+      ? {width: imageDimensions.size, height: imageDimensions.size}
+      : (imageDimensions as ImageDimensions2D)
+    : {height: 24, width: 24};
 
   if (loading) {
     return (
@@ -58,7 +62,7 @@ export default function CategoriesCollectionSection<T>({
           <Title style={{marginHorizontal: 20}}>{title}</Title>
         ) : undefined}
         <FlatList
-          horizontal
+          horizontal={horizontal}
           data={Array.from({length: skeletonLength}).map((_, index) => index)} // 5 skeleton items
           style={{marginTop: 10}}
           showsHorizontalScrollIndicator={false}
@@ -78,7 +82,7 @@ export default function CategoriesCollectionSection<T>({
         <Title style={{marginHorizontal: 20}}>{title}</Title>
       ) : undefined}
       <FlatList
-        horizontal
+        horizontal={horizontal}
         data={data}
         style={{marginTop: 10}}
         showsHorizontalScrollIndicator={false}

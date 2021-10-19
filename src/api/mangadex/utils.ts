@@ -22,6 +22,17 @@ export function preferredMangaTitle(manga: Manga) {
   );
 }
 
+export function preferredMangaDescription(manga: Manga) {
+  if (Object.entries(manga.attributes.description).length === 0) {
+    return null;
+  }
+
+  return (
+    manga.attributes.description[manga.attributes.originalLanguage] ||
+    manga.attributes.description.en
+  );
+}
+
 export function anyValidRelationship(
   resource: {relationships: Relationship[]},
   type: unknown,

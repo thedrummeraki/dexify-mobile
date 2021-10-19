@@ -10,7 +10,7 @@ export default function ShowManga() {
   useHeader({title: '', hideHeader: true});
   const route = useShowMangaRoute();
   const {data, error, loading} = useGetRequest<EntityResponse<Manga>>(
-    `https://api.mangadex.org/manga/${route.params.id}?includes[]=cover_art&includes[]=author&includes[]=artist`,
+    `https://api.mangadex.org/manga/${route.params.id}?includes[]=cover_art&includes[]=author&includes[]=artist&includes[]=tag`,
   );
 
   if (loading) {
