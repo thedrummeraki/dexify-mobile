@@ -13,7 +13,6 @@ export default function TagCategoryItem({category}: {category: UITagCategory}) {
   const {data, loading} = useGetRequest<PagedResultsList<Manga.Tag>>(
     url(category),
   );
-  console.log('tag data', data, 'from', url(category));
   const sectionData = data?.result === 'ok' ? data.data : [];
 
   return (

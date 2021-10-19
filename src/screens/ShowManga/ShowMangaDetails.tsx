@@ -1,8 +1,9 @@
-import React, {useState} from 'react';
+import React, {useRef, useState} from 'react';
 import {Image, ScrollView, TouchableNativeFeedback, View} from 'react-native';
 import {
   Button,
   Caption,
+  Card,
   Chip,
   List,
   Paragraph,
@@ -43,7 +44,7 @@ export default function ShowMangaDetails({manga}: Props) {
   const aspectRatio = showFullImage ? 1 : 2;
 
   const {data, loading} = useGetRequest<PagedResultsList<Chapter>>(
-    `https://api.mangadex.org/manga/${manga.id}/feed?translatedLanguage[]=en`,
+    `https://api.mangadex.org/manga/${manga.id}/feed?translatedLanguage[]=en&limit=10`,
   );
 
   const chapters: {[key: string]: Chapter[]} = {};
@@ -68,8 +69,6 @@ export default function ShowMangaDetails({manga}: Props) {
   const authorsAndArtists = authorsAndArtistsObjects.filter(
     (value, index, self) => self.findIndex(v => v.id === value.id) === index,
   );
-
-  const showCredits = authorsAndArtists.length > 5;
 
   return (
     <View style={{height: '100%'}}>
@@ -157,11 +156,15 @@ function ShowMangaDetailsDetailsTab({
   manga: Manga;
   authorsAndArtists: Array<Author | Artist>;
 }) {
+  const initialTrim = useRef(false);
+  const [showingFullDescripiton, setShowingFullDescripiton] = useState(true);
+  const [descriptionTrimmable, setDescriptionTrimmable] = useState(false);
+
   const goToTab = useTabNavigation();
   const altTitle = manga.attributes.altTitles.find(
-    title => title[manga.attributes.originalLanguage] || title.en,
+    title => title.jp || title.en || title[manga.attributes.originalLanguage],
   );
-  const description = preferredMangaDescription(manga);
+  const description = preferredMangaDescription(manga)?.trim();
   const partialAuthorsAndArtists = authorsAndArtists.slice(0, 5);
   const showCredits = authorsAndArtists.length > 5;
 
@@ -194,10 +197,43 @@ function ShowMangaDetailsDetailsTab({
           )}
         />
       ) : null}
-      {description && <Paragraph>{description}</Paragraph>}
+      <View>
+        <Paragraph
+          numberOfLines={showingFullDescripiton ? undefined : 4}
+          onTextLayout={({nativeEvent}) => {
+            if (!initialTrim.current) {
+              setShowingFullDescripiton(nativeEvent.lines.length <= 4);
+              setDescriptionTrimmable(nativeEvent.lines.length > 4);
+              initialTrim.current = true;
+            }
+          }}>
+          {description ||
+            `- No description was added for ${preferredMangaTitle(manga)} -`}
+        </Paragraph>
+        {descriptionTrimmable ? (
+          <View
+            style={{
+              justifyContent: 'flex-start',
+              alignItems: 'center',
+            }}>
+            <Chip
+              style={{
+                padding: -10,
+                backgroundColor: 'rgba(0,0,0,0)', // fully transparent
+              }}
+              onPress={() =>
+                setShowingFullDescripiton(!showingFullDescripiton)
+              }>
+              <Text style={{fontWeight: '900'}}>
+                {showingFullDescripiton ? 'View less' : 'View more'}
+              </Text>
+            </Chip>
+          </View>
+        ) : null}
+      </View>
       <ChipsContainer
         data={manga.attributes.tags}
-        style={{marginHorizontal: -3}}
+        style={{marginHorizontal: -3, marginTop: 13}}
         itemStyle={{paddingHorizontal: 3, paddingVertical: 5}}
         renderChip={item => <Chip icon="tag">{item.attributes.name.en}</Chip>}
       />
