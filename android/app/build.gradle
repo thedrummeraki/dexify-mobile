@@ -152,6 +152,14 @@ android {
             keyAlias 'androiddebugkey'
             keyPassword 'android'
         }
+        release {
+            if (project.hasProperty('DEXIFY_UPLOAD_STORE_FILE')) {
+                storeFile file(DEXIFY_UPLOAD_STORE_FILE)
+                storePassword DEXIFY_UPLOAD_STORE_PASSWORD
+                keyAlias DEXIFY_UPLOAD_KEY_ALIAS
+                keyPassword DEXIFY_UPLOAD_KEY_PASSWORD
+            }
+        }
     }
     buildTypes {
         debug {
@@ -168,6 +176,7 @@ android {
             signingConfig signingConfigs.debug
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+            signingConfig signingConfigs.release
         }
     }
 
