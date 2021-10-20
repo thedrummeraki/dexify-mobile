@@ -1,6 +1,7 @@
 import React, {useRef, useState} from 'react';
 import {Image, ScrollView, TouchableNativeFeedback, View} from 'react-native';
 import {
+  Avatar,
   Button,
   Caption,
   Card,
@@ -102,10 +103,7 @@ export default function ShowMangaDetails({manga}: Props) {
           <ScrollView style={{flex: 1}}>
             <View>
               <View>
-                <List.Section
-                  title={`Chapters (${
-                    (data?.result === 'ok' && data.total) || '...'
-                  })`}>
+                <List.Section>
                   {Object.entries(chapters).map(([number, list]) => (
                     <ShowMangaChapterItem
                       key={number}
@@ -191,7 +189,13 @@ function ShowMangaDetailsDetailsTab({
               : undefined
           }
           renderChip={author => (
-            <Chip icon={author.type === 'artist' ? 'account' : 'palette'}>
+            <Chip
+              avatar={
+                <Avatar.Image
+                  source={{uri: 'https://mangadex.org/avatar.png'}}
+                  size={24}
+                />
+              }>
               {author.attributes.name || author.id}
             </Chip>
           )}
@@ -225,7 +229,7 @@ function ShowMangaDetailsDetailsTab({
                 setShowingFullDescripiton(!showingFullDescripiton)
               }>
               <Text style={{fontWeight: '900'}}>
-                {showingFullDescripiton ? 'View less' : 'View more'}
+                {showingFullDescripiton ? '- View less' : '+ View more'}
               </Text>
             </Chip>
           </View>

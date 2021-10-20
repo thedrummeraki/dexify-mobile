@@ -5,11 +5,7 @@ import {
   NativeStackScreenProps,
 } from '@react-navigation/native-stack';
 import {Home, ShowChapter, ShowManga} from 'src/screens';
-import {
-  RouteProp,
-  useNavigation as useReactNavigation,
-  useRoute,
-} from '@react-navigation/core';
+import {RouteProp, useNavigation, useRoute} from '@react-navigation/core';
 import {Header} from '.';
 import {HeaderContext} from 'src/prodivers';
 
@@ -38,7 +34,6 @@ export default function Navigation() {
             goBack={navigation.canGoBack() ? navigation.goBack : undefined}
             title={headerContext.title || options.title || route.name}
             subtitle={headerContext.subtitle || undefined}
-            hideHeader={headerContext.hideHeader}
           />
         ),
       }}
@@ -50,19 +45,27 @@ export default function Navigation() {
             hideHeader: true,
           })),
       }}>
-      <Stack.Screen name="Home" component={Home} />
+      <Stack.Screen
+        name="Home"
+        component={Home}
+        options={{headerShown: false}}
+      />
       <Stack.Screen
         name="ShowManga"
         component={ShowManga}
-        options={{title: 'Loading...'}}
+        options={{title: ' '}} // little hack to avoid showing "ShowManga"
       />
-      <Stack.Screen name="ShowChapter" component={ShowChapter} />
+      <Stack.Screen
+        name="ShowChapter"
+        component={ShowChapter}
+        options={{headerShown: false}}
+      />
     </Stack.Navigator>
   );
 }
 
 export function useDexifyNavigation() {
-  return useReactNavigation<DexifyNavigationProp>();
+  return useNavigation<DexifyNavigationProp>();
 }
 
 export function useShowMangaRoute() {
