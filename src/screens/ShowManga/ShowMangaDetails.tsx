@@ -34,6 +34,7 @@ import {
 } from 'src/api/mangadex/types';
 import {useGetRequest} from 'src/api/utils';
 import {ChipsContainer} from 'src/components';
+import DynamicTabs, {DynamicTab} from 'src/components/DynamicTabs';
 import ShowMangaChapterItem from './ShowMangaChapterItem';
 
 interface Props {
@@ -43,22 +44,6 @@ interface Props {
 export default function ShowMangaDetails({manga}: Props) {
   const [showFullImage, setShowFullImage] = useState(false);
   const aspectRatio = showFullImage ? 1 : 2;
-
-  const {data, loading} = useGetRequest<PagedResultsList<Chapter>>(
-    `https://api.mangadex.org/manga/${manga.id}/feed?translatedLanguage[]=en&limit=10`,
-  );
-
-  const chapters: {[key: string]: Chapter[]} = {};
-  if (data?.result === 'ok') {
-    for (const chapter of data.data) {
-      const key = chapter.attributes.chapter || 'N/A';
-      if (chapters[key]) {
-        chapters[key].push(chapter);
-      } else {
-        chapters[key] = [chapter];
-      }
-    }
-  }
 
   const authors = findRelationships<Author>(manga, 'author');
   const artists = findRelationships<Artist>(manga, 'artist');
@@ -70,6 +55,28 @@ export default function ShowMangaDetails({manga}: Props) {
   const authorsAndArtists = authorsAndArtistsObjects.filter(
     (value, index, self) => self.findIndex(v => v.id === value.id) === index,
   );
+
+  const tabs: DynamicTab[] = [
+    {
+      title: 'Details',
+      content: () => (
+        <ShowMangaDetailsDetailsTab
+          manga={manga}
+          authorsAndArtists={authorsAndArtists}
+        />
+      ),
+    },
+    {
+      title: 'Chapters',
+      content: () => <ShowMangaDetailsChaptersTab manga={manga} />,
+    },
+    {
+      title: 'Credits',
+      content: () => (
+        <ShowMangaDetailsCreditsTab authors={authors} artists={artists} />
+      ),
+    },
+  ];
 
   return (
     <View style={{height: '100%'}}>
@@ -85,64 +92,7 @@ export default function ShowMangaDetails({manga}: Props) {
         </View>
       </TouchableNativeFeedback>
 
-      <Tabs mode="scrollable" showLeadingSpace={false}>
-        <TabScreen label="Details">
-          <ShowMangaDetailsDetailsTab
-            manga={manga}
-            authorsAndArtists={authorsAndArtists}
-          />
-        </TabScreen>
-        <TabScreen
-          label={
-            loading
-              ? 'Loading...'
-              : data?.result === 'ok'
-              ? `Chapters (${data.total})`
-              : 'Chapters (X)'
-          }>
-          <ScrollView style={{flex: 1}}>
-            <View>
-              <View>
-                <List.Section>
-                  {Object.entries(chapters).map(([number, list]) => (
-                    <ShowMangaChapterItem
-                      key={number}
-                      number={number}
-                      list={list}
-                    />
-                  ))}
-                </List.Section>
-              </View>
-            </View>
-          </ScrollView>
-        </TabScreen>
-        <TabScreen label="Credits">
-          <ScrollView style={{padding: 5, flex: 1}}>
-            <Title>Written by</Title>
-            <ChipsContainer
-              data={authors}
-              style={{marginTop: 7, marginBottom: 13, marginHorizontal: -3}}
-              itemStyle={{paddingHorizontal: 3, paddingVertical: 5}}
-              renderChip={author => (
-                <Chip icon={'account'}>
-                  {author.attributes.name || author.id}
-                </Chip>
-              )}
-            />
-            <Title>Illustrated by</Title>
-            <ChipsContainer
-              data={artists}
-              style={{marginTop: 7, marginBottom: 13, marginHorizontal: -3}}
-              itemStyle={{paddingHorizontal: 3, paddingVertical: 5}}
-              renderChip={artist => (
-                <Chip icon={'palette'}>
-                  {artist.attributes.name || artist.id}
-                </Chip>
-              )}
-            />
-          </ScrollView>
-        </TabScreen>
-      </Tabs>
+      <DynamicTabs tabs={tabs} />
     </View>
   );
 }
@@ -240,6 +190,68 @@ function ShowMangaDetailsDetailsTab({
         style={{marginHorizontal: -3, marginTop: 13}}
         itemStyle={{paddingHorizontal: 3, paddingVertical: 5}}
         renderChip={item => <Chip icon="tag">{item.attributes.name.en}</Chip>}
+      />
+    </ScrollView>
+  );
+}
+
+function ShowMangaDetailsChaptersTab({manga}: {manga: Manga}) {
+  const {data, loading} = useGetRequest<PagedResultsList<Chapter>>(
+    `https://api.mangadex.org/manga/${manga.id}/feed?translatedLanguage[]=en&limit=10`,
+  );
+
+  const chapters: {[key: string]: Chapter[]} = {};
+  if (data?.result === 'ok') {
+    for (const chapter of data.data) {
+      const key = chapter.attributes.chapter || 'N/A';
+      if (chapters[key]) {
+        chapters[key].push(chapter);
+      } else {
+        chapters[key] = [chapter];
+      }
+    }
+  }
+  return (
+    <ScrollView style={{flex: 1}}>
+      <View>
+        <View>
+          <List.Section>
+            {Object.entries(chapters).map(([number, list]) => (
+              <ShowMangaChapterItem key={number} number={number} list={list} />
+            ))}
+          </List.Section>
+        </View>
+      </View>
+    </ScrollView>
+  );
+}
+
+function ShowMangaDetailsCreditsTab({
+  authors,
+  artists,
+}: {
+  authors: Author[];
+  artists: Artist[];
+}) {
+  return (
+    <ScrollView style={{padding: 5, flex: 1}}>
+      <Title>Written by</Title>
+      <ChipsContainer
+        data={authors}
+        style={{marginTop: 7, marginBottom: 13, marginHorizontal: -3}}
+        itemStyle={{paddingHorizontal: 3, paddingVertical: 5}}
+        renderChip={author => (
+          <Chip icon={'account'}>{author.attributes.name || author.id}</Chip>
+        )}
+      />
+      <Title>Illustrated by</Title>
+      <ChipsContainer
+        data={artists}
+        style={{marginTop: 7, marginBottom: 13, marginHorizontal: -3}}
+        itemStyle={{paddingHorizontal: 3, paddingVertical: 5}}
+        renderChip={artist => (
+          <Chip icon={'palette'}>{artist.attributes.name || artist.id}</Chip>
+        )}
       />
     </ScrollView>
   );

@@ -1,5 +1,5 @@
 import React from 'react';
-import {Text, Title} from 'react-native-paper';
+import {Title} from 'react-native-paper';
 import {EntityResponse, Manga} from 'src/api/mangadex/types';
 import {useGetRequest} from 'src/api/utils';
 import {useShowMangaRoute} from 'src/foundation/Navigation';
