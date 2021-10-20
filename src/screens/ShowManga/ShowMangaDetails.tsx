@@ -1,23 +1,17 @@
-import React, {useRef, useState} from 'react';
+import React, {useEffect, useMemo, useRef, useState} from 'react';
 import {Image, ScrollView, TouchableNativeFeedback, View} from 'react-native';
 import {
+  ActivityIndicator,
   Avatar,
-  Button,
+  Badge,
   Caption,
-  Card,
   Chip,
   List,
   Paragraph,
-  Subheading,
   Text,
   Title,
 } from 'react-native-paper';
-import {
-  Tabs,
-  TabScreen,
-  useTabIndex,
-  useTabNavigation,
-} from 'react-native-paper-tabs';
+import {useTabIndex, useTabNavigation} from 'react-native-paper-tabs';
 import {
   CoverSize,
   findRelationships,
@@ -25,6 +19,8 @@ import {
   preferredMangaDescription,
   preferredMangaTitle,
 } from 'src/api';
+import {Kitsu} from 'src/api/kitsu';
+import {friendlyStatus, preferredThumbnailImage} from 'src/api/kitsu/utils';
 import {
   Artist,
   Author,
@@ -34,7 +30,10 @@ import {
 } from 'src/api/mangadex/types';
 import {useGetRequest} from 'src/api/utils';
 import {ChipsContainer} from 'src/components';
+import BasicList from 'src/components/BasicList';
 import DynamicTabs, {DynamicTab} from 'src/components/DynamicTabs';
+import Thumbnail from 'src/foundation/Thumbnail';
+import {levenshteinDistance} from 'src/utils';
 import ShowMangaChapterItem from './ShowMangaChapterItem';
 
 interface Props {
@@ -71,6 +70,10 @@ export default function ShowMangaDetails({manga}: Props) {
       content: () => <ShowMangaDetailsChaptersTab manga={manga} />,
     },
     {
+      title: 'Anime',
+      content: () => <ShowMangaDetailsAnimeDetailsTab manga={manga} />,
+    },
+    {
       title: 'Credits',
       content: () => (
         <ShowMangaDetailsCreditsTab authors={authors} artists={artists} />
@@ -92,7 +95,7 @@ export default function ShowMangaDetails({manga}: Props) {
         </View>
       </TouchableNativeFeedback>
 
-      <DynamicTabs tabs={tabs} />
+      <DynamicTabs tabs={tabs} mode="scrollable" showLeadingSpace={false} />
     </View>
   );
 }
@@ -127,6 +130,7 @@ function ShowMangaDetailsDetailsTab({
       {partialAuthorsAndArtists.length > 0 ? (
         <ChipsContainer
           data={partialAuthorsAndArtists}
+          keyExtractor={item => item.id}
           style={{marginTop: 7, marginBottom: 13, marginHorizontal: -3}}
           itemStyle={{paddingHorizontal: 3, paddingVertical: 5}}
           additionalChip={
@@ -187,6 +191,7 @@ function ShowMangaDetailsDetailsTab({
       </View>
       <ChipsContainer
         data={manga.attributes.tags}
+        keyExtractor={tag => tag.id}
         style={{marginHorizontal: -3, marginTop: 13}}
         itemStyle={{paddingHorizontal: 3, paddingVertical: 5}}
         renderChip={item => <Chip icon="tag">{item.attributes.name.en}</Chip>}
@@ -238,33 +243,114 @@ function ShowMangaDetailsCreditsTab({
       <Title>Written by</Title>
       <ChipsContainer
         data={authors}
+        keyExtractor={author => author.id}
         style={{marginTop: 7, marginBottom: 13, marginHorizontal: -3}}
         itemStyle={{paddingHorizontal: 3, paddingVertical: 5}}
         renderChip={author => (
-          <Chip icon={'account'}>{author.attributes.name || author.id}</Chip>
+          <Chip icon="account">{author.attributes.name || author.id}</Chip>
         )}
       />
       <Title>Illustrated by</Title>
       <ChipsContainer
         data={artists}
+        keyExtractor={artist => artist.id}
         style={{marginTop: 7, marginBottom: 13, marginHorizontal: -3}}
         itemStyle={{paddingHorizontal: 3, paddingVertical: 5}}
         renderChip={artist => (
-          <Chip icon={'palette'}>{artist.attributes.name || artist.id}</Chip>
+          <Chip icon="palette">{artist.attributes.name || artist.id}</Chip>
         )}
       />
     </ScrollView>
   );
 }
 
-function ExploreWitHookExamples() {
-  const goTo = useTabNavigation();
-  const index = useTabIndex();
+function ShowMangaDetailsAnimeDetailsTab({manga}: {manga: Manga}) {
+  const title = preferredMangaTitle(manga);
+  const [results, setResults] = useState<Kitsu.Anime[]>([]);
+  const {data, loading, error} = useGetRequest<
+    Kitsu.PagedResultsList<Kitsu.Anime>
+  >(
+    `https://kitsu.io/api/edge/anime?filter[text]=${encodeURIComponent(title)}`,
+  );
+
+  const filteredResults = useMemo(
+    () =>
+      results.filter(
+        anime =>
+          levenshteinDistance(title, anime.attributes.canonicalTitle) >= 0.9 ||
+          anime.attributes.canonicalTitle
+            .toLowerCase()
+            .startsWith(title.toLowerCase()),
+      ),
+    [results],
+  );
+
+  useEffect(() => {
+    setResults(data?.data || []);
+  }, [data]);
+
+  if (loading) {
+    return <ActivityIndicator size="large" style={{flex: 1}} />;
+  }
+
+  if (!data || error) {
+    console.error(
+      `Uh oh, something went wrong while fetching "${title}"...`,
+      error,
+    );
+    return <Text>Uh oh, something went wrong while fetching "{title}"...</Text>;
+  }
+
+  if (results.length === 0) {
+    return <Text>No anime shows were found for this manga.</Text>;
+  }
+
+  if (filteredResults.length === 0) {
+    return (
+      <ScrollView>
+        <BasicList
+          data={results}
+          aspectRatio={results.length > 4 ? 1 / 3 : 1 / 2}
+          renderItem={item => (
+            <Thumbnail
+              TopComponent={
+                <Badge style={{borderRadius: 0, borderBottomRightRadius: 7}}>
+                  {friendlyStatus(item.attributes.status)}
+                </Badge>
+              }
+              imageUrl={preferredThumbnailImage(item)}
+              title={item.attributes.canonicalTitle}
+              width="100%"
+              aspectRatio={0.8}
+            />
+          )}
+        />
+      </ScrollView>
+    );
+  }
+
+  // Todo: get a currently anime's slug, query YourAnime.moe and show info here
+  // Then show other shows in BasicList in a section (ex: "Other anime series")
+
   return (
-    <View style={{flex: 1}}>
-      <Title>Explore</Title>
-      <Paragraph>Index: {index}</Paragraph>
-      <Button onPress={() => goTo(1)}>Go to Flights</Button>
-    </View>
+    <ScrollView>
+      <BasicList
+        data={filteredResults}
+        aspectRatio={filteredResults.length > 4 ? 1 / 3 : 1 / 2}
+        renderItem={item => (
+          <Thumbnail
+            TopComponent={
+              <Badge style={{borderRadius: 0, borderBottomRightRadius: 7}}>
+                {friendlyStatus(item.attributes.status)}
+              </Badge>
+            }
+            imageUrl={preferredThumbnailImage(item)}
+            title={item.attributes.canonicalTitle}
+            width="100%"
+            aspectRatio={0.8}
+          />
+        )}
+      />
+    </ScrollView>
   );
 }

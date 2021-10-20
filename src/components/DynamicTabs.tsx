@@ -10,23 +10,31 @@ type Props = {
 export interface DynamicTab {
   title: string;
   content: () => React.ReactElement;
+  renderIf?: () => boolean;
 }
 
 export default function DynamicTabs({tabs, ...rest}: Props) {
   const [loaded, setLoaded] = useState<number[]>([0]);
 
-  const tabScreens = tabs.map((tab, index) => {
-    return (
-      <TabScreen key={`tab-${index}`} label={tab.title}>
-        {loaded[index] === index ? tab.content() : <View />}
-      </TabScreen>
-    );
-  });
+  const tabScreens = tabs
+    .filter(tab => tab.renderIf === undefined || tab.renderIf())
+    .map((tab, index) => {
+      return (
+        <TabScreen key={`tab-${index}`} label={tab.title}>
+          {loaded.includes(index) &&
+          (tab.renderIf === undefined || tab.renderIf()) ? (
+            tab.content()
+          ) : (
+            <View />
+          )}
+        </TabScreen>
+      );
+    });
 
   return (
     <Tabs
       onChangeIndex={index =>
-        setLoaded(loaded => loaded.concat([index]).filter(onlyUnique))
+        setLoaded(loaded => loaded.concat([index]).filter(onlyUnique).sort())
       }
       {...rest}>
       {tabScreens}

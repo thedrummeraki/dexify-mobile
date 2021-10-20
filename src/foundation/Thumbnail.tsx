@@ -1,6 +1,6 @@
 import React, {PropsWithChildren} from 'react';
 import {View, Image, TouchableNativeFeedback} from 'react-native';
-import {Caption, Text, TouchableRipple} from 'react-native-paper';
+import {Caption} from 'react-native-paper';
 
 interface DimensionsProps {
   width: number | string;
