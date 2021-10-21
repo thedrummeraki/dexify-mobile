@@ -7,7 +7,7 @@ interface BasicResource {
 
 interface Props<T extends BasicResource> {
   data: T[];
-  aspectRatio: number; // decimal numbers only
+  aspectRatio: number; // decimal numbers only. Ratio of the screen that each element should take.
   style?: StyleProp<ViewStyle>;
   renderItem: (item: T) => React.ReactNode;
 }

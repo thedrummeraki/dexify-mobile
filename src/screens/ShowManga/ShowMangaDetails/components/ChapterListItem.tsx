@@ -12,7 +12,7 @@ interface Props {
   list: Chapter[];
 }
 
-export default function ShowMangaChapterItem({number, list}: Props) {
+export default function ChapterListItem({number, list}: Props) {
   const navigation = useDexifyNavigation();
   const title = `Chapter ${number}`;
 
