@@ -31,6 +31,12 @@ export function useHomeCategories(): UICategory[] {
       description: 'Check out these newly uploaded chapters.',
       url: 'https://api.mangadex.org/chapter?order%5BpublishAt%5D=desc&limit=4&includes[]=manga',
     },
+    {
+      title: 'New additions',
+      type: 'manga',
+      description: 'Newest titles added to Mangadex',
+      url: 'https://api.mangadex.org/manga?order[createdAt]=desc&includes[]=cover_art&limit=50',
+    },
   ];
 }
 

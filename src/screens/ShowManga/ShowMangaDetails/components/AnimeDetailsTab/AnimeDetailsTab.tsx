@@ -51,7 +51,7 @@ export default function AnimeDetailsTab({manga}: Props) {
     <ScrollView>
       <BasicList
         data={results}
-        aspectRatio={results.length > 4 ? 1 / 3 : 1 / 2}
+        aspectRatio={results.length > 4 ? 1 / 3 : 1 / 3}
         renderItem={item => (
           <Thumbnail
             TopComponent={
@@ -73,7 +73,7 @@ export default function AnimeDetailsTab({manga}: Props) {
             imageUrl={preferredThumbnailImage(item.posterImage)}
             title={item.canonicalTitle}
             width="100%"
-            aspectRatio={0.8}
+            aspectRatio={0.7}
             onPress={() => setCurrentAnime(item)}
           />
         )}
