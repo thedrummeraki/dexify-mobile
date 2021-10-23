@@ -47,25 +47,32 @@ export default function AnimeDetailsTab({manga}: Props) {
   // Todo: get a currently anime's slug, query YourAnime.moe and show info here
   // Then show other shows in BasicList in a section (ex: "Other anime series")
 
+  const platformIconSize = results.length > 4 ? 18 : 32;
+
   return (
     <ScrollView>
       <BasicList
         data={results}
-        aspectRatio={results.length > 4 ? 1 / 3 : 1 / 3}
+        aspectRatio={results.length > 4 ? 1 / 3 : 1 / 2}
         renderItem={item => (
           <Thumbnail
-            TopComponent={
+            BottomComponent={
               // <Badge style={{borderRadius: 0, borderBottomRightRadius: 7}}>
               //   {item.platforms.map(platform => platform.title).join(' - ')}
               // </Badge>
-              <View style={{flex: 1, flexDirection: 'row'}}>
+              <View style={{flex: 1, flexDirection: 'row', padding: 5}}>
                 {item.platforms.map(platform => (
                   <Image
                     key={platform.name}
                     source={platformIcon(platform.name as PlatformIcons)}
-                    width={24}
-                    height={24}
-                    style={{height: 24, width: 24}}
+                    width={platformIconSize}
+                    height={platformIconSize}
+                    style={{
+                      height: platformIconSize,
+                      width: platformIconSize,
+                      marginRight: 5,
+                      borderRadius: 1024,
+                    }}
                   />
                 ))}
               </View>

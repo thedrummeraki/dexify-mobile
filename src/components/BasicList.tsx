@@ -24,7 +24,7 @@ export default function BasicList<T extends BasicResource>({
   style,
   renderItem,
 }: Props<T>) {
-  const flexBasis = aspectRatio < 1 ? `${aspectRatio * 100}%` : '50%';
+  const flexBasis = aspectRatio <= 1 ? `${aspectRatio * 100}%` : '50%';
 
   return (
     <View style={style}>

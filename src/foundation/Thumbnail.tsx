@@ -13,6 +13,7 @@ interface Props {
   title?: string;
   hideTitle?: boolean;
   TopComponent?: React.ReactElement;
+  BottomComponent?: React.ReactElement;
   onPress?: () => void;
   onLongPress?: () => void;
 }
@@ -25,6 +26,7 @@ export default function Thumbnail({
   height,
   aspectRatio,
   TopComponent,
+  BottomComponent,
   onPress,
   onLongPress,
 }: Props & DimensionsProps) {
@@ -38,6 +40,9 @@ export default function Thumbnail({
             style={{height, aspectRatio, zIndex: -1}}
             resizeMode="cover"
           />
+          <View style={{position: 'absolute', bottom: 0}}>
+            {BottomComponent}
+          </View>
         </View>
       </MaybeTouchableNativeFeedback>
       {title && !hideTitle ? (
