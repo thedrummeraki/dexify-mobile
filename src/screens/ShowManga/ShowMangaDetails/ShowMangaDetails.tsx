@@ -4,6 +4,7 @@ import {CoverSize, findRelationships, mangaImage} from 'src/api';
 import {Artist, Author, Manga} from 'src/api/mangadex/types';
 import DynamicTabs, {DynamicTab} from 'src/components/DynamicTabs';
 import {AboutTab, ChaptersTab, AnimeDetailsTab, DetailsTab} from './components';
+import GalleryTab from './components/GalleryTab';
 
 interface Props {
   manga: Manga;
@@ -32,7 +33,7 @@ export default function ShowMangaDetails({manga}: Props) {
       ),
     },
     {
-      title: 'Chapters',
+      title: 'Read',
       content: () => <ChaptersTab manga={manga} />,
     },
     {
@@ -42,6 +43,10 @@ export default function ShowMangaDetails({manga}: Props) {
     {
       title: 'Details',
       content: () => <DetailsTab manga={manga} />,
+    },
+    {
+      title: 'Gallery',
+      content: () => <GalleryTab manga={manga} />,
     },
   ];
 

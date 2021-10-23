@@ -8,7 +8,7 @@ export interface CoverArt {
 }
 
 export interface CoverAttributes {
-  volume: string;
+  volume?: string | null;
   fileName: string;
   description: string;
   version: 1;

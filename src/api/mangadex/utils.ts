@@ -71,9 +71,17 @@ export function mangaImage(manga: Manga, options?: {size?: CoverSize}): string {
   if (!cover?.attributes) {
     return 'https://mangadex.org/avatar.png';
   }
+  return coverImage(cover, manga.id, options);
+}
+
+export function coverImage(
+  cover: CoverArt,
+  mangaId: string,
+  options?: {size?: CoverSize},
+): string {
   const {fileName} = cover.attributes;
 
-  return `https://uploads.mangadex.org/covers/${manga.id}/${fileName}${
+  return `https://uploads.mangadex.org/covers/${mangaId}/${fileName}${
     options?.size || CoverSize.Medium
   }`;
 }
