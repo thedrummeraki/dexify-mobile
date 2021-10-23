@@ -9,6 +9,7 @@ import {ApolloClient, InMemoryCache, ApolloProvider} from '@apollo/client';
 import {HeaderProvider} from './prodivers';
 import {Navigation} from './foundation';
 import {useColorScheme} from 'react-native';
+import {GestureHandlerRootView} from 'react-native-gesture-handler';
 
 export default function App() {
   const useDarkTheme = useColorScheme() === 'dark';
@@ -22,13 +23,15 @@ export default function App() {
 
   return (
     <ApolloProvider client={client}>
-      <PaperProvider>
-        <HeaderProvider>
-          <NavigationContainer theme={theme}>
-            <Navigation />
-          </NavigationContainer>
-        </HeaderProvider>
-      </PaperProvider>
+      <GestureHandlerRootView style={{flex: 1}}>
+        <PaperProvider>
+          <HeaderProvider>
+            <NavigationContainer theme={theme}>
+              <Navigation />
+            </NavigationContainer>
+          </HeaderProvider>
+        </PaperProvider>
+      </GestureHandlerRootView>
     </ApolloProvider>
   );
 }

@@ -3,12 +3,7 @@ import {Image, TouchableNativeFeedback, View} from 'react-native';
 import {CoverSize, findRelationships, mangaImage} from 'src/api';
 import {Artist, Author, Manga} from 'src/api/mangadex/types';
 import DynamicTabs, {DynamicTab} from 'src/components/DynamicTabs';
-import {
-  DetailsTab,
-  ChaptersTab,
-  AnimeDetailsTab,
-  CreditsTab,
-} from './components';
+import {AboutTab, ChaptersTab, AnimeDetailsTab, DetailsTab} from './components';
 
 interface Props {
   manga: Manga;
@@ -31,9 +26,9 @@ export default function ShowMangaDetails({manga}: Props) {
 
   const tabs: DynamicTab[] = [
     {
-      title: 'Details',
+      title: 'About',
       content: () => (
-        <DetailsTab manga={manga} authorsAndArtists={authorsAndArtists} />
+        <AboutTab manga={manga} authorsAndArtists={authorsAndArtists} />
       ),
     },
     {
@@ -45,8 +40,8 @@ export default function ShowMangaDetails({manga}: Props) {
       content: () => <AnimeDetailsTab manga={manga} />,
     },
     {
-      title: 'Credits',
-      content: () => <CreditsTab authors={authors} artists={artists} />,
+      title: 'Details',
+      content: () => <DetailsTab manga={manga} />,
     },
   ];
 

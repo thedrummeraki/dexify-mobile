@@ -72,6 +72,37 @@ export namespace Manga {
     group: string;
     description: any[];
   }
+
+  interface VolumeAggregateDetailsChapter {
+    chapter: string;
+    id: string;
+    count: number;
+  }
+
+  interface VolumeAggregateDetails {
+    volume: string;
+    count: number;
+    chapters: Array<VolumeAggregateDetailsChapter>;
+  }
+
+  export interface VolumeAggregateInfo {
+    [key: string]: VolumeAggregateDetails;
+  }
+
+  interface BasicAggregate {
+    result: 'ok' | 'error';
+  }
+
+  interface SuccessAggregate extends BasicAggregate {
+    result: 'ok';
+    volumes: VolumeAggregateInfo;
+  }
+
+  interface ErrorAggregate extends BasicAggregate {
+    result: 'error';
+  }
+
+  export type Aggregate = SuccessAggregate | ErrorAggregate;
 }
 
 export type MangaLinks = {
