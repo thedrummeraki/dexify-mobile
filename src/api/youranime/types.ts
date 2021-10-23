@@ -1,3 +1,6 @@
+import {Kitsu} from '../kitsu';
+import {Title} from '../mangadex/types';
+
 export namespace YourAnime {
   export namespace GraphQL {
     export interface PageInfo {
@@ -48,22 +51,17 @@ export namespace YourAnime {
     refId?: string;
   }
 
-  export interface AnimeSearchResult {
-    title: string;
-    slug: string;
-    showType: string;
-    showCategory: string;
-    relativePopularity: number;
-    posterUrl: string;
-    episodesCount: number;
-    nsfw: boolean;
-    ageRating: AgeRating;
-    year?: number;
-    airingAt?: string;
-    nextEpisode?: number;
-    friendlyStatus?: string;
-    platforms: Platform[];
-  }
+  type AnimeSearchResultAttributes =
+    | 'titles'
+    | 'canonicalTitle'
+    | 'posterImage'
+    | 'slug'
+    | 'nsfw';
+
+  export type AnimeSearchResult = Pick<
+    Kitsu.AnimeAttributes,
+    AnimeSearchResultAttributes
+  > & {year?: number; platforms: Array<Platform>};
 
   export interface Anime {
     title: string;

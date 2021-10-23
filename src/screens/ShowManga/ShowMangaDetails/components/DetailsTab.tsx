@@ -2,6 +2,7 @@ import React, {useRef, useState} from 'react';
 import {ScrollView, View} from 'react-native';
 import {
   Avatar,
+  Button,
   Caption,
   Chip,
   Paragraph,
@@ -18,10 +19,7 @@ interface Props {
   authorsAndArtists: Array<Author | Artist>;
 }
 
-export default function ShowMangaDetailsDetailsTab({
-  manga,
-  authorsAndArtists,
-}: Props) {
+export default function DetailsTab({manga, authorsAndArtists}: Props) {
   const initialTrim = useRef(false);
   const [showingFullDescripiton, setShowingFullDescripiton] = useState(true);
   const [descriptionTrimmable, setDescriptionTrimmable] = useState(false);
@@ -42,34 +40,35 @@ export default function ShowMangaDetailsDetailsTab({
           {altTitle[manga.attributes.originalLanguage] || altTitle.en}
         </Caption>
       )}
-      {partialAuthorsAndArtists.length > 0 ? (
-        <ChipsContainer
-          data={partialAuthorsAndArtists}
-          keyExtractor={item => item.id}
-          style={{marginTop: 7, marginBottom: 13, marginHorizontal: -3}}
-          itemStyle={{paddingHorizontal: 3, paddingVertical: 5}}
-          additionalChip={
-            showCredits
-              ? {
-                  content: 'See all artists',
-                  icon: 'plus',
-                  onAction: () => goToTab(2),
-                }
-              : undefined
-          }
-          renderChip={author => (
-            <Chip
-              avatar={
-                <Avatar.Image
-                  source={{uri: 'https://mangadex.org/avatar.png'}}
-                  size={24}
-                />
-              }>
-              {author.attributes.name || author.id}
-            </Chip>
-          )}
-        />
-      ) : null}
+      <View style={{marginTop: 10, marginBottom: 7}}>
+        <Button mode="contained">Add to library</Button>
+      </View>
+      <ChipsContainer
+        data={partialAuthorsAndArtists}
+        keyExtractor={item => item.id}
+        style={{marginTop: 7, marginBottom: 13, marginHorizontal: -3}}
+        itemStyle={{paddingHorizontal: 3, paddingVertical: 5}}
+        additionalChip={
+          showCredits
+            ? {
+                content: 'See all artists',
+                icon: 'plus',
+                onAction: () => goToTab(2),
+              }
+            : undefined
+        }
+        renderChip={author => (
+          <Chip
+            avatar={
+              <Avatar.Image
+                source={{uri: 'https://mangadex.org/avatar.png'}}
+                size={24}
+              />
+            }>
+            {author.attributes.name || author.id}
+          </Chip>
+        )}
+      />
       <View>
         <Paragraph
           numberOfLines={showingFullDescripiton ? undefined : 4}

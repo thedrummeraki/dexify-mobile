@@ -18,7 +18,8 @@ export enum CoverSize {
 export function preferredMangaTitle(manga: Manga) {
   return (
     manga.attributes.title[manga.attributes.originalLanguage] ||
-    manga.attributes.title.en
+    manga.attributes.title.en ||
+    Object.entries(manga.attributes.title).map(([key, value]) => value)[0]
   );
 }
 

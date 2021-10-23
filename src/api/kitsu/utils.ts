@@ -15,8 +15,7 @@ export function friendlyStatus(status: Kitsu.ShowStatus) {
   }
 }
 
-export function preferredThumbnailImage(anime: Kitsu.Anime) {
-  const {posterImage} = anime.attributes;
+export function preferredThumbnailImage(posterImage: Kitsu.Image) {
   return (
     posterImage.small ||
     posterImage.tiny ||

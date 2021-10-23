@@ -1,5 +1,5 @@
 import GetShowById from './get-show';
-import GetShowsBySlug from './get-shows-by-slug';
+import GetShowsBySlug from './search-shows-on-kitsu';
 
 export default {
   GetShowById,

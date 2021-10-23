@@ -24,6 +24,10 @@ export default function ChipsContainer<T>({
   keyExtractor,
   renderChip,
 }: Props<T>) {
+  if (data.length === 0) {
+    return null;
+  }
+
   return (
     <View
       style={Object.assign(
