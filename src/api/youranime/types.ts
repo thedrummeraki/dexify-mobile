@@ -1,4 +1,26 @@
 export namespace YourAnime {
+  export namespace GraphQL {
+    export interface PageInfo {
+      hasNextPage: boolean;
+      hasPreviousPage: boolean;
+      startCursor?: string;
+      endCursour?: string;
+      totalCount: number;
+    }
+
+    export type Node<T> = T;
+    export interface Edge<T> {
+      cursor: string;
+      node: Node<T>;
+    }
+
+    export interface Connection<T> {
+      pageInfo: PageInfo;
+      edges?: Array<Edge<T>>;
+      nodes?: Array<Node<T>>;
+    }
+  }
+
   export interface AgeRating {
     rating: string;
     guide?: string;
@@ -24,6 +46,23 @@ export namespace YourAnime {
     value: string;
     refUrl?: string;
     refId?: string;
+  }
+
+  export interface AnimeSearchResult {
+    title: string;
+    slug: string;
+    showType: string;
+    showCategory: string;
+    relativePopularity: number;
+    posterUrl: string;
+    episodesCount: number;
+    nsfw: boolean;
+    ageRating: AgeRating;
+    year?: number;
+    airingAt?: string;
+    nextEpisode?: number;
+    friendlyStatus?: string;
+    platforms: Platform[];
   }
 
   export interface Anime {

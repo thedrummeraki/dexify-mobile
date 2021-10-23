@@ -1,9 +1,15 @@
 import React from 'react';
 import {StyleProp, View, ViewStyle} from 'react-native';
 
-interface BasicResource {
+interface BasicResourceWithId {
   id: any;
 }
+
+interface BasicResourceWithSlug {
+  slug: string;
+}
+
+type BasicResource = Partial<BasicResourceWithId & BasicResourceWithSlug>;
 
 interface Props<T extends BasicResource> {
   data: T[];
@@ -25,7 +31,7 @@ export default function BasicList<T extends BasicResource>({
       <View style={{flex: 1, flexDirection: 'row', flexWrap: 'wrap'}}>
         {data.map(item => (
           <View
-            key={item.id}
+            key={item.id || item.slug}
             style={{
               flexBasis,
               padding: 5,

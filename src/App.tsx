@@ -16,7 +16,7 @@ export default function App() {
 
   const cache = new InMemoryCache();
   const client = new ApolloClient({
-    uri: 'https://proxy.youranime.moe/graphql',
+    uri: 'https://tanoshimu-2.herokuapp.com/graphql',
     cache,
   });
 
