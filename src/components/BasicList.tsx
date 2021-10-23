@@ -15,7 +15,7 @@ interface Props<T extends BasicResource> {
   data: T[];
   aspectRatio: number; // decimal numbers only. Ratio of the screen that each element should take.
   style?: StyleProp<ViewStyle>;
-  renderItem: (item: T) => React.ReactNode;
+  renderItem: (item: T, index: number) => React.ReactNode;
 }
 
 export default function BasicList<T extends BasicResource>({
@@ -29,14 +29,14 @@ export default function BasicList<T extends BasicResource>({
   return (
     <View style={style}>
       <View style={{flex: 1, flexDirection: 'row', flexWrap: 'wrap'}}>
-        {data.map(item => (
+        {data.map((item, index) => (
           <View
             key={item.id || item.slug}
             style={{
               flexBasis,
               padding: 5,
             }}>
-            {renderItem(item)}
+            {renderItem(item, index)}
           </View>
         ))}
       </View>

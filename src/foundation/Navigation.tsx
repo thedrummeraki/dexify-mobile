@@ -2,9 +2,8 @@ import React, {useContext} from 'react';
 import {
   createNativeStackNavigator,
   NativeStackNavigationProp,
-  NativeStackScreenProps,
 } from '@react-navigation/native-stack';
-import {Home, ShowChapter, ShowManga} from 'src/screens';
+import {Home, ShowChapter, ShowManga, ShowMangaGallery} from 'src/screens';
 import {RouteProp, useNavigation, useRoute} from '@react-navigation/core';
 import {Header} from '.';
 import {HeaderContext} from 'src/prodivers';
@@ -12,6 +11,7 @@ import {HeaderContext} from 'src/prodivers';
 type RootStackParamList = {
   Home: undefined;
   ShowManga: {id: string};
+  ShowMangaGallery: {id: string; number?: number};
   ShowChapter: {id: string};
 };
 
@@ -56,6 +56,11 @@ export default function Navigation() {
         options={{title: ' '}} // little hack to avoid showing "ShowManga"
       />
       <Stack.Screen
+        name="ShowMangaGallery"
+        component={ShowMangaGallery}
+        options={{title: 'Covers gallery'}}
+      />
+      <Stack.Screen
         name="ShowChapter"
         component={ShowChapter}
         options={{headerShown: false}}
@@ -70,6 +75,10 @@ export function useDexifyNavigation() {
 
 export function useShowMangaRoute() {
   return useRoute<RouteProp<RootStackParamList, 'ShowManga'>>();
+}
+
+export function useShowMangaGalleryRoute() {
+  return useRoute<RouteProp<RootStackParamList, 'ShowMangaGallery'>>();
 }
 
 export function useShowChapterRoute() {

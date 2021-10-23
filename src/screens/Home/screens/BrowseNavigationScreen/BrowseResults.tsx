@@ -1,7 +1,7 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {Keyboard, ScrollView, StyleProp, View, ViewStyle} from 'react-native';
 import {Title, ActivityIndicator} from 'react-native-paper';
-import {CoverSize, mangaImage} from 'src/api';
+import {CoverSize, mangaImage, preferredMangaTitle} from 'src/api';
 import {Author, Manga, PagedResultsList} from 'src/api/mangadex/types';
 import {useLazyGetRequest} from 'src/api/utils';
 import BasicList from 'src/components/BasicList';
@@ -107,7 +107,7 @@ export default function BrowseResults({query}: Props) {
             renderItem={manga => (
               <Thumbnail
                 imageUrl={mangaImage(manga, {size: CoverSize.Small}) || '/'}
-                title={manga.attributes.title.en}
+                title={preferredMangaTitle(manga)}
                 width="100%"
                 aspectRatio={0.8}
                 onPress={() => navigation.navigate('ShowManga', {id: manga.id})}

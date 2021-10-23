@@ -6,6 +6,7 @@ import {coverImage, CoverSize} from 'src/api';
 import {CoverArt, Manga, PagedResultsList} from 'src/api/mangadex/types';
 import {useGetRequest} from 'src/api/utils';
 import BasicList from 'src/components/BasicList';
+import {useDexifyNavigation} from 'src/foundation';
 import Thumbnail from 'src/foundation/Thumbnail';
 
 interface Props {
@@ -18,6 +19,7 @@ enum SortRule {
 }
 
 export default function GalleryTab({manga}: Props) {
+  const navigation = useDexifyNavigation();
   const {data, loading, error} = useGetRequest<PagedResultsList<CoverArt>>(
     `https://api.mangadex.org/cover?manga[]=${manga.id}&limit=100`,
   );
@@ -55,7 +57,7 @@ export default function GalleryTab({manga}: Props) {
       <BasicList
         data={sortedCovers}
         aspectRatio={0.5}
-        renderItem={cover => {
+        renderItem={(cover, index) => {
           const {volume} = cover.attributes;
           const title =
             !volume || volume === 'null' ? 'N/A' : `Volume ${volume}`;
@@ -66,6 +68,12 @@ export default function GalleryTab({manga}: Props) {
               width="100%"
               aspectRatio={0.7}
               title={title}
+              onPress={() =>
+                navigation.navigate('ShowMangaGallery', {
+                  id: manga.id,
+                  number: index + 1,
+                })
+              }
             />
           );
         }}
