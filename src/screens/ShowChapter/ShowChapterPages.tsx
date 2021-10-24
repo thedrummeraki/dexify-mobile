@@ -69,12 +69,12 @@ export default function ShowChapterPages({pages, chapter}: Props) {
         onPress={navigation.goBack}
         hidden={!showHeader}
       />
-      <FullScreenImageSwiper
+      {/* <FullScreenImageSwiper
         initialPage={0}
         images={pages.map(page => ({uri: page.originalImageUrl}))}
         onPageSelected={console.log}
-      />
-      {/* <SwipeableViews
+      /> */}
+      <SwipeableViews
         style={{flex: 1}}
         onChangeIndex={index => {
           setCurrentPage(pages[index]);
@@ -114,7 +114,7 @@ export default function ShowChapterPages({pages, chapter}: Props) {
             </TouchableWithoutFeedback>
           );
         })}
-      </SwipeableViews> */}
+      </SwipeableViews>
     </View>
   );
 }

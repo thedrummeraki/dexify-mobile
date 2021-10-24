@@ -18,6 +18,8 @@ import BasicList from 'src/components/BasicList';
 import CategoriesCollectionSection from 'src/components/CategoriesCollection/CategoriesCollectionSection';
 import {useBackgroundColor} from 'src/components/colors';
 import {useDexifyNavigation} from 'src/foundation';
+import ChaptersGridLayout from './ChaptersGridLayout';
+import ChaptersImagesLayout from './ChaptersImagesLayout';
 
 interface Props {
   manga: Manga;
@@ -26,16 +28,26 @@ interface Props {
   error?: any;
 }
 
+enum Layout {
+  Grid = 'Grid',
+  Images = 'Images',
+}
+
+const layoutIcons: {[key in Layout]: string} = {
+  [Layout.Grid]: 'grid',
+  [Layout.Images]: 'image',
+};
+
 export default function ChaptersTab({manga, loading, aggregate, error}: Props) {
-  const navigation = useDexifyNavigation();
   const [showBanner] = useState(true);
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [layout, setLayout] = useState<Layout>(Layout.Images);
   const [chapters, setChapters] = useState<Chapter[]>([]);
   const [currentVolume, setCurrentVolume] = useState<string>();
   const aggregateEntries = aggregate ? Object.entries(aggregate) : [];
 
   const volumes = aggregateEntries.map(([volume, _]) => volume);
   const selectedVolumeBackgroundColor = useBackgroundColor('primary');
+  const selectedLayoutBackgroundColor = useBackgroundColor('accent');
 
   const [getChapters, {data, loading: chaptersLoading, error: chaptersError}] =
     useLazyGetRequest<PagedResultsList<Chapter>>();
@@ -57,8 +69,6 @@ export default function ChaptersTab({manga, loading, aggregate, error}: Props) {
   // 1 per line = 1 chapter
   // 2 per line = 2, 3 and 4 chapters
   // 4 per line = 5+ chapters
-  const aspectRatio =
-    chaptersCount > 4 ? 1 / 4 : chaptersCount === 1 ? 1 : 1 / 2;
 
   useEffect(() => {
     if (data?.result === 'ok') {
@@ -77,7 +87,28 @@ export default function ChaptersTab({manga, loading, aggregate, error}: Props) {
   }
 
   if (aggregateEntries.length === 0) {
-    return <Text>No chapters are available yet for this manga.</Text>;
+    return (
+      <ScrollView>
+        {Object.entries(manga.attributes.links || {}).length && (
+          <Banner
+            visible={showBanner}
+            background="accent"
+            title="Support the manga industry"
+            body="If possible, support the author and consider buying from the official publisher."
+            // primaryAction={{
+            //   content: 'Learn more',
+            //   onAction: () => console.log('yee!!...?'),
+            // }}
+            // onDismiss={() => setShowBanner(false)}
+          />
+        )}
+        <Banner
+          background="error"
+          title="No chapters found"
+          body="Looks like no chapters have been uploaded to Mangadex... yet!"
+        />
+      </ScrollView>
+    );
   }
 
   return (
@@ -95,7 +126,23 @@ export default function ChaptersTab({manga, loading, aggregate, error}: Props) {
       />
       <CategoriesCollectionSection
         horizontal
-        title="Select a volume"
+        data={[Layout.Images, Layout.Grid]}
+        renderItem={item => (
+          <Chip
+            disabled={chaptersLoading}
+            selected={layout === item}
+            icon={layoutIcons[item]}
+            style={{
+              backgroundColor:
+                layout === item ? selectedLayoutBackgroundColor : undefined,
+            }}
+            onPress={() => setLayout(item)}>
+            {item}
+          </Chip>
+        )}
+      />
+      <CategoriesCollectionSection
+        horizontal
         data={volumes}
         renderItem={item => (
           <Chip
@@ -125,27 +172,19 @@ export default function ChaptersTab({manga, loading, aggregate, error}: Props) {
         )}
       </View>
 
-      {chaptersLoading && (
-        <BasicList
-          aspectRatio={1 / 4}
-          data={Array.from({length: 4}).map(id => ({id}))}
-          renderItem={() => <Button mode="outlined">-</Button>}
+      {layout === Layout.Grid && (
+        <ChaptersGridLayout
+          loading={chaptersLoading}
+          count={chaptersCount}
+          chapters={chapters}
         />
       )}
 
-      {!chaptersLoading && (
-        <BasicList
-          data={chapters}
-          aspectRatio={aspectRatio}
-          renderItem={item => (
-            <Button
-              mode="outlined"
-              onPress={() => navigation.navigate('ShowChapter', {...item})}>
-              {item.attributes.chapter === 'none' || !item.attributes.chapter
-                ? 'N/A'
-                : item.attributes.chapter}
-            </Button>
-          )}
+      {layout === Layout.Images && (
+        <ChaptersImagesLayout
+          loading={chaptersLoading}
+          count={chaptersCount}
+          chapters={chapters}
         />
       )}
     </ScrollView>

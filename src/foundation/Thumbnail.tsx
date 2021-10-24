@@ -1,6 +1,5 @@
 import React, {PropsWithChildren} from 'react';
-import {View, TouchableNativeFeedback} from 'react-native';
-import FastImage from 'react-native-fast-image';
+import {View, TouchableNativeFeedback, Image} from 'react-native';
 import {Caption} from 'react-native-paper';
 
 interface DimensionsProps {
@@ -36,10 +35,11 @@ export default function Thumbnail({
       <MaybeTouchableNativeFeedback onLongPress={onLongPress} onPress={onPress}>
         <View>
           <View style={{position: 'absolute'}}>{TopComponent}</View>
-          <FastImage
+          <Image
             source={{uri: imageUrl}}
+            loadingIndicatorSource={{uri: 'https://mangadex.org/avatar.png'}}
             style={{height, aspectRatio, zIndex: -1}}
-            resizeMode={FastImage.resizeMode.cover}
+            resizeMode="cover"
           />
           <View style={{position: 'absolute', bottom: 0}}>
             {BottomComponent}

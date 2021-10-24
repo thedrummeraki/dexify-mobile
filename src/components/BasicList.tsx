@@ -31,7 +31,7 @@ export default function BasicList<T extends BasicResource>({
       <View style={{flex: 1, flexDirection: 'row', flexWrap: 'wrap'}}>
         {data.map((item, index) => (
           <View
-            key={item.id || item.slug}
+            key={item.id || item.slug || `basic-list-${index}`}
             style={{
               flexBasis,
               padding: 5,
