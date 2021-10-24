@@ -14,7 +14,7 @@ const COLOR_MAP: {
 } = {
   dark: {
     accent: '#222',
-    disabled: '#ccc',
+    disabled: '#eee',
     error: '#fff',
     notification: '#222',
     primary: '#222',

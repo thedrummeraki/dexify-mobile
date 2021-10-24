@@ -56,6 +56,7 @@ export default function Banner({
           paddingHorizontal: 20,
           paddingTop: 15,
           paddingBottom,
+          marginBottom: 10,
         }}>
         <View
           style={{

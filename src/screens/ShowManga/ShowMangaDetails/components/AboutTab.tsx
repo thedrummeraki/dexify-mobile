@@ -1,9 +1,10 @@
-import React, {useRef, useState} from 'react';
+import React, {useCallback, useRef, useState} from 'react';
 import {ScrollView, View} from 'react-native';
 import {
   Button,
   Caption,
   Chip,
+  IconButton,
   Paragraph,
   Text,
   Title,
@@ -17,12 +18,16 @@ import {
 } from 'src/api';
 import {Artist, Author, Manga} from 'src/api/mangadex/types';
 import {ChipsContainer, TextBadge} from 'src/components';
+import {useDexifyNavigation} from 'src/foundation';
 
 interface Props {
   manga: Manga;
+  loading: boolean;
+  aggregate?: Manga.VolumeAggregateInfo;
 }
 
-export default function AboutTab({manga}: Props) {
+export default function AboutTab({manga, loading, aggregate}: Props) {
+  const navigation = useDexifyNavigation();
   const initialTrim = useRef(false);
 
   const authors = findRelationships<Author>(manga, 'author');
@@ -42,8 +47,21 @@ export default function AboutTab({manga}: Props) {
   const altTitle = manga.attributes.altTitles.find(
     title => title.jp || title.en || title[manga.attributes.originalLanguage],
   );
+  const altTitles = manga.attributes.altTitles.map(
+    title => Object.entries(title).map(([_, value]) => value)[0],
+  );
   const description = preferredMangaDescription(manga)?.trim();
-  const partialAuthorsAndArtists = authorsAndArtists.slice(0, 5);
+  const aggregateEntries = Object.entries(aggregate || {});
+  const chapterToRead =
+    aggregateEntries.length > 0
+      ? Object.entries(aggregateEntries[0][1].chapters)[0][1]
+      : null;
+
+  const readFirstChapter = useCallback(() => {
+    if (chapterToRead) {
+      navigation.navigate('ShowChapter', {id: chapterToRead.id});
+    }
+  }, [chapterToRead]);
 
   const contentRating = manga.attributes.contentRating
     ? contentRatingInfo(manga.attributes.contentRating)
@@ -79,9 +97,20 @@ export default function AboutTab({manga}: Props) {
         </View>
       </View>
       <View style={{flex: 1, marginTop: 17, marginBottom: 12}}>
-        <Button icon="play" mode="contained" style={{marginVertical: 3}}>
-          Read Chapter 1 now
-        </Button>
+        {loading && (
+          <Button loading mode="contained" style={{marginVertical: 3}}>
+            {''}
+          </Button>
+        )}
+        {!loading && chapterToRead && (
+          <Button
+            icon="play"
+            mode="contained"
+            style={{marginVertical: 3}}
+            onPress={readFirstChapter}>
+            Start reading now
+          </Button>
+        )}
         <Button icon="plus" mode="outlined" style={{marginVertical: 3}}>
           Add to library
         </Button>
@@ -125,6 +154,18 @@ export default function AboutTab({manga}: Props) {
       </View>
       <View
         style={{
+          flex: 1,
+          flexDirection: 'row',
+          alignContent: 'center',
+          justifyContent: 'center',
+        }}>
+        <IconButton icon="thumb-up" size={36} onPress={() => {}} />
+        <IconButton icon="eye" size={36} onPress={() => {}} />
+        <IconButton icon="download" size={36} onPress={() => {}} />
+        <IconButton icon="share-variant" size={36} onPress={() => {}} />
+      </View>
+      <View
+        style={{
           flexDirection: 'row',
           alignItems: 'center',
           justifyContent: 'flex-start',
@@ -148,6 +189,19 @@ export default function AboutTab({manga}: Props) {
         itemStyle={{paddingHorizontal: 3, paddingVertical: 5}}
         renderChip={item => <Chip icon="tag">{item.attributes.name.en}</Chip>}
       />
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'flex-start',
+          flexWrap: 'wrap',
+          marginTop: 10,
+        }}>
+        <Text style={{marginRight: 6}}>Also known as:</Text>
+        {altTitles.map(title => (
+          <TextBadge key={title} content={title} background="surface" />
+        ))}
+      </View>
     </ScrollView>
   );
 }

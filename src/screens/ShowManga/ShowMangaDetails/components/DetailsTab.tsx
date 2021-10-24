@@ -14,17 +14,13 @@ import {ChipsContainer} from 'src/components';
 
 interface Props {
   manga: Manga;
+  loading: boolean;
+  aggregate?: Manga.VolumeAggregateInfo;
 }
 
-export default function DetailsTab({manga}: Props) {
+export default function DetailsTab({manga, loading, aggregate}: Props) {
   const authors = findRelationships<Author>(manga, 'author');
   const artists = findRelationships<Artist>(manga, 'artist');
-
-  const {data, loading} = useGetRequest<Manga.Aggregate>(
-    `https://api.mangadex.org/manga/${manga.id}/aggregate`,
-  );
-
-  const aggregate = data?.result === 'ok' ? data.volumes : undefined;
 
   return (
     <ScrollView style={{padding: 5, flex: 1}}>

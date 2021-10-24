@@ -82,7 +82,7 @@ export namespace Manga {
   interface VolumeAggregateDetails {
     volume: string;
     count: number;
-    chapters: Array<VolumeAggregateDetailsChapter>;
+    chapters: {[key: string]: VolumeAggregateDetailsChapter};
   }
 
   export interface VolumeAggregateInfo {

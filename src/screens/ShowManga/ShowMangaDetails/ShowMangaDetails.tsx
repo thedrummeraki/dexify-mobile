@@ -3,9 +3,9 @@ import {ImageBackground, View} from 'react-native';
 import {useTheme} from 'react-native-paper';
 import {CoverSize, findRelationships, mangaImage} from 'src/api';
 import {Artist, Author, Manga} from 'src/api/mangadex/types';
+import {useGetRequest} from 'src/api/utils';
 import DynamicTabs, {DynamicTab} from 'src/components/DynamicTabs';
-import {AboutTab, ChaptersTab, AnimeDetailsTab, DetailsTab} from './components';
-import GalleryTab from './components/GalleryTab';
+import {AboutTab, ChaptersTab, AnimeDetailsTab, GalleryTab} from './components';
 
 interface Props {
   manga: Manga;
@@ -14,22 +14,33 @@ interface Props {
 export default function ShowMangaDetails({manga}: Props) {
   const theme = useTheme();
 
+  const {data, loading, error} = useGetRequest<Manga.Aggregate>(
+    `https://api.mangadex.org/manga/${manga.id}/aggregate?translatedLanguage[]=en`,
+  );
+
+  const aggregate = data?.result === 'ok' ? data.volumes : undefined;
+
   const tabs: DynamicTab[] = [
     {
       title: 'About',
-      content: () => <AboutTab manga={manga} />,
+      content: () => (
+        <AboutTab loading={loading} manga={manga} aggregate={aggregate} />
+      ),
     },
     {
       title: 'Read',
-      content: () => <ChaptersTab manga={manga} />,
+      content: () => (
+        <ChaptersTab
+          manga={manga}
+          aggregate={aggregate}
+          loading={loading}
+          error={error}
+        />
+      ),
     },
     {
       title: 'Anime',
       content: () => <AnimeDetailsTab manga={manga} />,
-    },
-    {
-      title: 'Details',
-      content: () => <DetailsTab manga={manga} />,
     },
     {
       title: 'Gallery',

@@ -34,7 +34,7 @@ export default function TextBadge({
         {
           marginRight: 6,
           marginVertical: 2,
-          borderRadius: 30,
+          borderRadius: 5,
           backgroundColor,
         },
         style,
