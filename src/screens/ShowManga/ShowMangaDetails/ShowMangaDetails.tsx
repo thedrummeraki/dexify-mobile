@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import {Image, TouchableNativeFeedback, View} from 'react-native';
+import {useTheme} from 'react-native-paper';
 import {CoverSize, findRelationships, mangaImage} from 'src/api';
 import {Artist, Author, Manga} from 'src/api/mangadex/types';
 import DynamicTabs, {DynamicTab} from 'src/components/DynamicTabs';
@@ -11,6 +12,7 @@ interface Props {
 }
 
 export default function ShowMangaDetails({manga}: Props) {
+  const theme = useTheme();
   const [showFullImage, setShowFullImage] = useState(false);
   const aspectRatio = showFullImage ? 1 : 2;
 
@@ -64,7 +66,14 @@ export default function ShowMangaDetails({manga}: Props) {
         </View>
       </TouchableNativeFeedback>
 
-      <DynamicTabs tabs={tabs} mode="scrollable" showLeadingSpace={false} />
+      <DynamicTabs
+        style={{
+          backgroundColor: theme.colors.background,
+        }}
+        tabs={tabs}
+        mode="scrollable"
+        showLeadingSpace={false}
+      />
     </View>
   );
 }
