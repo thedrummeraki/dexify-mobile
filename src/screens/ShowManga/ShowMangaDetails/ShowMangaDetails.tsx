@@ -29,6 +29,7 @@ export default function ShowMangaDetails({manga}: Props) {
     },
     {
       title: 'Read',
+      renderIf: () => false,
       content: () => (
         <ChaptersTab
           manga={manga}
@@ -71,7 +72,7 @@ export default function ShowMangaDetails({manga}: Props) {
 
       <DynamicTabs
         style={{
-          backgroundColor: theme.colors.background,
+          backgroundColor: `${theme.colors.background}00`,
         }}
         tabs={tabs}
         mode="scrollable"

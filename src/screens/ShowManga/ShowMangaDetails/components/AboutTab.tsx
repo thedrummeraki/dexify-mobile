@@ -1,17 +1,21 @@
 import React, {useCallback, useRef, useState} from 'react';
 import {ScrollView, View} from 'react-native';
+import FastImage from 'react-native-fast-image';
 import {
   Button,
   Caption,
   Chip,
   IconButton,
   Paragraph,
+  Subheading,
   Text,
   Title,
 } from 'react-native-paper';
 import {
   contentRatingInfo,
+  CoverSize,
   findRelationships,
+  mangaImage,
   preferredMangaDescription,
   preferredMangaTitle,
   preferredTitle,
@@ -68,139 +72,159 @@ export default function AboutTab({manga, loading, aggregate}: Props) {
     : undefined;
 
   return (
-    <ScrollView style={{padding: 5, flex: 1}}>
-      <View style={{flex: 1, marginTop: -5}}>
-        <Title>{preferredMangaTitle(manga)}</Title>
-        {altTitle && (
-          <Caption style={{marginTop: -3, fontWeight: '700'}}>
-            {preferredTitle(altTitle)}
-          </Caption>
-        )}
+    <ScrollView style={{flex: 1}}>
+      <FastImage
+        source={{uri: mangaImage(manga, {size: CoverSize.Medium})}}
+        style={{width: '100%', aspectRatio: 2}}
+      />
+      <View style={{padding: 5}}>
+        <View style={{flex: 1}}>
+          <Title>{preferredMangaTitle(manga)}</Title>
+          {altTitle && (
+            <Caption style={{marginTop: -3, fontWeight: '700'}}>
+              {preferredTitle(altTitle)}
+            </Caption>
+          )}
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'flex-start',
+              flexWrap: 'wrap',
+              marginTop: 7,
+            }}>
+            {contentRating && <TextBadge {...contentRating} />}
+            {manga.attributes.publicationDemographic && (
+              <TextBadge
+                content={manga.attributes.publicationDemographic}
+                background="disabled"
+              />
+            )}
+            {manga.attributes.year && (
+              <TextBadge content={manga.attributes.year} />
+            )}
+          </View>
+        </View>
+        <View style={{flex: 1, marginTop: 17, marginBottom: 12}}>
+          <Subheading>Just a piece of text</Subheading>
+          {loading && (
+            <Button loading mode="contained" style={{marginVertical: 3}}>
+              {''}
+            </Button>
+          )}
+          {!loading && chapterToRead && (
+            <Button
+              icon="play"
+              mode="contained"
+              style={{marginVertical: 3}}
+              onPress={readFirstChapter}>
+              Start reading now
+            </Button>
+          )}
+          <Button icon="plus" mode="outlined" style={{marginVertical: 3}}>
+            Add to library
+          </Button>
+        </View>
         <View
           style={{
             flexDirection: 'row',
             alignItems: 'center',
             justifyContent: 'flex-start',
             flexWrap: 'wrap',
-            marginTop: 7,
+            marginTop: 3,
           }}>
-          {contentRating && <TextBadge {...contentRating} />}
-          {manga.attributes.publicationDemographic && (
+          <Text style={{marginRight: 6}}>Made by:</Text>
+          {authorsAndArtists.map(artist => (
             <TextBadge
-              content={manga.attributes.publicationDemographic}
-              background="disabled"
+              key={artist.id}
+              content={artist.attributes.name}
+              background="surface"
             />
-          )}
-          {manga.attributes.year && (
-            <TextBadge content={manga.attributes.year} />
-          )}
+          ))}
         </View>
-      </View>
-      <View style={{flex: 1, marginTop: 17, marginBottom: 12}}>
-        {loading && (
-          <Button loading mode="contained" style={{marginVertical: 3}}>
-            {''}
-          </Button>
-        )}
-        {!loading && chapterToRead && (
-          <Button
-            icon="play"
-            mode="contained"
-            style={{marginVertical: 3}}
-            onPress={readFirstChapter}>
-            Start reading now
-          </Button>
-        )}
-        <Button icon="plus" mode="outlined" style={{marginVertical: 3}}>
-          Add to library
-        </Button>
-      </View>
-      <View>
-        <Paragraph
-          numberOfLines={showingFullDescripiton ? undefined : 4}
-          onTextLayout={({nativeEvent}) => {
-            if (!initialTrim.current) {
-              setShowingFullDescripiton(nativeEvent.lines.length <= 4);
-              setDescriptionTrimmable(nativeEvent.lines.length > 4);
-              initialTrim.current = true;
-            }
-          }}>
-          {description || (
-            <Caption style={{fontStyle: 'italic'}}>
-              No description was added for ${preferredMangaTitle(manga)}
-            </Caption>
-          )}
-        </Paragraph>
-        {descriptionTrimmable ? (
-          <View
-            style={{
-              justifyContent: 'flex-start',
-              alignItems: 'center',
+        <View style={{marginTop: 10}}>
+          <Paragraph
+            numberOfLines={showingFullDescripiton ? undefined : 4}
+            onTextLayout={({nativeEvent}) => {
+              if (!initialTrim.current) {
+                setShowingFullDescripiton(nativeEvent.lines.length <= 4);
+                setDescriptionTrimmable(nativeEvent.lines.length > 4);
+                initialTrim.current = true;
+              }
             }}>
-            <Chip
+            {description || (
+              <Caption style={{fontStyle: 'italic'}}>
+                No description was added for ${preferredMangaTitle(manga)}
+              </Caption>
+            )}
+          </Paragraph>
+          {descriptionTrimmable ? (
+            <View
               style={{
-                padding: -10,
-                backgroundColor: 'rgba(0,0,0,0)', // fully transparent
-              }}
-              onPress={() =>
-                setShowingFullDescripiton(!showingFullDescripiton)
-              }>
-              <Text style={{fontWeight: '900'}}>
-                {showingFullDescripiton ? '- View less' : '+ View more'}
-              </Text>
-            </Chip>
-          </View>
-        ) : null}
-      </View>
-      <View
-        style={{
-          flex: 1,
-          flexDirection: 'row',
-          alignContent: 'center',
-          justifyContent: 'center',
-        }}>
-        <IconButton icon="thumb-up" size={36} onPress={() => {}} />
-        <IconButton icon="eye" size={36} onPress={() => {}} />
-        <IconButton icon="download" size={36} onPress={() => {}} />
-        <IconButton icon="share-variant" size={36} onPress={() => {}} />
-      </View>
-      <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'flex-start',
-          flexWrap: 'wrap',
-          marginTop: 10,
-        }}>
-        <Text style={{marginRight: 6}}>Made by:</Text>
-        {authorsAndArtists.map(artist => (
-          <TextBadge
-            key={artist.id}
-            content={artist.attributes.name}
-            background="surface"
-            // onPress={() => console.log('selected', artist.attributes.name)}
-          />
-        ))}
-      </View>
-      <ChipsContainer
-        data={manga.attributes.tags}
-        keyExtractor={tag => tag.id}
-        style={{marginHorizontal: -3, marginTop: 13}}
-        itemStyle={{paddingHorizontal: 3, paddingVertical: 5}}
-        renderChip={item => <Chip icon="tag">{item.attributes.name.en}</Chip>}
-      />
-      <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'flex-start',
-          flexWrap: 'wrap',
-          marginTop: 10,
-        }}>
-        <Text style={{marginRight: 6}}>Also known as:</Text>
-        {altTitles.map(title => (
-          <TextBadge key={title} content={title} background="surface" />
-        ))}
+                justifyContent: 'flex-start',
+                alignItems: 'center',
+              }}>
+              <Chip
+                style={{
+                  padding: -10,
+                  backgroundColor: 'rgba(0,0,0,0)', // fully transparent
+                }}
+                onPress={() =>
+                  setShowingFullDescripiton(!showingFullDescripiton)
+                }>
+                <Text style={{fontWeight: '900'}}>
+                  {showingFullDescripiton ? '- View less' : '+ View more'}
+                </Text>
+              </Chip>
+            </View>
+          ) : null}
+        </View>
+        <View
+          style={{
+            display: 'none',
+            flex: 1,
+            flexDirection: 'row',
+            alignContent: 'center',
+            justifyContent: 'center',
+          }}>
+          <IconButton icon="thumb-up" size={36} onPress={() => {}} />
+          <IconButton icon="eye" size={36} onPress={() => {}} />
+          <IconButton icon="download" size={36} onPress={() => {}} />
+          <IconButton icon="share-variant" size={36} onPress={() => {}} />
+        </View>
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'flex-start',
+            flexWrap: 'wrap',
+            marginTop: 10,
+            marginBottom: 30,
+          }}>
+          <Text style={{marginRight: 6}}>Genres:</Text>
+          {manga.attributes.tags.map(tag => (
+            <TextBadge
+              key={tag.id}
+              background="disabled"
+              content={tag.attributes.name.en}
+              onPress={() => {}}
+            />
+          ))}
+        </View>
+        <View
+          style={{
+            display: 'none',
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'flex-start',
+            flexWrap: 'wrap',
+            marginVertical: 10,
+          }}>
+          <Text style={{marginRight: 6}}>Also known as:</Text>
+          {altTitles.map(title => (
+            <TextBadge key={title} content={title} background="surface" />
+          ))}
+        </View>
       </View>
     </ScrollView>
   );

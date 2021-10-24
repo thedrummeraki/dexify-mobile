@@ -32,7 +32,7 @@ export default function Navigation() {
         header: ({navigation, route, options}) => (
           <Header
             goBack={navigation.canGoBack() ? navigation.goBack : undefined}
-            title={headerContext.title || options.title || route.name}
+            // title={headerContext.title || options.title || route.name}
             subtitle={headerContext.subtitle || undefined}
           />
         ),

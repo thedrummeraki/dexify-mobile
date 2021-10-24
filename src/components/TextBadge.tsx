@@ -4,6 +4,7 @@ import {BackgroundColor, useTextColor} from './colors';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {
   StyleProp,
+  TextStyle,
   TouchableNativeFeedback,
   View,
   ViewStyle,
@@ -15,6 +16,7 @@ interface Props {
   icon?: string;
   onPress?: () => void;
   style?: StyleProp<ViewStyle>;
+  textStyle?: StyleProp<TextStyle>;
 }
 
 export default function TextBadge({
@@ -22,6 +24,7 @@ export default function TextBadge({
   background,
   icon,
   style,
+  textStyle,
   onPress,
 }: Props) {
   const theme = useTheme();
@@ -43,10 +46,13 @@ export default function TextBadge({
         onPress={onPress}
         backgroundColor={backgroundColor || theme.dark ? '#fff' : '#000'}>
         <Text
-          style={{
-            color,
-            paddingHorizontal: 4,
-          }}>
+          style={Object.assign(
+            {
+              color,
+              paddingHorizontal: 4,
+            },
+            textStyle,
+          )}>
           {icon && (
             <>
               <Icon name={icon} />{' '}

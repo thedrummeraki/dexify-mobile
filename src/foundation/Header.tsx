@@ -35,7 +35,7 @@ export default function Header({title, subtitle, goBack}: Props) {
       )}
       {!showSearchbar && (
         <Appbar.Content
-          title={headerContext.title || title}
+          title=""
           subtitle={headerContext.subtitle || subtitle}
         />
       )}
