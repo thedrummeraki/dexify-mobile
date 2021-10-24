@@ -46,6 +46,7 @@ export default function ShowMangaGallery() {
       images={sortedCovers.map(cover => ({
         uri: coverImage(cover, route.params.id, {size: CoverSize.Original}),
       }))}
+      onPageSelected={() => {}}
     />
   );
 }

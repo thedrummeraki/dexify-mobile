@@ -23,7 +23,7 @@ interface Props {
 
 export default function ChaptersTab({manga, loading, aggregate, error}: Props) {
   const navigation = useDexifyNavigation();
-  const [showBanner, setShowBanner] = useState(true);
+  const [showBanner] = useState(true);
   const aggregateEntries = aggregate ? Object.entries(aggregate) : [];
 
   // const chapters: {[key: string]: Chapter[]} = {};
@@ -61,7 +61,7 @@ export default function ChaptersTab({manga, loading, aggregate, error}: Props) {
         //   content: 'Learn more',
         //   onAction: () => console.log('yee!!...?'),
         // }}
-        onDismiss={() => setShowBanner(false)}
+        // onDismiss={() => setShowBanner(false)}
       />
       {aggregateEntries.map(([volume, chaptersInfo]) => {
         const chapters = Object.entries(chaptersInfo.chapters).map(
