@@ -6,13 +6,20 @@ import {
   Caption,
   Chip,
   Paragraph,
+  Subheading,
   Text,
   Title,
 } from 'react-native-paper';
 import {useTabNavigation} from 'react-native-paper-tabs';
-import {preferredMangaDescription, preferredMangaTitle} from 'src/api';
+import {
+  CoverSize,
+  mangaImage,
+  preferredMangaDescription,
+  preferredMangaTitle,
+} from 'src/api';
 import {Artist, Author, Manga} from 'src/api/mangadex/types';
 import {ChipsContainer} from 'src/components';
+import Thumbnail from 'src/foundation/Thumbnail';
 
 interface Props {
   manga: Manga;
@@ -34,19 +41,27 @@ export default function AboutTab({manga, authorsAndArtists}: Props) {
 
   return (
     <ScrollView style={{padding: 5, flex: 1}}>
-      <Title>{preferredMangaTitle(manga)}</Title>
-      {altTitle && (
-        <Caption style={{marginTop: -3}}>
-          {altTitle[manga.attributes.originalLanguage] || altTitle.en}
-        </Caption>
-      )}
-      <View style={{marginTop: 10, marginBottom: 7}}>
-        <Button mode="contained">Add to library</Button>
+      <View style={{flex: 1, flexDirection: 'row'}}>
+        <View style={{flex: 1}}>
+          <Thumbnail
+            imageUrl={mangaImage(manga, {size: CoverSize.Small})}
+            width="100%"
+            aspectRatio={0.7}
+          />
+        </View>
+        <View style={{flex: 3, paddingLeft: 5, marginTop: -5}}>
+          <Subheading>{preferredMangaTitle(manga)}</Subheading>
+          {altTitle && (
+            <Caption style={{marginTop: -3}}>
+              {altTitle[manga.attributes.originalLanguage] || altTitle.en}
+            </Caption>
+          )}
+        </View>
       </View>
       <ChipsContainer
         data={partialAuthorsAndArtists}
         keyExtractor={item => item.id}
-        style={{marginTop: 7, marginBottom: 13, marginHorizontal: -3}}
+        style={{marginTop: 15, marginBottom: 10, marginHorizontal: -3}}
         itemStyle={{paddingHorizontal: 3, paddingVertical: 5}}
         additionalChip={
           showCredits

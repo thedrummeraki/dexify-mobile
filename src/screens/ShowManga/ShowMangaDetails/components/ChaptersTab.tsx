@@ -62,15 +62,6 @@ export default function ChaptersTab({manga}: Props) {
         }}
         onDismiss={() => setShowBanner(false)}
       />
-      <View>
-        <View>
-          <List.Section>
-            {Object.entries(chapters).map(([number, list]) => (
-              <ChapterListItem key={number} number={number} list={list} />
-            ))}
-          </List.Section>
-        </View>
-      </View>
     </ScrollView>
   );
 }

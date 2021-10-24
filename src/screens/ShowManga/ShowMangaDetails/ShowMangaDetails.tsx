@@ -1,5 +1,10 @@
 import React, {useState} from 'react';
-import {Image, TouchableNativeFeedback, View} from 'react-native';
+import {
+  Image,
+  ImageBackground,
+  TouchableNativeFeedback,
+  View,
+} from 'react-native';
 import {useTheme} from 'react-native-paper';
 import {CoverSize, findRelationships, mangaImage} from 'src/api';
 import {Artist, Author, Manga} from 'src/api/mangadex/types';
@@ -53,18 +58,25 @@ export default function ShowMangaDetails({manga}: Props) {
   ];
 
   return (
-    <View style={{height: '100%'}}>
-      <TouchableNativeFeedback
-        useForeground
-        onPress={() => setShowFullImage(!showFullImage)}
-        background={TouchableNativeFeedback.Ripple('#fff', false)}>
-        <View>
-          <Image
-            source={{uri: mangaImage(manga, {size: CoverSize.Original})}}
-            style={{width: '100%', aspectRatio}}
-          />
-        </View>
-      </TouchableNativeFeedback>
+    <View style={{flex: 1}}>
+      <View
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+        }}>
+        <ImageBackground
+          source={{uri: mangaImage(manga, {size: CoverSize.Original})}}
+          resizeMode="cover"
+          style={{
+            flex: 1,
+            justifyContent: 'center',
+            opacity: 0.15,
+          }}
+        />
+      </View>
 
       <DynamicTabs
         style={{
