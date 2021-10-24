@@ -14,10 +14,14 @@ export function useLazyGetRequest<T>(): [
 ] {
   const [data, setData] = useState<T>();
   const [response, setResponse] = useState<AxiosResponse<T>>();
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<AxiosError<T>>();
 
   const callback = async (url: string) => {
+    setLoading(true);
+    setError(undefined);
+    setData(undefined);
+
     return axios
       .get<T>(url)
       .then(response => {

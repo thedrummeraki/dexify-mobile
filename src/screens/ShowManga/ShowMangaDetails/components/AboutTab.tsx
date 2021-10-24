@@ -105,8 +105,7 @@ export default function AboutTab({manga, loading, aggregate}: Props) {
             )}
           </View>
         </View>
-        <View style={{flex: 1, marginTop: 17, marginBottom: 12}}>
-          <Subheading>Just a piece of text</Subheading>
+        <View style={{flex: 1, marginTop: 22, marginBottom: 12}}>
           {loading && (
             <Button loading mode="contained" style={{marginVertical: 3}}>
               {''}

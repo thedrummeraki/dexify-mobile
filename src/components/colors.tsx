@@ -37,6 +37,11 @@ export function useTextColor(background?: BackgroundColor) {
     : theme.colors.text;
 }
 
+export function useBackgroundColor(background: BackgroundColor) {
+  const theme = useTheme();
+  return theme.colors[background];
+}
+
 export function PaperProviderForBackground({
   background,
   children,

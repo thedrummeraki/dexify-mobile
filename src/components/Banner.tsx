@@ -54,7 +54,7 @@ export default function Banner({
           flex: 1,
           backgroundColor: theme.colors[background],
           paddingHorizontal: 20,
-          paddingTop: 15,
+          paddingTop: 20,
           paddingBottom,
           marginBottom: 10,
         }}>
@@ -64,9 +64,12 @@ export default function Banner({
             flexDirection: 'row',
             justifyContent: 'space-between',
           }}>
-          <Subheading style={{fontWeight: '700', color: textColor}}>
-            {title}
-          </Subheading>
+          {title && (
+            <Subheading
+              style={{fontWeight: '700', color: textColor, marginTop: -5}}>
+              {title}
+            </Subheading>
+          )}
           {onDismiss && (
             <IconButton
               icon="close"

@@ -7,6 +7,7 @@ import {preferredThumbnailImage} from 'src/api/kitsu/utils';
 import {Manga} from 'src/api/mangadex/types';
 import {YourAnime} from 'src/api/youranime';
 import Queries from 'src/api/youranime/queries';
+import {Banner} from 'src/components';
 import BasicList from 'src/components/BasicList';
 import Thumbnail from 'src/foundation/Thumbnail';
 import {platformIcon, PlatformIcons} from 'src/icons';
@@ -41,7 +42,15 @@ export default function AnimeDetailsTab({manga}: Props) {
   }
 
   if (results.length === 0) {
-    return <Text>No anime shows were found for this manga.</Text>;
+    return (
+      <ScrollView>
+        <Banner
+          background="error"
+          title="No anime series found"
+          body="We tried looking through the stars but couldn't find anything."
+        />
+      </ScrollView>
+    );
   }
 
   // Todo: get a currently anime's slug, query YourAnime.moe and show info here

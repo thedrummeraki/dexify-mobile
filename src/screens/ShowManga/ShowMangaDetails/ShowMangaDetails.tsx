@@ -29,7 +29,6 @@ export default function ShowMangaDetails({manga}: Props) {
     },
     {
       title: 'Read',
-      renderIf: () => false,
       content: () => (
         <ChaptersTab
           manga={manga}
