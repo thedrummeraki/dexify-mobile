@@ -1,18 +1,9 @@
 import React, {useState} from 'react';
-import {ScrollView, View} from 'react-native';
-import {
-  ActivityIndicator,
-  List,
-  Text,
-  Subheading,
-  useTheme,
-  Paragraph,
-  IconButton,
-} from 'react-native-paper';
+import {ScrollView} from 'react-native';
+import {ActivityIndicator, Text} from 'react-native-paper';
 import {Manga, PagedResultsList, Chapter} from 'src/api/mangadex/types';
 import {useGetRequest} from 'src/api/utils';
 import {Banner} from 'src/components';
-import ChapterListItem from './ChapterListItem';
 
 interface Props {
   manga: Manga;
@@ -20,7 +11,7 @@ interface Props {
 
 export default function ChaptersTab({manga}: Props) {
   const {data, loading, error} = useGetRequest<PagedResultsList<Chapter>>(
-    `https://api.mangadex.org/manga/${manga.id}/feed?translatedLanguage[]=en&limit=10`,
+    `https://api.mangadex.org/manga/${manga.id}/feed?translatedLanguage[]=en&limit=10&contentRating[]=${manga.attributes.contentRating}`,
   );
 
   const [showBanner, setShowBanner] = useState(true);

@@ -1,12 +1,13 @@
+import {BackgroundColor} from 'src/components/colors';
 import {
-  Author,
   Chapter,
+  ContentRating,
   CoverArt,
   Manga,
   PossibleRelationship,
   PossibleRelationshipTypes,
   Relationship,
-  ScanlationGroup,
+  Title,
 } from './types';
 
 export enum CoverSize {
@@ -18,9 +19,12 @@ export enum CoverSize {
 export function preferredMangaTitle(manga: Manga) {
   return (
     manga.attributes.title[manga.attributes.originalLanguage] ||
-    manga.attributes.title.en ||
-    Object.entries(manga.attributes.title).map(([key, value]) => value)[0]
+    preferredTitle(manga.attributes.title)
   );
+}
+
+export function preferredTitle(title: Title) {
+  return title.en || Object.entries(title).map(([_, value]) => value)[0];
 }
 
 export function preferredMangaDescription(manga: Manga) {
@@ -99,4 +103,48 @@ export function chapterImage(chapter: Chapter): string | null {
     chapterHash,
     filename,
   ].join('/');
+}
+
+export function contentRatingBackgroundColor(
+  contentRating: ContentRating,
+): BackgroundColor {
+  switch (contentRating) {
+    case ContentRating.safe:
+      return 'error';
+    case ContentRating.suggestive:
+      return 'disabled';
+    case ContentRating.erotica:
+      return 'accent';
+    case ContentRating.pornographic:
+      return 'error';
+  }
+}
+
+export function contentRatingInfo(contentRating: ContentRating): {
+  content: string;
+  background: BackgroundColor;
+  icon: string;
+} {
+  switch (contentRating) {
+    case ContentRating.safe:
+      return {
+        content: 'For everyone',
+        background: 'accent',
+        icon: 'check-outline',
+      };
+    case ContentRating.suggestive:
+      return {
+        content: 'For everyone (13+)',
+        background: 'disabled',
+        icon: 'check',
+      };
+    case ContentRating.erotica:
+      return {
+        content: 'Erotica (15+)',
+        background: 'accent',
+        icon: 'alert-outline',
+      };
+    case ContentRating.pornographic:
+      return {content: 'Hentai (18+)', background: 'error', icon: 'alert'};
+  }
 }

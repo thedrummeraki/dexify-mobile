@@ -7,16 +7,12 @@ import {
   useTheme,
   Button,
   Text,
-  Provider as PaperProvider,
 } from 'react-native-paper';
-
-type BannerColor =
-  | 'primary'
-  | 'surface'
-  | 'accent'
-  | 'error'
-  | 'disabled'
-  | 'notification';
+import {
+  BackgroundColor,
+  PaperProviderForBackground,
+  useTextColor,
+} from './colors';
 
 interface BannerAction {
   content: string;
@@ -27,30 +23,11 @@ interface Props {
   visible?: boolean;
   title?: string;
   body?: string;
-  background?: BannerColor;
+  background?: BackgroundColor;
   primaryAction?: BannerAction;
   secondaryAction?: BannerAction;
   onDismiss?: () => void;
 }
-
-const COLOR_MAP: {[key in 'dark' | 'light']: {[key in BannerColor]: string}} = {
-  dark: {
-    accent: '#222',
-    disabled: '#ccc',
-    error: '#fff',
-    notification: '#222',
-    primary: '#222',
-    surface: '#eee',
-  },
-  light: {
-    accent: '#eee',
-    disabled: '#333',
-    error: '#fff',
-    notification: '#222',
-    primary: '#eee',
-    surface: '#111',
-  },
-};
 
 export default function Banner({
   visible = true,
@@ -62,8 +39,7 @@ export default function Banner({
   onDismiss,
 }: Props) {
   const theme = useTheme();
-  const colorScheme = theme.dark ? 'dark' : 'light';
-  const textColor = COLOR_MAP[colorScheme][background];
+  const textColor = useTextColor(background);
 
   const paddingBottom = primaryAction || secondaryAction ? 15 : 20;
 
@@ -72,8 +48,7 @@ export default function Banner({
   }
 
   return (
-    <PaperProvider
-      theme={{...theme, colors: {...theme.colors, text: textColor}}}>
+    <PaperProviderForBackground background={background}>
       <View
         style={{
           flex: 1,
@@ -116,6 +91,6 @@ export default function Banner({
           </View>
         </View>
       </View>
-    </PaperProvider>
+    </PaperProviderForBackground>
   );
 }

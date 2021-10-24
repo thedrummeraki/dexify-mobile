@@ -1,10 +1,5 @@
-import React, {useState} from 'react';
-import {
-  Image,
-  ImageBackground,
-  TouchableNativeFeedback,
-  View,
-} from 'react-native';
+import React from 'react';
+import {ImageBackground, View} from 'react-native';
 import {useTheme} from 'react-native-paper';
 import {CoverSize, findRelationships, mangaImage} from 'src/api';
 import {Artist, Author, Manga} from 'src/api/mangadex/types';
@@ -18,26 +13,11 @@ interface Props {
 
 export default function ShowMangaDetails({manga}: Props) {
   const theme = useTheme();
-  const [showFullImage, setShowFullImage] = useState(false);
-  const aspectRatio = showFullImage ? 1 : 2;
-
-  const authors = findRelationships<Author>(manga, 'author');
-  const artists = findRelationships<Artist>(manga, 'artist');
-
-  const authorsAndArtistsObjects: Array<Author | Artist> = [];
-  artists.forEach(artist => authorsAndArtistsObjects.push(artist));
-  authors.forEach(author => authorsAndArtistsObjects.push(author));
-
-  const authorsAndArtists = authorsAndArtistsObjects.filter(
-    (value, index, self) => self.findIndex(v => v.id === value.id) === index,
-  );
 
   const tabs: DynamicTab[] = [
     {
       title: 'About',
-      content: () => (
-        <AboutTab manga={manga} authorsAndArtists={authorsAndArtists} />
-      ),
+      content: () => <AboutTab manga={manga} />,
     },
     {
       title: 'Read',
@@ -73,7 +53,7 @@ export default function ShowMangaDetails({manga}: Props) {
           style={{
             flex: 1,
             justifyContent: 'center',
-            opacity: 0.15,
+            opacity: 0.175,
           }}
         />
       </View>
