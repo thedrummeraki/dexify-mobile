@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {ImageBackground, View} from 'react-native';
 import {useTheme} from 'react-native-paper';
 import {CoverSize, findRelationships, mangaImage} from 'src/api';
@@ -18,13 +18,20 @@ export default function ShowMangaDetails({manga}: Props) {
     `https://api.mangadex.org/manga/${manga.id}/aggregate?translatedLanguage[]=en`,
   );
 
+  const [coverUrl, setCoverUrl] = useState<string>();
+
   const aggregate = data?.result === 'ok' ? data.volumes : undefined;
 
   const tabs: DynamicTab[] = [
     {
       title: 'About',
       content: () => (
-        <AboutTab loading={loading} manga={manga} aggregate={aggregate} />
+        <AboutTab
+          loading={loading}
+          manga={manga}
+          aggregate={aggregate}
+          coverUrl={coverUrl}
+        />
       ),
     },
     {
@@ -35,6 +42,7 @@ export default function ShowMangaDetails({manga}: Props) {
           aggregate={aggregate}
           loading={loading}
           error={error}
+          onCoverUrlUpdate={setCoverUrl}
         />
       ),
     },
@@ -59,7 +67,7 @@ export default function ShowMangaDetails({manga}: Props) {
           bottom: 0,
         }}>
         <ImageBackground
-          source={{uri: mangaImage(manga, {size: CoverSize.Original})}}
+          source={{uri: coverUrl}}
           resizeMode="cover"
           style={{
             flex: 1,

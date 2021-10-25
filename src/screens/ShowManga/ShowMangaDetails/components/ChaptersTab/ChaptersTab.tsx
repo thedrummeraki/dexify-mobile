@@ -11,7 +11,13 @@ import {
   TextInput,
   Title,
 } from 'react-native-paper';
-import {Manga, PagedResultsList, Chapter} from 'src/api/mangadex/types';
+import {coverImage} from 'src/api';
+import {
+  Manga,
+  PagedResultsList,
+  Chapter,
+  CoverArt,
+} from 'src/api/mangadex/types';
 import {useGetRequest, useLazyGetRequest} from 'src/api/utils';
 import {Banner} from 'src/components';
 import BasicList from 'src/components/BasicList';
@@ -26,6 +32,7 @@ interface Props {
   loading: boolean;
   aggregate?: Manga.VolumeAggregateInfo;
   error?: any;
+  onCoverUrlUpdate: (coverUrl: string) => void;
 }
 
 enum Layout {
@@ -38,11 +45,18 @@ const layoutIcons: {[key in Layout]: string} = {
   [Layout.Images]: 'image',
 };
 
-export default function ChaptersTab({manga, loading, aggregate, error}: Props) {
+export default function ChaptersTab({
+  manga,
+  loading,
+  aggregate,
+  error,
+  onCoverUrlUpdate,
+}: Props) {
   const [showBanner] = useState(true);
   const [layout, setLayout] = useState<Layout>(Layout.Images);
   const [chapters, setChapters] = useState<Chapter[]>([]);
   const [currentVolume, setCurrentVolume] = useState<string>();
+  const [covers, setCovers] = useState<CoverArt[]>([]);
   const aggregateEntries = aggregate ? Object.entries(aggregate) : [];
 
   const volumes = aggregateEntries.map(([volume, _]) => volume);
@@ -52,17 +66,34 @@ export default function ChaptersTab({manga, loading, aggregate, error}: Props) {
   const [getChapters, {data, loading: chaptersLoading, error: chaptersError}] =
     useLazyGetRequest<PagedResultsList<Chapter>>();
 
+  const [getCover] = useLazyGetRequest<PagedResultsList<CoverArt>>();
+
   useEffect(() => {
     setCurrentVolume(volumes[0]);
+    getCover(
+      `https://api.mangadex.org/cover?manga[]=${manga.id}&limit=100`,
+    ).then(result => {
+      if (result?.result === 'ok') {
+        setCovers(result.data);
+      }
+    });
   }, []);
+
+  useEffect(() => {}, []);
 
   useEffect(() => {
     if (currentVolume) {
       getChapters(
         `https://api.mangadex.org/chapter?limit=100&volume[]=${currentVolume}&manga=${manga.id}&translatedLanguage[]=en&contentRating[]=${manga.attributes.contentRating}`,
       );
+      const cover = covers.find(
+        cover => cover.attributes.volume === currentVolume,
+      );
+      if (cover) {
+        onCoverUrlUpdate(coverImage(cover, manga.id));
+      }
     }
-  }, [currentVolume]);
+  }, [currentVolume, covers]);
 
   const chaptersCount = data?.result === 'ok' ? data.total : 0;
 

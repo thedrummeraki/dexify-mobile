@@ -30,7 +30,9 @@ export default function GalleryTab({manga}: Props) {
   }
 
   if (error || !data || data.result === 'error') {
-    console.error(error || (data?.result === 'error' && data.errors));
+    console.error(
+      error || (data?.result === 'error' ? data.errors : 'unknown error'),
+    );
     return <Text>We couldn't fetch covers for this manga</Text>;
   }
 

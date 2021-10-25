@@ -1,4 +1,4 @@
-import axios, {AxiosError, AxiosResponse} from 'axios';
+import axios, {Axios, AxiosError, AxiosResponse} from 'axios';
 import {useEffect, useState} from 'react';
 
 interface RequestResult<T> {
@@ -9,7 +9,7 @@ interface RequestResult<T> {
 }
 
 export function useLazyGetRequest<T>(): [
-  (url: string) => Promise<void>,
+  (url: string) => Promise<T | undefined>,
   RequestResult<T>,
 ] {
   const [data, setData] = useState<T>();
@@ -22,19 +22,21 @@ export function useLazyGetRequest<T>(): [
     setError(undefined);
     setData(undefined);
 
-    return axios
-      .get<T>(url)
-      .then(response => {
-        setData(response.data);
-        setResponse(response);
-      })
-      .catch((error: AxiosError<T>) => {
-        setError(error);
-      })
-      .catch((error: Error) => {
+    try {
+      const response = await axios.get<T>(url);
+      setData(response.data);
+      setResponse(response);
+
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        setError(error as AxiosError<T>);
+      } else {
         console.error(error);
-      })
-      .finally(() => setLoading(false));
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   return [callback, {data, response, loading, error}];

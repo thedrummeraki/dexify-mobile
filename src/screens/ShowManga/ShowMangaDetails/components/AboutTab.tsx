@@ -1,4 +1,4 @@
-import React, {useCallback, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {ScrollView, View} from 'react-native';
 import FastImage from 'react-native-fast-image';
 import {
@@ -28,9 +28,10 @@ interface Props {
   manga: Manga;
   loading: boolean;
   aggregate?: Manga.VolumeAggregateInfo;
+  coverUrl?: string;
 }
 
-export default function AboutTab({manga, loading, aggregate}: Props) {
+export default function AboutTab({manga, loading, aggregate, coverUrl}: Props) {
   const navigation = useDexifyNavigation();
   const initialTrim = useRef(false);
 
@@ -74,7 +75,7 @@ export default function AboutTab({manga, loading, aggregate}: Props) {
   return (
     <ScrollView style={{flex: 1}}>
       <FastImage
-        source={{uri: mangaImage(manga, {size: CoverSize.Medium})}}
+        source={{uri: coverUrl || mangaImage(manga, {size: CoverSize.Medium})}}
         style={{width: '100%', aspectRatio: 2}}
       />
       <View style={{padding: 5}}>
