@@ -8,7 +8,7 @@ export function useHomeCategories(): UICategory[] {
   const session = useSession();
   const [currentlyReadingIds, setCurrentReadingIds] = useState<string[]>([]);
 
-  const {data} = useGetRequest<{
+  const {data, error} = useGetRequest<{
     statuses: {
       [key: string]:
         | 'reading'
@@ -32,14 +32,13 @@ export function useHomeCategories(): UICategory[] {
     {
       title: 'Currently reading',
       type: 'manga',
-      requiresAuth: true,
       ids: currentlyReadingIds,
       params: {
         'includes[]': 'cover_art',
       },
     },
     {
-      title: 'Most popular titles',
+      title: 'Most popular titles!',
       type: 'manga',
       description: 'Most popular manga on Mangadex.',
       url: 'https://api.mangadex.org/manga?order%5BfollowedCount%5D=desc&limit=20&includes[]=cover_art',

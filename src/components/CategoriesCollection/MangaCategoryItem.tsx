@@ -21,9 +21,6 @@ export default function MangaCategoryItem({
     url(category),
   );
   const sectionData = data?.result === 'ok' ? data.data : [];
-
-  console.log(category.title, data?.result, error);
-
   const session = useSession();
 
   if (category.requiresAuth && !session) {

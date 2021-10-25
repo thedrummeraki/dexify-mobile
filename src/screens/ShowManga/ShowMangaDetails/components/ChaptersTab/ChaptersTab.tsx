@@ -179,6 +179,10 @@ export default function ChaptersTab({
             selected={item === currentVolume}
             disabled={chaptersLoading || loading}
             style={{
+              flex: 1,
+              alignItems: 'center',
+              justifyContent: 'center',
+              height: 64,
               backgroundColor:
                 item === currentVolume
                   ? selectedVolumeBackgroundColor

@@ -16,18 +16,18 @@ export default function App() {
   const theme = useDarkTheme ? DarkTheme : DefaultTheme;
 
   return (
-    <SessionProvider>
-      <GraphQLProvider>
-        <GestureHandlerRootView style={{flex: 1}}>
-          <PaperProvider>
+    <PaperProvider>
+      <SessionProvider>
+        <GraphQLProvider>
+          <GestureHandlerRootView style={{flex: 1}}>
             <HeaderProvider>
               <NavigationContainer theme={theme}>
                 <Navigation />
               </NavigationContainer>
             </HeaderProvider>
-          </PaperProvider>
-        </GestureHandlerRootView>
-      </GraphQLProvider>
-    </SessionProvider>
+          </GestureHandlerRootView>
+        </GraphQLProvider>
+      </SessionProvider>
+    </PaperProvider>
   );
 }

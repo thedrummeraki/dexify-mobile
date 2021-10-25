@@ -36,6 +36,7 @@ export function usePostRequest<T, Body = any>(): [
   const config = useAxiosRequestConfig();
 
   const callback = async (url: string, body: Body) => {
+    console.log('[POST]', url, 'with body', body, 'config', config);
     setLoading(true);
     setError(undefined);
     setData(undefined);
@@ -77,6 +78,7 @@ export function useLazyGetRequest<T>(): [
   const config = useAxiosRequestConfig();
 
   const callback = async (url: string) => {
+    console.log('[GET]', url, 'config', config);
     setLoading(true);
     setError(undefined);
     setData(undefined);

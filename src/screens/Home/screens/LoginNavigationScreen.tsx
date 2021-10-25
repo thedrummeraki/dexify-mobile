@@ -11,8 +11,6 @@ export function LoginNavigationScreen() {
   // const [get] = useLazyGetRequest<{result: 'ok', isAuthenticated: boolean, roles: string[], permissions: string[]}>()
   const {session, setSession} = useContext(SessionContext);
 
-  console.log('session', session);
-
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
@@ -53,11 +51,13 @@ export function LoginNavigationScreen() {
             username,
             session: {
               value: token.session,
-              validUntil: new Date(),
+              validUntil: new Date(new Date().getTime() + 14 * 60 * 1000), // 14 minutes
             },
             refresh: {
-              value: token.session,
-              validUntil: new Date(),
+              value: token.refresh,
+              validUntil: new Date(
+                new Date().getTime() + 30 * 24 * 60 * 60 * 1000, // 30 days
+              ),
             },
           });
         }
