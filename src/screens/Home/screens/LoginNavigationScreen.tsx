@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {View} from 'react-native';
 import {Button, Text, TextInput, Title} from 'react-native-paper';
 import {AuthResponse} from 'src/api/mangadex/types';
@@ -6,39 +6,64 @@ import {useLazyGetRequest, usePostRequest} from 'src/api/utils';
 import {SessionContext} from 'src/prodivers';
 
 export function LoginNavigationScreen() {
-  const [post, data] = usePostRequest<AuthResponse>();
+  const [post] = usePostRequest<AuthResponse>();
+  const [submitEnabled, setSubmitEnabled] = useState(false);
   // const [get] = useLazyGetRequest<{result: 'ok', isAuthenticated: boolean, roles: string[], permissions: string[]}>()
   const {session, setSession} = useContext(SessionContext);
 
-  console.log(session);
+  console.log('session', session);
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
   useEffect(() => {
-    if (data.data?.result === 'ok') {
-      const {token} = data.data;
+    setSubmitEnabled(password.length >= 8 && Boolean(username));
+  }, [username, password]);
 
-      setSession({
-        username,
-        session: {
-          value: token.session,
-          validUntil: new Date(),
-        },
-        refresh: {
-          value: token.session,
-          validUntil: new Date(),
-        },
-      });
-    }
-  }, [data]);
+  // useEffect(() => {
+  //   if (data.data?.result === 'ok') {
+  //     const {token} = data.data;
 
-  const onLoginPressed = () => {
+  //     setSession({
+  //       username,
+  //       session: {
+  //         value: token.session,
+  //         validUntil: new Date(),
+  //       },
+  //       refresh: {
+  //         value: token.session,
+  //         validUntil: new Date(),
+  //       },
+  //     });
+  //   }
+  // }, [data]);
+
+  const onLoginPressed = useCallback(() => {
+    setSubmitEnabled(false);
     post('https://api.mangadex.org/auth/login', {
       username,
       password,
-    });
-  };
+    })
+      .then(result => {
+        setSubmitEnabled(result?.result === 'error');
+        if (result?.result === 'ok') {
+          const {token} = result;
+
+          setSession({
+            username,
+            session: {
+              value: token.session,
+              validUntil: new Date(),
+            },
+            refresh: {
+              value: token.session,
+              validUntil: new Date(),
+            },
+          });
+        }
+      })
+      .catch(() => setSubmitEnabled(true));
+  }, [username, password]);
 
   return (
     <View style={{flex: 1, alignContent: 'center', justifyContent: 'center'}}>
@@ -55,12 +80,7 @@ export function LoginNavigationScreen() {
           onChangeText={setPassword}
         />
         <Button
-          disabled={
-            password.length < 8 ||
-            !username ||
-            data.loading ||
-            data.data?.result === 'ok'
-          }
+          disabled={!submitEnabled}
           mode="contained"
           icon="lock"
           style={{marginTop: 7}}

@@ -2,6 +2,7 @@ import React from 'react';
 import {Touchable, TouchableNativeFeedback, View} from 'react-native';
 import {TouchableRipple} from 'react-native-paper';
 import {useDexifyNavigation} from 'src/foundation/Navigation';
+import {useSession} from 'src/prodivers';
 import {mangaImage, preferredMangaTitle} from '../../api';
 import {Manga, PagedResultsList} from '../../api/mangadex/types';
 import {useGetRequest} from '../../api/utils';
@@ -16,10 +17,16 @@ export default function MangaCategoryItem({
   category: UIMangaCategory;
 }) {
   const navigation = useDexifyNavigation();
-  const {data, loading} = useGetRequest<PagedResultsList<Manga>>(url(category));
+  const {data, loading, error} = useGetRequest<PagedResultsList<Manga>>(
+    url(category),
+  );
   const sectionData = data?.result === 'ok' ? data.data : [];
 
-  if (category.requiresAuth) {
+  console.log(category.title, data?.result, error);
+
+  const session = useSession();
+
+  if (category.requiresAuth && !session) {
     return null;
   }
 

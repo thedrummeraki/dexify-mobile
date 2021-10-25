@@ -47,8 +47,6 @@ export function usePostRequest<T, Body = any>(): [
         config,
       );
 
-      console.log('response', response);
-
       setData(response.data);
       setResponse(response);
 

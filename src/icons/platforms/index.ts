@@ -10,7 +10,7 @@ export const platforms = {
   netflix: require('./netflix-icon.jpg'),
   prime: require('./primevideo-icon.jpg'),
   tubi: require('./tubi-icon.png'),
-  vimeo: require('./vimeo-icon.png'),
+  vimeo: require('./vimeo-icon.jpg'),
   vrv: require('./vrv-icon.png'),
   youtube: require('./youtube-icon.png'),
 };

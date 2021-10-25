@@ -8,7 +8,6 @@ import {
   Menu,
   Subheading,
   Text,
-  TextInput,
   Title,
 } from 'react-native-paper';
 import {coverImage} from 'src/api';

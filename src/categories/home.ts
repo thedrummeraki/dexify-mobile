@@ -1,19 +1,45 @@
 import {UICategory} from './types';
 import {airingMangas} from 'src/api/mangadex';
 import {useSession} from 'src/prodivers';
+import {useGetRequest} from 'src/api/utils';
+import {useEffect, useState} from 'react';
 
 export function useHomeCategories(): UICategory[] {
   const session = useSession();
+  const [currentlyReadingIds, setCurrentReadingIds] = useState<string[]>([]);
+
+  const {data} = useGetRequest<{
+    statuses: {
+      [key: string]:
+        | 'reading'
+        | 'on_hold'
+        | 'plan_to_read'
+        | 'dropped'
+        | 're_reading'
+        | 'completed';
+    };
+  }>('https://api.mangadex.org/manga/status?status=reading');
+
+  useEffect(() => {
+    setCurrentReadingIds(
+      Object.entries(data?.statuses || {})
+        .filter(([_, status]) => status === 'reading')
+        .map(([id, _]) => id),
+    );
+  }, [data]);
 
   return [
     {
       title: 'Currently reading',
       type: 'manga',
       requiresAuth: true,
-      url: 'https://api.mangadex.org/manga/status?status=reading&limit=10',
+      ids: currentlyReadingIds,
+      params: {
+        'includes[]': 'cover_art',
+      },
     },
     {
-      title: `${session?.session}`,
+      title: 'Most popular titles',
       type: 'manga',
       description: 'Most popular manga on Mangadex.',
       url: 'https://api.mangadex.org/manga?order%5BfollowedCount%5D=desc&limit=20&includes[]=cover_art',
