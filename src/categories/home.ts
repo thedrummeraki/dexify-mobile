@@ -1,7 +1,10 @@
 import {UICategory} from './types';
 import {airingMangas} from 'src/api/mangadex';
+import {useSession} from 'src/prodivers';
 
 export function useHomeCategories(): UICategory[] {
+  const session = useSession();
+
   return [
     {
       title: 'Currently reading',
@@ -10,7 +13,7 @@ export function useHomeCategories(): UICategory[] {
       url: 'https://api.mangadex.org/manga/status?status=reading&limit=10',
     },
     {
-      title: 'Most popular titles',
+      title: `${session?.session}`,
       type: 'manga',
       description: 'Most popular manga on Mangadex.',
       url: 'https://api.mangadex.org/manga?order%5BfollowedCount%5D=desc&limit=20&includes[]=cover_art',

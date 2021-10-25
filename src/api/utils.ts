@@ -1,11 +1,70 @@
-import axios, {Axios, AxiosError, AxiosResponse} from 'axios';
+import axios, {
+  Axios,
+  AxiosError,
+  AxiosRequestConfig,
+  AxiosResponse,
+} from 'axios';
 import {useEffect, useState} from 'react';
+import {useSession} from 'src/prodivers';
 
 interface RequestResult<T> {
   data?: T;
   response?: AxiosResponse<T>;
   loading: boolean;
   error?: AxiosError<T>;
+}
+
+export function useAxiosRequestConfig(): AxiosRequestConfig {
+  const session = useSession();
+
+  if (!session?.session?.value) {
+    return {};
+  }
+
+  return {headers: {Authorization: session.session.value}};
+}
+
+export function usePostRequest<T, Body = any>(): [
+  (url: string, body: Body) => Promise<T | undefined>,
+  RequestResult<T>,
+] {
+  const [data, setData] = useState<T>();
+  const [response, setResponse] = useState<AxiosResponse<T>>();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<AxiosError<T>>();
+
+  const config = useAxiosRequestConfig();
+
+  const callback = async (url: string, body: Body) => {
+    setLoading(true);
+    setError(undefined);
+    setData(undefined);
+
+    try {
+      const response = await axios.post<T, AxiosResponse<T>, Body>(
+        url,
+        body,
+        config,
+      );
+
+      console.log('response', response);
+
+      setData(response.data);
+      setResponse(response);
+
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        setError(error as AxiosError<T>);
+      } else {
+        console.error(error);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return [callback, {data, response, loading, error}];
 }
 
 export function useLazyGetRequest<T>(): [
@@ -17,13 +76,15 @@ export function useLazyGetRequest<T>(): [
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<AxiosError<T>>();
 
+  const config = useAxiosRequestConfig();
+
   const callback = async (url: string) => {
     setLoading(true);
     setError(undefined);
     setData(undefined);
 
     try {
-      const response = await axios.get<T>(url);
+      const response = await axios.get<T>(url, config);
       setData(response.data);
       setResponse(response);
 
