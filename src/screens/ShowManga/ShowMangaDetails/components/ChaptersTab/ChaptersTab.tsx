@@ -49,7 +49,6 @@ export default function ChaptersTab() {
   const aggregateEntries = aggregate ? Object.entries(aggregate) : [];
 
   const volumes = aggregateEntries.map(([volume, _]) => volume);
-  console.log('volumes', volumes);
   const selectedVolumeBackgroundColor = useBackgroundColor('primary');
   const selectedLayoutBackgroundColor = useBackgroundColor('accent');
 

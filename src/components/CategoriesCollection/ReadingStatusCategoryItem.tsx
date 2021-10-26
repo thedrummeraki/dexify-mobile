@@ -1,5 +1,4 @@
 import React, {useEffect, useState} from 'react';
-import {Text} from 'react-native-paper';
 import {useGetRequest} from 'src/api/utils';
 import {UIReadingStatusCategory} from 'src/categories';
 import MangaCategoryItem from './MangaCategoryItem';
@@ -32,7 +31,6 @@ export default function ReadingStatusCategoryItem({category}: Props) {
 
   if (error) {
     console.error(error);
-    return <Text>hjmmmm what</Text>;
   }
 
   return (
@@ -43,7 +41,7 @@ export default function ReadingStatusCategoryItem({category}: Props) {
         type: 'manga',
         ids: currentlyReadingIds,
         params: {
-          'include[]': 'cover_art',
+          'includes[]': 'cover_art',
         },
       }}
     />

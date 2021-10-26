@@ -5,6 +5,10 @@ export function url(category: UICategory) {
     return category.url;
   }
 
+  if (category.loading) {
+    return null;
+  }
+
   const additionalParams = category.params
     ? new URLSearchParams(category.params).toString()
     : '';
