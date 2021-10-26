@@ -26,6 +26,10 @@ export default function SessionRefresher({
   const {refreshToken} = useUpdatedSession();
 
   useEffect(() => {
+    if (session) {
+      return;
+    }
+
     retrieveStoredSession()
       .then(retrievedSession => {
         if (retrievedSession) {
@@ -45,9 +49,9 @@ export default function SessionRefresher({
         }
       })
       .catch(() => onLoading(false));
-  }, []);
+  }, [session]);
 
-  if (loading || !session) {
+  if (loading) {
     return <ActivityIndicator style={{flex: 1}} />;
   }
 
