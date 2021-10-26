@@ -29,7 +29,7 @@ export default function MangaCategoryItem({
 
   return (
     <CategoriesCollectionSection
-      loading={loading}
+      loading={category.loading || loading}
       title={category.title}
       data={sectionData}
       dimensions={{width: 120, height: 160}}

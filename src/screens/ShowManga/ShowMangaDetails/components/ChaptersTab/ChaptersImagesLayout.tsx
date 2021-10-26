@@ -21,15 +21,10 @@ export default function ChaptersImagesLayout({
   if (loading) {
     return (
       <BasicList
+        style={{flex: 1}}
         aspectRatio={1 / 3}
         data={Array.from({length: 3}).map(id => ({id}))}
-        renderItem={() => (
-          <Thumbnail
-            imageUrl={'https://mangadex.org/avatar.png'}
-            width="100%"
-            aspectRatio={0.7}
-          />
-        )}
+        renderItem={() => <ThumbnailSkeleton width={120} height={160} />}
       />
     );
   }
@@ -52,8 +47,8 @@ export default function ChaptersImagesLayout({
         return (
           <Thumbnail
             imageUrl={chapterImage(item) || 'https://mangadex.org/avatar.png'}
-            width="100%"
-            aspectRatio={0.7}
+            width={120}
+            height={160}
             title={title}
             onPress={() => navigation.navigate('ShowChapter', {id: item.id})}
           />

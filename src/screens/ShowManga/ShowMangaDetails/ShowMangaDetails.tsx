@@ -51,6 +51,8 @@ export default function ShowMangaDetails({manga}: Props) {
 
   const aggregate = data?.result === 'ok' ? data.volumes : undefined;
 
+  const theme = useTheme();
+
   return (
     <ShowMangaDetailsProvider
       loading={loading}
@@ -79,7 +81,14 @@ export default function ShowMangaDetails({manga}: Props) {
           />
         </View>
 
-        <Tab.Navigator screenOptions={{swipeEnabled: false, lazy: true}}>
+        <Tab.Navigator
+          screenOptions={{
+            swipeEnabled: false,
+            lazy: true,
+            tabBarInactiveTintColor: theme.colors.disabled,
+            tabBarActiveTintColor: theme.colors.primary,
+            tabBarIndicatorStyle: {backgroundColor: theme.colors.primary},
+          }}>
           <Tab.Screen name="About" component={AboutTab} />
           <Tab.Screen name="Read" component={ChaptersTab} />
           <Tab.Screen name="Anime" component={AnimeDetailsTab} />
@@ -88,8 +97,4 @@ export default function ShowMangaDetails({manga}: Props) {
       </View>
     </ShowMangaDetailsProvider>
   );
-}
-
-function Test() {
-  return <Text>test!</Text>;
 }

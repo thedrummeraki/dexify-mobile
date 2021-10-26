@@ -18,7 +18,7 @@ export default function ScanlationGroupCategoryItem({
 
   return (
     <CategoriesCollectionSection
-      loading={loading}
+      loading={category.loading || loading}
       title={category.title}
       data={sectionData}
       dimensions={{size: 24}}

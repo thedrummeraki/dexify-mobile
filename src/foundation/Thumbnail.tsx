@@ -1,11 +1,13 @@
 import React, {PropsWithChildren} from 'react';
 import {View, TouchableNativeFeedback, Image} from 'react-native';
 import {Caption} from 'react-native-paper';
+import SkeletonContent from 'react-native-skeleton-content-nonexpo';
 
 interface DimensionsProps {
   width: number | string;
   height?: number | string;
   aspectRatio?: number;
+  showTitle?: boolean;
 }
 
 interface Props {
@@ -74,5 +76,12 @@ function MaybeTouchableNativeFeedback({
 }
 
 export function ThumbnailSkeleton({width, height}: DimensionsProps) {
-  return <View style={{width, height, backgroundColor: '#fff'}} />;
+  return (
+    <SkeletonContent
+      isLoading
+      containerStyle={{width, height}}
+      animationDirection="horizontalRight"
+      layout={[{key: 'image', width, height}]}
+    />
+  );
 }

@@ -24,10 +24,9 @@ export function useAxiosRequestConfig(): AxiosRequestConfig {
   return {headers: {Authorization: session.session.value}};
 }
 
-export function usePostRequest<T, Body = any>(): [
-  (url: string, body: Body) => Promise<T | undefined>,
-  RequestResult<T>,
-] {
+export function usePostRequest<T, Body = any>(
+  hookUrl?: string,
+): [(url?: string, body?: Body) => Promise<T | undefined>, RequestResult<T>] {
   const [data, setData] = useState<T>();
   const [response, setResponse] = useState<AxiosResponse<T>>();
   const [loading, setLoading] = useState(false);
@@ -35,7 +34,15 @@ export function usePostRequest<T, Body = any>(): [
 
   const config = useAxiosRequestConfig();
 
-  const callback = async (url: string, body: Body) => {
+  const callback = async (callbackUrl?: string, body?: Body) => {
+    const url = hookUrl || callbackUrl;
+
+    if (!url) {
+      throw new Error(
+        'Missing url. Must be passed in from the hook or the callback',
+      );
+    }
+
     console.log('[POST]', url, 'with body', body, 'config', config);
     setLoading(true);
     setError(undefined);
@@ -66,10 +73,9 @@ export function usePostRequest<T, Body = any>(): [
   return [callback, {data, response, loading, error}];
 }
 
-export function useLazyGetRequest<T>(): [
-  (url: string) => Promise<T | undefined>,
-  RequestResult<T>,
-] {
+export function useLazyGetRequest<T>(
+  hookUrl?: string,
+): [(url?: string) => Promise<T | undefined>, RequestResult<T>] {
   const [data, setData] = useState<T>();
   const [response, setResponse] = useState<AxiosResponse<T>>();
   const [loading, setLoading] = useState(false);
@@ -77,7 +83,14 @@ export function useLazyGetRequest<T>(): [
 
   const config = useAxiosRequestConfig();
 
-  const callback = async (url: string) => {
+  const callback = async (callbackUrl?: string) => {
+    const url = hookUrl || callbackUrl;
+    if (!url) {
+      throw new Error(
+        'Missing url. Must be passed in from the hook or the callback',
+      );
+    }
+
     console.log('[GET]', url, 'config', config);
     setLoading(true);
     setError(undefined);

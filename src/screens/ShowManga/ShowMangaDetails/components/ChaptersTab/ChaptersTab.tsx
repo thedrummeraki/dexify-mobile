@@ -49,6 +49,7 @@ export default function ChaptersTab() {
   const aggregateEntries = aggregate ? Object.entries(aggregate) : [];
 
   const volumes = aggregateEntries.map(([volume, _]) => volume);
+  console.log('volumes', volumes);
   const selectedVolumeBackgroundColor = useBackgroundColor('primary');
   const selectedLayoutBackgroundColor = useBackgroundColor('accent');
 
@@ -67,8 +68,6 @@ export default function ChaptersTab() {
       }
     });
   }, []);
-
-  useEffect(() => {}, []);
 
   useEffect(() => {
     if (currentVolume) {
@@ -105,7 +104,7 @@ export default function ChaptersTab() {
   if (aggregateEntries.length === 0) {
     return (
       <ScrollView>
-        {Object.entries(manga.attributes.links || {}).length && (
+        {Object.entries(manga.attributes.links || {}).length ? (
           <Banner
             visible={showBanner}
             background="accent"
@@ -117,7 +116,7 @@ export default function ChaptersTab() {
             // }}
             // onDismiss={() => setShowBanner(false)}
           />
-        )}
+        ) : undefined}
         <Banner
           background="error"
           title="No chapters found"

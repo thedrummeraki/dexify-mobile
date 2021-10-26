@@ -8,7 +8,7 @@ export function useHomeCategories(): UICategory[] {
   const session = useSession();
   const [currentlyReadingIds, setCurrentReadingIds] = useState<string[]>([]);
 
-  const {data, error} = useGetRequest<{
+  const {data, loading} = useGetRequest<{
     statuses: {
       [key: string]:
         | 'reading'
@@ -28,15 +28,46 @@ export function useHomeCategories(): UICategory[] {
     );
   }, [data]);
 
+  console.log('currentlyReadingIds', currentlyReadingIds);
+
+  return session ? authenticatedHomeCategories() : unauthenticatedCategories();
+}
+
+function authenticatedHomeCategories(): UICategory[] {
   return [
     {
-      title: 'Currently reading',
+      title: 'Your feed',
+      type: 'chapter',
+      description: 'Your personalized chapters feed.',
+      url: 'https://api.mangadex.org/user/follows/manga/feed?includes[]=manga&limit=20',
+    },
+    {
+      title: 'Most popular titles!',
       type: 'manga',
-      ids: currentlyReadingIds,
+      description: 'Most popular manga on Mangadex.',
+      url: 'https://api.mangadex.org/manga?order%5BfollowedCount%5D=desc&limit=20&includes[]=cover_art',
+    },
+    {
+      title: 'Fall 2021 Seasonal manga',
+      type: 'manga',
+      description: 'These titles have an anime airing this season.',
+      ids: airingMangas,
       params: {
         'includes[]': 'cover_art',
+        'order[followedCount]': 'desc',
       },
     },
+    {
+      title: 'New additions',
+      type: 'manga',
+      description: 'Newest titles added to Mangadex',
+      url: 'https://api.mangadex.org/manga?order[createdAt]=desc&includes[]=cover_art&limit=50',
+    },
+  ];
+}
+
+function unauthenticatedCategories(): UICategory[] {
+  return [
     {
       title: 'Most popular titles!',
       type: 'manga',

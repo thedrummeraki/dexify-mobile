@@ -1,5 +1,5 @@
 import React, {useCallback, useContext, useState} from 'react';
-import {Appbar, Searchbar} from 'react-native-paper';
+import {Appbar, Searchbar, useTheme} from 'react-native-paper';
 import {HeaderContext} from '../prodivers';
 
 interface Props {
@@ -13,6 +13,8 @@ export default function Header({title, subtitle, goBack}: Props) {
   const headerContext = useContext(HeaderContext);
   const [showSearchbar, setShowSearchbar] = useState(false);
 
+  const theme = useTheme();
+
   const handleSearch = headerContext.showSearch
     ? () => setShowSearchbar(true)
     : undefined;
@@ -23,7 +25,7 @@ export default function Header({title, subtitle, goBack}: Props) {
   }, [goBack]);
 
   return (
-    <Appbar.Header>
+    <Appbar.Header style={{backgroundColor: theme.colors.background}}>
       {goBack && !showSearchbar && <Appbar.BackAction onPress={handleGoBack} />}
       {showSearchbar && (
         <Searchbar

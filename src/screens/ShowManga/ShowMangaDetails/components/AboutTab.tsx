@@ -69,7 +69,7 @@ export default function AboutTab() {
     : undefined;
 
   return (
-    <ScrollView style={{flex: 1}}>
+    <ScrollView showsVerticalScrollIndicator={false} style={{flex: 1}}>
       <FastImage
         source={{uri: coverUrl || mangaImage(manga, {size: CoverSize.Medium})}}
         style={{width: '100%', aspectRatio: 2}}

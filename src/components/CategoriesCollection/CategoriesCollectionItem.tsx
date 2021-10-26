@@ -11,7 +11,7 @@ interface Props {
 }
 
 export default function CategoriesCollectionItem({category}: Props) {
-  if (category.ids && category.ids.length === 0) {
+  if (category.ids && category.ids.length === 0 && !category.loading) {
     return null;
   }
 

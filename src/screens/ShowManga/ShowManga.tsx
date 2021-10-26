@@ -4,6 +4,7 @@ import {EntityResponse, Manga} from 'src/api/mangadex/types';
 import {useGetRequest} from 'src/api/utils';
 import {useShowMangaRoute} from 'src/foundation/Navigation';
 import ShowMangaDetails from './ShowMangaDetails';
+import ShowMangaDetailsSkeleton from './ShowMangaDetailsSkeleton';
 
 export default function ShowManga() {
   const route = useShowMangaRoute();
@@ -12,14 +13,10 @@ export default function ShowManga() {
   );
 
   if (loading) {
-    return <Title>Loading...</Title>;
+    return <ShowMangaDetailsSkeleton />;
   }
 
-  if (error || !data || data.result === 'error') {
-    return <Title>Error while fetching manga info</Title>;
-  }
-
-  if (data.result === 'ok') {
+  if (data?.result === 'ok') {
     return <ShowMangaDetails manga={data.data} />;
   }
 
