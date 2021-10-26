@@ -4,7 +4,7 @@ import {Badge, Checkbox, Text} from 'react-native-paper';
 import {useDexifyNavigation} from 'src/foundation/Navigation';
 import {chapterImage, preferredMangaTitle} from '../../api';
 import {Chapter, Manga, PagedResultsList} from '../../api/mangadex/types';
-import {useGetRequest} from '../../api/utils';
+import {useCategoryRequest, useGetRequest} from '../../api/utils';
 import {UIChapterCategory} from '../../categories';
 import Thumbnail from '../../foundation/Thumbnail';
 import CategoriesCollectionSection from './CategoriesCollectionSection';
@@ -16,9 +16,8 @@ export default function ChapterCategoryItem({
   category: UIChapterCategory;
 }) {
   const navigation = useDexifyNavigation();
-  const {data, loading} = useGetRequest<PagedResultsList<Chapter>>(
-    url(category),
-  );
+  const {data, loading} =
+    useCategoryRequest<PagedResultsList<Chapter>>(category);
   const sectionData = data?.result === 'ok' ? data.data : [];
 
   return (

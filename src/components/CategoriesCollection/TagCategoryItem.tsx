@@ -3,16 +3,15 @@ import {View} from 'react-native';
 import {Avatar, Chip, Text} from 'react-native-paper';
 import {chapterImage} from '../../api';
 import {Author, Manga, PagedResultsList} from '../../api/mangadex/types';
-import {useGetRequest} from '../../api/utils';
+import {useCategoryRequest, useGetRequest} from '../../api/utils';
 import {UITagCategory} from '../../categories';
 import Thumbnail from '../../foundation/Thumbnail';
 import CategoriesCollectionSection from './CategoriesCollectionSection';
 import {url} from './utils';
 
 export default function TagCategoryItem({category}: {category: UITagCategory}) {
-  const {data, loading} = useGetRequest<PagedResultsList<Manga.Tag>>(
-    url(category),
-  );
+  const {data, loading} =
+    useCategoryRequest<PagedResultsList<Manga.Tag>>(category);
   const sectionData = data?.result === 'ok' ? data.data : [];
 
   return (

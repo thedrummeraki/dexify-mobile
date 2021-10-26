@@ -36,23 +36,6 @@ export function MainNavigationScreen() {
     );
   }, [statusesResponse.data]);
 
-  useEffect(() => {
-    if (session) {
-      setLoading(currentlyReadingIds !== undefined);
-    } else {
-      setLoading(false);
-    }
-  }, [currentlyReadingIds, session]);
-
-  if (session) {
-    categories.unshift({
-      loading,
-      title: 'Currently reading',
-      type: 'manga',
-      ids: currentlyReadingIds || [],
-    });
-  }
-
   // {
   //   loading,
   //   title: 'Currently reading',

@@ -3,6 +3,7 @@ import {UICategory} from '../../categories';
 import AuthorCategoryItem from './AuthorCategoryItem';
 import ChapterCategoryItem from './ChapterCategoryItem';
 import MangaCategoryItem from './MangaCategoryItem';
+import ReadingStatusCategoryItem from './ReadingStatusCategoryItem';
 import ScanlationGroupCategoryItem from './ScanlationGroupCategoryItem';
 import TagCategoryItem from './TagCategoryItem';
 
@@ -25,6 +26,8 @@ export default function CategoriesCollectionItem({category}: Props) {
     return <TagCategoryItem category={category} />;
   } else if (category.type === 'group') {
     return <ScanlationGroupCategoryItem category={category} />;
+  } else if (category.type === 'status') {
+    return <ReadingStatusCategoryItem category={category} />;
   }
   return null;
 }

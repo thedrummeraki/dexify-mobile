@@ -6,35 +6,17 @@ import {useEffect, useState} from 'react';
 
 export function useHomeCategories(): UICategory[] {
   const session = useSession();
-  const [currentlyReadingIds, setCurrentReadingIds] = useState<string[]>([]);
-
-  const {data, loading} = useGetRequest<{
-    statuses: {
-      [key: string]:
-        | 'reading'
-        | 'on_hold'
-        | 'plan_to_read'
-        | 'dropped'
-        | 're_reading'
-        | 'completed';
-    };
-  }>('https://api.mangadex.org/manga/status?status=reading');
-
-  useEffect(() => {
-    setCurrentReadingIds(
-      Object.entries(data?.statuses || {})
-        .filter(([_, status]) => status === 'reading')
-        .map(([id, _]) => id),
-    );
-  }, [data]);
-
-  console.log('currentlyReadingIds', currentlyReadingIds);
 
   return session ? authenticatedHomeCategories() : unauthenticatedCategories();
 }
 
 function authenticatedHomeCategories(): UICategory[] {
   return [
+    {
+      title: 'Currently reading',
+      type: 'status',
+      url: 'https://api.mangadex.org/manga/status?status=reading',
+    },
     {
       title: 'Your feed',
       type: 'chapter',

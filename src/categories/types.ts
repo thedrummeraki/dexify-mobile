@@ -43,11 +43,24 @@ export type UITagCategory = UIUntypedCategory & {
 export type UIScanlationGroupCategory = UIUntypedCategory & {
   type: 'group';
 };
+export type UIReadingStatusCategory = UIUntypedCategory & {
+  type: 'status';
+  url: string;
+  ids?: undefined;
+  params?: undefined;
+};
 
 export type UICategory =
   | UIMangaCategory
   | UIChapterCategory
   | UIAuthorCategory
   | UITagCategory
-  | UIScanlationGroupCategory;
-export type UICategoryType = 'manga' | 'chapter' | 'author' | 'tag' | 'group';
+  | UIScanlationGroupCategory
+  | UIReadingStatusCategory;
+export type UICategoryType =
+  | 'manga'
+  | 'chapter'
+  | 'author'
+  | 'tag'
+  | 'group'
+  | 'status';

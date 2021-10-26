@@ -1,22 +1,17 @@
 import React from 'react';
-import {View} from 'react-native';
-import {Avatar, Chip, Text} from 'react-native-paper';
-import {chapterImage} from '../../api';
+import {Avatar, Chip} from 'react-native-paper';
 import {Author, PagedResultsList} from '../../api/mangadex/types';
-import {useGetRequest} from '../../api/utils';
+import {useCategoryRequest} from '../../api/utils';
 import {UIAuthorCategory} from '../../categories';
-import Thumbnail from '../../foundation/Thumbnail';
 import CategoriesCollectionSection from './CategoriesCollectionSection';
-import {url} from './utils';
 
 export default function AuthorCategoryItem({
   category,
 }: {
   category: UIAuthorCategory;
 }) {
-  const {data, loading} = useGetRequest<PagedResultsList<Author>>(
-    url(category),
-  );
+  const {data, loading} =
+    useCategoryRequest<PagedResultsList<Author>>(category);
   const sectionData = data?.result === 'ok' ? data.data : [];
 
   return (

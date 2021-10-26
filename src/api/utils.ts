@@ -5,6 +5,8 @@ import axios, {
   AxiosResponse,
 } from 'axios';
 import {useEffect, useState} from 'react';
+import {UICategory} from 'src/categories';
+import {url} from 'src/components/CategoriesCollection/utils';
 import {useSession} from 'src/prodivers';
 
 interface RequestResult<T> {
@@ -124,4 +126,18 @@ export function useGetRequest<T>(url: string): RequestResult<T> {
   }, []);
 
   return {...result};
+}
+
+export function useCategoryRequest<T>(category: UICategory): RequestResult<T> {
+  const [loading, setLoading] = useState(true);
+  const [callback, result] = useLazyGetRequest<T>();
+
+  useEffect(() => {
+    const categoryUrl = url(category);
+    if (categoryUrl) {
+      callback(categoryUrl).finally(() => setLoading(false));
+    }
+  }, [category]);
+
+  return {...result, loading};
 }
