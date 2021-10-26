@@ -11,12 +11,15 @@ import {Banner} from 'src/components';
 import BasicList from 'src/components/BasicList';
 import Thumbnail from 'src/foundation/Thumbnail';
 import {platformIcon, PlatformIcons} from 'src/icons';
+import {useMangaDetails} from '../../ShowMangaDetails';
 
 interface Props {
   manga: Manga;
 }
 
-export default function AnimeDetailsTab({manga}: Props) {
+export default function AnimeDetailsTab() {
+  const {manga} = useMangaDetails();
+
   const title = preferredMangaTitle(manga);
   const [currentAnime, setCurrentAnime] =
     useState<YourAnime.AnimeSearchResult>();

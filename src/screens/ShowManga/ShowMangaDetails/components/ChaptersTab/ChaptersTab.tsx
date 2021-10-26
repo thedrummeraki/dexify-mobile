@@ -23,16 +23,9 @@ import BasicList from 'src/components/BasicList';
 import CategoriesCollectionSection from 'src/components/CategoriesCollection/CategoriesCollectionSection';
 import {useBackgroundColor} from 'src/components/colors';
 import {useDexifyNavigation} from 'src/foundation';
+import {useMangaDetails} from '../../ShowMangaDetails';
 import ChaptersGridLayout from './ChaptersGridLayout';
 import ChaptersImagesLayout from './ChaptersImagesLayout';
-
-interface Props {
-  manga: Manga;
-  loading: boolean;
-  aggregate?: Manga.VolumeAggregateInfo;
-  error?: any;
-  onCoverUrlUpdate: (coverUrl: string) => void;
-}
 
 enum Layout {
   Grid = 'Grid',
@@ -44,13 +37,10 @@ const layoutIcons: {[key in Layout]: string} = {
   [Layout.Images]: 'image',
 };
 
-export default function ChaptersTab({
-  manga,
-  loading,
-  aggregate,
-  error,
-  onCoverUrlUpdate,
-}: Props) {
+export default function ChaptersTab() {
+  const {manga, loading, aggregate, error, onCoverUrlUpdate} =
+    useMangaDetails();
+
   const [showBanner] = useState(true);
   const [layout, setLayout] = useState<Layout>(Layout.Images);
   const [chapters, setChapters] = useState<Chapter[]>([]);
@@ -95,10 +85,6 @@ export default function ChaptersTab({
   }, [currentVolume, covers]);
 
   const chaptersCount = data?.result === 'ok' ? data.total : 0;
-
-  // 1 per line = 1 chapter
-  // 2 per line = 2, 3 and 4 chapters
-  // 4 per line = 5+ chapters
 
   useEffect(() => {
     if (data?.result === 'ok') {
@@ -179,10 +165,6 @@ export default function ChaptersTab({
             selected={item === currentVolume}
             disabled={chaptersLoading || loading}
             style={{
-              flex: 1,
-              alignItems: 'center',
-              justifyContent: 'center',
-              height: 64,
               backgroundColor:
                 item === currentVolume
                   ? selectedVolumeBackgroundColor

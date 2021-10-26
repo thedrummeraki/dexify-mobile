@@ -8,17 +8,16 @@ import {useGetRequest} from 'src/api/utils';
 import BasicList from 'src/components/BasicList';
 import {useDexifyNavigation} from 'src/foundation';
 import Thumbnail from 'src/foundation/Thumbnail';
-
-interface Props {
-  manga: Manga;
-}
+import {useMangaDetails} from '../ShowMangaDetails';
 
 enum SortRule {
   Asc = -1,
   Desc = 1,
 }
 
-export default function GalleryTab({manga}: Props) {
+export default function GalleryTab() {
+  const {manga} = useMangaDetails();
+
   const navigation = useDexifyNavigation();
   const {data, loading, error} = useGetRequest<PagedResultsList<CoverArt>>(
     `https://api.mangadex.org/cover?manga[]=${manga.id}&limit=100`,

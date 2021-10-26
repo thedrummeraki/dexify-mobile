@@ -23,15 +23,11 @@ import {
 import {Artist, Author, Manga} from 'src/api/mangadex/types';
 import {ChipsContainer, TextBadge} from 'src/components';
 import {useDexifyNavigation} from 'src/foundation';
+import {useMangaDetails} from '../ShowMangaDetails';
 
-interface Props {
-  manga: Manga;
-  loading: boolean;
-  aggregate?: Manga.VolumeAggregateInfo;
-  coverUrl?: string;
-}
+export default function AboutTab() {
+  const {manga, loading, aggregate, coverUrl} = useMangaDetails();
 
-export default function AboutTab({manga, loading, aggregate, coverUrl}: Props) {
   const navigation = useDexifyNavigation();
   const initialTrim = useRef(false);
 
