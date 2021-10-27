@@ -1,5 +1,5 @@
-import React, {useEffect, useState} from 'react';
-import {ScrollView, View} from 'react-native';
+import React, {useContext, useEffect, useState} from 'react';
+import {ImageBackground, ScrollView, View} from 'react-native';
 import {
   ActivityIndicator,
   Button,
@@ -11,18 +11,11 @@ import {
   Title,
 } from 'react-native-paper';
 import {coverImage} from 'src/api';
-import {
-  Manga,
-  PagedResultsList,
-  Chapter,
-  CoverArt,
-} from 'src/api/mangadex/types';
-import {useGetRequest, useLazyGetRequest} from 'src/api/utils';
+import {PagedResultsList, Chapter, CoverArt} from 'src/api/mangadex/types';
+import {useLazyGetRequest} from 'src/api/utils';
 import {Banner} from 'src/components';
-import BasicList from 'src/components/BasicList';
 import CategoriesCollectionSection from 'src/components/CategoriesCollection/CategoriesCollectionSection';
 import {useBackgroundColor} from 'src/components/colors';
-import {useDexifyNavigation} from 'src/foundation';
 import {useMangaDetails} from '../../ShowMangaDetails';
 import ChaptersGridLayout from './ChaptersGridLayout';
 import ChaptersImagesLayout from './ChaptersImagesLayout';
@@ -38,7 +31,7 @@ const layoutIcons: {[key in Layout]: string} = {
 };
 
 export default function ChaptersTab() {
-  const {manga, loading, aggregate, error, onCoverUrlUpdate} =
+  const {manga, loading, aggregate, error, coverUrl, onCoverUrlUpdate} =
     useMangaDetails();
 
   const [showBanner] = useState(true);
@@ -126,81 +119,101 @@ export default function ChaptersTab() {
   }
 
   return (
-    <ScrollView style={{flex: 1}}>
-      <Banner
-        visible={showBanner}
-        background="accent"
-        title="Support the manga industry"
-        body="If you enjoy reading this manga, consider buying from the official publisher."
-        // primaryAction={{
-        //   content: 'Learn more',
-        //   onAction: () => console.log('yee!!...?'),
-        // }}
-        // onDismiss={() => setShowBanner(false)}
-      />
-      <CategoriesCollectionSection
-        horizontal
-        data={[Layout.Images, Layout.Grid]}
-        renderItem={item => (
-          <Chip
-            disabled={chaptersLoading}
-            selected={layout === item}
-            icon={layoutIcons[item]}
-            style={{
-              backgroundColor:
-                layout === item ? selectedLayoutBackgroundColor : undefined,
-            }}
-            onPress={() => setLayout(item)}>
-            {item}
-          </Chip>
-        )}
-      />
-      <CategoriesCollectionSection
-        horizontal
-        data={volumes}
-        renderItem={item => (
-          <Chip
-            selected={item === currentVolume}
-            disabled={chaptersLoading || loading}
-            style={{
-              backgroundColor:
-                item === currentVolume
-                  ? selectedVolumeBackgroundColor
-                  : undefined,
-            }}
-            onPress={() => {
-              setCurrentVolume(item);
-            }}>
-            Volume {item}
-          </Chip>
-        )}
-      />
-
-      <View style={{paddingHorizontal: 5}}>
-        {chaptersLoading ? (
-          <Subheading>Loading chapters</Subheading>
-        ) : (
-          <Subheading>
-            {chaptersCount} chapter{chaptersCount === 1 ? '' : 's'}
-          </Subheading>
-        )}
+    <View style={{flex: 1}}>
+      <View
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+        }}>
+        <ImageBackground
+          source={{uri: coverUrl}}
+          resizeMode="cover"
+          style={{
+            flex: 1,
+            justifyContent: 'center',
+            opacity: 0.175,
+          }}
+        />
       </View>
-
-      {layout === Layout.Grid && (
-        <ChaptersGridLayout
-          loading={chaptersLoading}
-          count={chaptersCount}
-          chapters={chapters}
+      <ScrollView style={{flex: 1}}>
+        <Banner
+          visible={showBanner}
+          background="accent"
+          title="Support the manga industry"
+          body="If you enjoy reading this manga, consider buying from the official publisher."
+          // primaryAction={{
+          //   content: 'Learn more',
+          //   onAction: () => console.log('yee!!...?'),
+          // }}
+          // onDismiss={() => setShowBanner(false)}
         />
-      )}
-
-      {layout === Layout.Images && (
-        <ChaptersImagesLayout
-          loading={chaptersLoading}
-          count={chaptersCount}
-          chapters={chapters}
+        <CategoriesCollectionSection
+          horizontal
+          data={[Layout.Images, Layout.Grid]}
+          renderItem={item => (
+            <Chip
+              disabled={chaptersLoading}
+              selected={layout === item}
+              icon={layoutIcons[item]}
+              style={{
+                backgroundColor:
+                  layout === item ? selectedLayoutBackgroundColor : undefined,
+              }}
+              onPress={() => setLayout(item)}>
+              {item}
+            </Chip>
+          )}
         />
-      )}
-    </ScrollView>
+        <CategoriesCollectionSection
+          horizontal
+          data={volumes}
+          renderItem={item => (
+            <Chip
+              selected={item === currentVolume}
+              disabled={chaptersLoading || loading}
+              style={{
+                backgroundColor:
+                  item === currentVolume
+                    ? selectedVolumeBackgroundColor
+                    : undefined,
+              }}
+              onPress={() => {
+                setCurrentVolume(item);
+              }}>
+              Volume {item}
+            </Chip>
+          )}
+        />
+
+        <View style={{paddingHorizontal: 5}}>
+          {chaptersLoading ? (
+            <Subheading>Loading chapters</Subheading>
+          ) : (
+            <Subheading>
+              {chaptersCount} chapter{chaptersCount === 1 ? '' : 's'}
+            </Subheading>
+          )}
+        </View>
+
+        {layout === Layout.Grid && (
+          <ChaptersGridLayout
+            loading={chaptersLoading}
+            count={chaptersCount}
+            chapters={chapters}
+          />
+        )}
+
+        {layout === Layout.Images && (
+          <ChaptersImagesLayout
+            loading={chaptersLoading}
+            count={chaptersCount}
+            chapters={chapters}
+          />
+        )}
+      </ScrollView>
+    </View>
   );
 }

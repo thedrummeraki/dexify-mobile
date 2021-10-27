@@ -62,25 +62,6 @@ export default function ShowMangaDetails({manga}: Props) {
       coverUrl={coverUrl}
       onCoverUrlUpdate={setCoverUrl}>
       <View style={{flex: 1}}>
-        <View
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-          }}>
-          <ImageBackground
-            source={{uri: coverUrl}}
-            resizeMode="cover"
-            style={{
-              flex: 1,
-              justifyContent: 'center',
-              opacity: 0.175,
-            }}
-          />
-        </View>
-
         <Tab.Navigator
           screenOptions={{
             swipeEnabled: false,
