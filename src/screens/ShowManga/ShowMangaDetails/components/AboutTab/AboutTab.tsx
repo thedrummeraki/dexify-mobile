@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useRef, useState} from 'react';
-import {ScrollView, View} from 'react-native';
+import {ScrollView, View, ViewStyle} from 'react-native';
 import FastImage from 'react-native-fast-image';
 import {
   Button,
@@ -20,15 +20,22 @@ import {
   preferredMangaTitle,
   preferredTitle,
 } from 'src/api';
-import {Artist, Author, Manga} from 'src/api/mangadex/types';
+import {
+  Artist,
+  Author,
+  Manga,
+  ReadingStatusResponse,
+} from 'src/api/mangadex/types';
+import {useGetRequest} from 'src/api/utils';
 import {ChipsContainer, TextBadge} from 'src/components';
 import {useDexifyNavigation} from 'src/foundation';
-import {useMangaDetails} from '../ShowMangaDetails';
+import {useMangaDetails} from '../../ShowMangaDetails';
+import LibraryButton from './LibraryButton';
+import StartReadingButton from './StartReadingButton';
 
 export default function AboutTab() {
-  const {manga, loading, aggregate, coverUrl} = useMangaDetails();
+  const {manga, coverUrl} = useMangaDetails();
 
-  const navigation = useDexifyNavigation();
   const initialTrim = useRef(false);
 
   const authors = findRelationships<Author>(manga, 'author');
@@ -52,17 +59,6 @@ export default function AboutTab() {
     title => Object.entries(title).map(([_, value]) => value)[0],
   );
   const description = preferredMangaDescription(manga)?.trim();
-  const aggregateEntries = Object.entries(aggregate || {});
-  const chapterToRead =
-    aggregateEntries.length > 0
-      ? Object.entries(aggregateEntries[0][1].chapters)[0][1]
-      : null;
-
-  const readFirstChapter = useCallback(() => {
-    if (chapterToRead) {
-      navigation.navigate('ShowChapter', {id: chapterToRead.id});
-    }
-  }, [chapterToRead]);
 
   const contentRating = manga.attributes.contentRating
     ? contentRatingInfo(manga.attributes.contentRating)
@@ -103,23 +99,8 @@ export default function AboutTab() {
           </View>
         </View>
         <View style={{flex: 1, marginTop: 22, marginBottom: 12}}>
-          {loading && (
-            <Button loading mode="contained" style={{marginVertical: 3}}>
-              {''}
-            </Button>
-          )}
-          {!loading && chapterToRead && (
-            <Button
-              icon="play"
-              mode="contained"
-              style={{marginVertical: 3}}
-              onPress={readFirstChapter}>
-              Start reading now
-            </Button>
-          )}
-          <Button icon="plus" mode="outlined" style={{marginVertical: 3}}>
-            Add to library
-          </Button>
+          <StartReadingButton mode="contained" />
+          <LibraryButton mode="outlined" style={{marginVertical: 3}} />
         </View>
         <View
           style={{

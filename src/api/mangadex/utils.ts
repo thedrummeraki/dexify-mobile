@@ -6,6 +6,7 @@ import {
   Manga,
   PossibleRelationship,
   PossibleRelationshipTypes,
+  ReadingStatus,
   Relationship,
   Title,
 } from './types';
@@ -146,5 +147,24 @@ export function contentRatingInfo(contentRating: ContentRating): {
       };
     case ContentRating.pornographic:
       return {content: 'Hentai (18+)', background: 'error', icon: 'alert'};
+  }
+}
+
+export function readingStatusInfo(readingStatus: ReadingStatus): {
+  content: string;
+} {
+  switch (readingStatus) {
+    case ReadingStatus.Completed:
+      return {content: 'Completed'};
+    case ReadingStatus.Dropped:
+      return {content: 'Dropped'};
+    case ReadingStatus.OnHold:
+      return {content: 'On Hold'};
+    case ReadingStatus.PlanToRead:
+      return {content: 'Plan to read'};
+    case ReadingStatus.ReReading:
+      return {content: 'Re-reading'};
+    case ReadingStatus.Reading:
+      return {content: 'Reading'};
   }
 }

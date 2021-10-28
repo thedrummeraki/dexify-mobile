@@ -68,7 +68,7 @@ function AboutSkeleton() {
           <TextBadge content="Please" background="accent" />
           <TextBadge content="wait..." background="disabled" />
         </View>
-        <View style={{flex: 1, marginTop: 22, marginBottom: 12}}>
+        {/* <View style={{flex: 1, marginTop: 22, marginBottom: 12}}>
           <Button loading mode="contained" style={{marginVertical: 3}}>
             {''}
           </Button>
@@ -90,7 +90,7 @@ function AboutSkeleton() {
           }}>
           <Text style={{marginRight: 6}}>Made by:</Text>
           <TextBadge content="Yours Truly" background="surface" />
-        </View>
+        </View> */}
       </View>
     </ScrollView>
   );

@@ -28,11 +28,15 @@ export default function GalleryTab() {
     return <ActivityIndicator size="large" style={{flex: 1}} />;
   }
 
-  if (error || !data || data.result === 'error') {
+  if (error || data?.result === 'error') {
     console.error(
       error || (data?.result === 'error' ? data.errors : 'unknown error'),
     );
     return <Text>We couldn't fetch covers for this manga</Text>;
+  }
+
+  if (!data) {
+    return null;
   }
 
   const sortedCovers = data.data.sort((left, right) => {

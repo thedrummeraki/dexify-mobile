@@ -1,4 +1,4 @@
-import {CoverArt, ScanlationGroup} from '.';
+import {CoverArt, MangadexError, ScanlationGroup} from '.';
 import {Order, Relationship} from './api';
 import {Author} from './author';
 import {Maybe} from './utils';
@@ -126,6 +126,32 @@ export enum TagMode {
   AND = 'AND',
   OR = 'OR',
 }
+
+export enum ReadingStatus {
+  Reading = 'reading',
+  OnHold = 'on_hold',
+  PlanToRead = 'plan_to_read',
+  Dropped = 'dropped',
+  ReReading = 're_reading',
+  Completed = 'completed',
+}
+
+interface BasicReadingStatusResponse {
+  result: 'ok' | 'error';
+}
+
+interface ErrorReadingStatusResponse extends BasicReadingStatusResponse {
+  result: 'error';
+  errors: MangadexError[];
+}
+
+interface SuccessReadingStatusResponse extends BasicReadingStatusResponse {
+  status: ReadingStatus;
+}
+
+export type ReadingStatusResponse =
+  | ErrorReadingStatusResponse
+  | SuccessReadingStatusResponse;
 
 export interface SearchState {
   title: string;

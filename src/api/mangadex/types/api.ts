@@ -9,7 +9,7 @@ export function defaultPagedResults<T>() {
   };
 }
 
-interface MangaDexError {
+export interface MangadexError {
   id: string;
   status: number;
   title: string;
@@ -31,7 +31,7 @@ interface SuccessPagedResults<T> extends BasicResultsResponse {
 
 interface ErrorResponse extends BasicResultsResponse {
   result: 'error';
-  errors: Array<MangaDexError>;
+  errors: Array<MangadexError>;
 }
 
 export type PagedResultsList<T> = SuccessPagedResults<T> | ErrorResponse;
@@ -42,7 +42,7 @@ interface SuccessActionResult {
 
 interface ErrorActionResult {
   result: 'error';
-  errors: Array<MangaDexError>;
+  errors: Array<MangadexError>;
 }
 
 export type ActionResult = SuccessActionResult | ErrorActionResult;

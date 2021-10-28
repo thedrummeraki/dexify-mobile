@@ -35,7 +35,7 @@ export default function ChaptersTab() {
     useMangaDetails();
 
   const [showBanner] = useState(true);
-  const [layout, setLayout] = useState<Layout>(Layout.Images);
+  const [layout, setLayout] = useState<Layout>(Layout.Grid);
   const [chapters, setChapters] = useState<Chapter[]>([]);
   const [currentVolume, setCurrentVolume] = useState<string>();
   const [covers, setCovers] = useState<CoverArt[]>([]);
@@ -152,7 +152,7 @@ export default function ChaptersTab() {
         />
         <CategoriesCollectionSection
           horizontal
-          data={[Layout.Images, Layout.Grid]}
+          data={[Layout.Grid, Layout.Images]}
           renderItem={item => (
             <Chip
               disabled={chaptersLoading}
