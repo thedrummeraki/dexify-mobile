@@ -1,8 +1,6 @@
 import {UICategory} from './types';
 import {airingMangas} from 'src/api/mangadex';
 import {useSession} from 'src/prodivers';
-import {useGetRequest} from 'src/api/utils';
-import {useEffect, useState} from 'react';
 
 export function useHomeCategories(): UICategory[] {
   const session = useSession();
@@ -12,11 +10,6 @@ export function useHomeCategories(): UICategory[] {
 
 function authenticatedHomeCategories(): UICategory[] {
   return [
-    {
-      title: 'Currently reading',
-      type: 'status',
-      url: 'https://api.mangadex.org/manga/status?status=reading',
-    },
     {
       title: 'Your feed',
       type: 'chapter',

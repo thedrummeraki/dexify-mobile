@@ -29,12 +29,13 @@ import {
 import {useGetRequest} from 'src/api/utils';
 import {ChipsContainer, TextBadge} from 'src/components';
 import {useDexifyNavigation} from 'src/foundation';
+import { isNumber } from 'src/utils';
 import {useMangaDetails} from '../../ShowMangaDetails';
 import LibraryButton from './LibraryButton';
 import StartReadingButton from './StartReadingButton';
 
 export default function AboutTab() {
-  const {manga, coverUrl} = useMangaDetails();
+  const {manga, aggregate, coverUrl} = useMangaDetails();
 
   const initialTrim = useRef(false);
 
@@ -63,6 +64,11 @@ export default function AboutTab() {
   const contentRating = manga.attributes.contentRating
     ? contentRatingInfo(manga.attributes.contentRating)
     : undefined;
+
+  const aggregateEntries = Object.entries(aggregate || {});
+  const volumes = aggregateEntries.map(([volume, _]) => volume);
+  console.log('volumes', volumes.filter(isNumber).map(parseFloat).sort())
+  const volumesCountText = volumes.length === 1 ? '1 volume' : `${volumes.length} volumes`
 
   return (
     <ScrollView showsVerticalScrollIndicator={false} style={{flex: 1}}>
@@ -93,6 +99,7 @@ export default function AboutTab() {
                 background="disabled"
               />
             )}
+            {aggregate && <TextBadge content={volumesCountText} background='notification' />}
             {manga.attributes.year && (
               <TextBadge content={manga.attributes.year} />
             )}

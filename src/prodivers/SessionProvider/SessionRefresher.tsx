@@ -103,33 +103,33 @@ export function useUpdatedSession() {
         return;
       }
 
-      if (checkSessionValidity(refresh)) {
-        try {
-          const response = await post('https://api.mangadex.org/auth/refresh', {
-            token: refresh.value,
+      if (!checkSessionValidity(refresh)) {
+        return null;
+      }
+
+      try {
+        const response = await post('https://api.mangadex.org/auth/refresh', {
+          token: refresh.value,
+        });
+
+        if (response?.result === 'ok') {
+          setSession({
+            ...tokenToUpdate,
+            refresh: {
+              value: response.token.refresh,
+              validUntil: new Date(
+                new Date().getTime() + 30 * 24 * 60 * 60 * 1000,
+              ),
+            },
+            session: {
+              value: response.token.session,
+              validUntil: new Date(new Date().getTime() + 14 * 60 * 1000),
+            },
           });
-
-          if (response?.result === 'ok') {
-            setSession({
-              ...tokenToUpdate,
-              refresh: {
-                value: response.token.refresh,
-                validUntil: new Date(
-                  new Date().getTime() + 30 * 24 * 60 * 60 * 1000,
-                ),
-              },
-              session: {
-                value: response.token.session,
-                validUntil: new Date(new Date().getTime() + 14 * 60 * 1000),
-              },
-            });
-          }
-
-          return response || null;
-        } catch (error) {
-          return null;
         }
-      } else {
+
+        return response || null;
+      } catch (error) {
         return null;
       }
     },

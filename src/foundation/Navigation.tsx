@@ -6,7 +6,7 @@ import {
 import {Home, ShowChapter, ShowManga, ShowMangaGallery} from 'src/screens';
 import {RouteProp, useNavigation, useRoute} from '@react-navigation/core';
 import {Header} from '.';
-import {HeaderContext} from 'src/prodivers';
+import {HeaderContext, useUpdatedSession} from 'src/prodivers';
 
 type RootStackParamList = {
   Home: undefined;
@@ -24,6 +24,8 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function Navigation() {
   const headerContext = useContext(HeaderContext);
+  const {refreshToken} = useUpdatedSession();
+
 
   return (
     <Stack.Navigator
@@ -44,6 +46,9 @@ export default function Navigation() {
             title: '',
             hideHeader: true,
           })),
+        focus: () => {
+          refreshToken()
+        }
       }}>
       <Stack.Screen
         name="Home"
@@ -53,7 +58,7 @@ export default function Navigation() {
       <Stack.Screen
         name="ShowManga"
         component={ShowManga}
-        options={{title: ' '}} // little hack to avoid showing "ShowManga"
+        options={{headerShown: false}} // little hack to avoid showing "ShowManga"
       />
       <Stack.Screen
         name="ShowMangaGallery"

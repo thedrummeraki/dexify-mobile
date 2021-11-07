@@ -90,3 +90,7 @@ function editDistance(s1: string, s2: string) {
   }
   return costs[s2.length];
 }
+
+export function isNumber(string: string) {
+  return !isNaN(parseFloat(string))
+}

@@ -183,7 +183,7 @@ export default function ChaptersTab() {
               onPress={() => {
                 setCurrentVolume(item);
               }}>
-              Volume {item}
+              {item === 'none' ? 'Last volume' : `Volume ${item}`}
             </Chip>
           )}
         />
