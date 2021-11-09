@@ -5,6 +5,7 @@ import {
   BrowseNavigationScreen,
   LoginNavigationScreen,
   MainNavigationScreen,
+  MyLibraryNavigationScreen,
   MyProfileNavigationScreen,
 } from './screens';
 
@@ -24,12 +25,14 @@ function AuthenticatedBottomNavigation() {
   const [routes] = useState([
     {key: 'main', title: 'Home', icon: 'home'},
     {key: 'browse', title: 'Browse...', icon: 'magnify'},
+    {key: 'library', title: 'Library', icon: 'library-shelves'},
     {key: 'profile', title: 'My profile', icon: 'account'},
   ]);
 
   const renderScene = BottomNavigation.SceneMap({
     main: MainNavigationScreen,
     browse: BrowseNavigationScreen,
+    library: MyLibraryNavigationScreen,
     profile: MyProfileNavigationScreen,
   });
 

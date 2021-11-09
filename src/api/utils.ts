@@ -78,6 +78,7 @@ export function usePostRequest<T, Body = any>(
 export function useLazyGetRequest<T>(
   hookUrl?: string,
 ): [(url?: string) => Promise<T | undefined>, RequestResult<T>] {
+  const session = useSession();
   const [data, setData] = useState<T>();
   const [response, setResponse] = useState<AxiosResponse<T>>();
   const [loading, setLoading] = useState(false);
@@ -93,7 +94,9 @@ export function useLazyGetRequest<T>(
       );
     }
 
-    console.log('[GET]', url, 'config', config);
+    const method = session ? '[GET]' : '[?GET]';
+    console.log(method, url);
+
     setLoading(true);
     setError(undefined);
     setData(undefined);

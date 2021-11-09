@@ -153,6 +153,18 @@ export type ReadingStatusResponse =
   | ErrorReadingStatusResponse
   | SuccessReadingStatusResponse;
 
+export interface AllReadingStatusResponse {
+  statuses: {
+    [key: string]:
+      | 'reading'
+      | 'on_hold'
+      | 'plan_to_read'
+      | 'dropped'
+      | 're_reading'
+      | 'completed';
+  };
+}
+
 export interface SearchState {
   title: string;
   artists: string[];

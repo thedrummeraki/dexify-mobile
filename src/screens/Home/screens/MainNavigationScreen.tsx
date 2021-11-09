@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {View} from 'react-native';
+import {AllReadingStatusResponse} from 'src/api/mangadex/types';
 import {useGetRequest, useLazyGetRequest} from 'src/api/utils';
 import CategoriesCollectionSection from 'src/components/CategoriesCollection/CategoriesCollectionSection';
 import {useSession} from 'src/prodivers';
@@ -12,17 +13,10 @@ export function MainNavigationScreen() {
   const [loading, setLoading] = useState(true);
 
   const [currentlyReadingIds, setCurrentReadingIds] = useState<string[]>();
-  const [getStatuses, statusesResponse] = useLazyGetRequest<{
-    statuses: {
-      [key: string]:
-        | 'reading'
-        | 'on_hold'
-        | 'plan_to_read'
-        | 'dropped'
-        | 're_reading'
-        | 'completed';
-    };
-  }>('https://api.mangadex.org/manga/status?status=reading');
+  const [getStatuses, statusesResponse] =
+    useLazyGetRequest<AllReadingStatusResponse>(
+      'https://api.mangadex.org/manga/status?status=reading',
+    );
 
   useEffect(() => {
     getStatuses();

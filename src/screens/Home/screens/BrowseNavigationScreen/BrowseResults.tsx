@@ -7,7 +7,7 @@ import {useLazyGetRequest} from 'src/api/utils';
 import BasicList from 'src/components/BasicList';
 import CategoriesCollectionItem from 'src/components/CategoriesCollection/CategoriesCollectionItem';
 import {useDexifyNavigation} from 'src/foundation/Navigation';
-import Thumbnail from 'src/foundation/Thumbnail';
+import Thumbnail, {ThumbnailSkeleton} from 'src/foundation/Thumbnail';
 import {useScreenOrientation} from 'src/utils';
 
 interface Props {
@@ -93,15 +93,8 @@ export default function BrowseResults({query}: Props) {
           }
         }}>
         <View>
-          <View style={{flex: 1, flexDirection: 'row', paddingHorizontal: 20}}>
-            {loading && (
-              <ActivityIndicator
-                size="small"
-                style={{flexShrink: 1, marginRight: 5}}
-              />
-            )}
-          </View>
           <BasicList
+            loading={loading}
             data={results}
             aspectRatio={orientation === 'portrait' ? 1 / 3 : 0.25}
             renderItem={manga => (
@@ -113,6 +106,9 @@ export default function BrowseResults({query}: Props) {
                 onPress={() => navigation.navigate('ShowManga', {id: manga.id})}
               />
             )}
+            skeletonItem={
+              <ThumbnailSkeleton width="100%" height="100%" aspectRatio={0.8} />
+            }
           />
         </View>
       </ScrollView>

@@ -4,8 +4,20 @@ import {Text} from 'react-native-paper';
 import {useBrowseCategories} from 'src/categories';
 import {CategoriesCollection} from 'src/components';
 
-export default function BrowseDefaultState() {
+interface Props {
+  showSearchHistory?: boolean;
+}
+
+export default function BrowseDefaultState({showSearchHistory}: Props) {
   const categories = useBrowseCategories();
+
+  if (showSearchHistory) {
+    return (
+      <View>
+        <Text>Search history...</Text>
+      </View>
+    );
+  }
 
   return (
     <View>

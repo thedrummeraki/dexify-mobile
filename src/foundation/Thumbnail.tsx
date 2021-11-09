@@ -1,6 +1,12 @@
 import React, {PropsWithChildren} from 'react';
-import {View, TouchableNativeFeedback, Image} from 'react-native';
-import {Caption} from 'react-native-paper';
+import {
+  View,
+  TouchableNativeFeedback,
+  Image,
+  StyleProp,
+  TextStyle,
+} from 'react-native';
+import {Badge, Caption, useTheme} from 'react-native-paper';
 import SkeletonContent from 'react-native-skeleton-content-nonexpo';
 
 interface DimensionsProps {
@@ -75,13 +81,35 @@ function MaybeTouchableNativeFeedback({
   }
 }
 
-export function ThumbnailSkeleton({width, height}: DimensionsProps) {
+export function ThumbnailSkeleton({
+  width,
+  height,
+  aspectRatio,
+}: DimensionsProps) {
+  const theme = useTheme();
+
   return (
     <SkeletonContent
       isLoading
-      containerStyle={{width, height}}
+      containerStyle={{width, height, aspectRatio, flex: 1}}
       animationDirection="horizontalRight"
       layout={[{key: 'image', width, height}]}
+      boneColor="#222"
+      highlightColor="#333333"
     />
   );
+}
+
+export function ThumbnailBadge({
+  children,
+  badgeStyle,
+}: {
+  children?: React.ReactText;
+  badgeStyle?: StyleProp<TextStyle>;
+}) {
+  const style = Object.assign(
+    {borderRadius: 0, borderBottomRightRadius: 7},
+    badgeStyle,
+  );
+  return <Badge style={style}>{children}</Badge>;
 }

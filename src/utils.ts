@@ -92,5 +92,16 @@ function editDistance(s1: string, s2: string) {
 }
 
 export function isNumber(string: string) {
-  return !isNaN(parseFloat(string))
+  return !isNaN(parseFloat(string));
+}
+
+export function occurences<T>(array: T[], value: T) {
+  let count = 0;
+  array.forEach(actual => {
+    if (actual === value) {
+      count += 1;
+    }
+  });
+
+  return count;
 }
