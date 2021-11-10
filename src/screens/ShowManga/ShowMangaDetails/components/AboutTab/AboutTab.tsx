@@ -69,7 +69,6 @@ export default function AboutTab() {
 
   const aggregateEntries = Object.entries(aggregate || {});
   const volumes = aggregateEntries.map(([volume, _]) => volume);
-  console.log('volumes', volumes.filter(isNumber).map(parseFloat).sort());
   const volumesCountText =
     volumes.length === 1 ? '1 volume' : `${volumes.length} volumes`;
 

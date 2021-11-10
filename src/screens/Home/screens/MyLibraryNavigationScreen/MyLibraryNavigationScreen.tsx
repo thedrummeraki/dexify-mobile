@@ -37,7 +37,6 @@ export default function MyLibraryNavigationScreen() {
     useState<ReadingStatus>(ReadingStatus.Reading);
 
   const heheYeaBoi = useLibraryMangaIds();
-  console.log('heheYeaBoi', heheYeaBoi);
 
   const [searchInput, setSearchInput] = useState<string>('');
   const [manga, setManga] = useState<Manga[]>([]);
@@ -73,12 +72,6 @@ export default function MyLibraryNavigationScreen() {
 
   useEffect(() => {
     if (data?.statuses) {
-      console.log(
-        'data',
-        Object.entries(data.statuses).filter(
-          ([_, info]) => info === selectedReadingStatus,
-        ),
-      );
       const mangaIds = Object.entries(data.statuses)
         .filter(([_, info]) => info === selectedReadingStatus)
         .map(([mangaId]) => mangaId);

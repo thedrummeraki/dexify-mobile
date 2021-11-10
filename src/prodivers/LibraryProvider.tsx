@@ -76,8 +76,6 @@ export default function LibraryProvider({children}: PropsWithChildren<{}>) {
       'https://api.mangadex.org/manga/status',
     );
 
-  console.log('ERROR', error);
-
   const [postReadingStatus, {loading: updating}] =
     usePostRequest<ReadingStatusUpdateResponse>();
 

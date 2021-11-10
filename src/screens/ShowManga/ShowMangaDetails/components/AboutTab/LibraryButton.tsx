@@ -1,9 +1,8 @@
 import React, {useState} from 'react';
-import {View, ViewStyle} from 'react-native';
+import {View} from 'react-native';
 import {Button, Chip} from 'react-native-paper';
 import {readingStatusInfo} from 'src/api';
-import {ReadingStatus, ReadingStatusResponse} from 'src/api/mangadex/types';
-import {useGetRequest} from 'src/api/utils';
+import {ReadingStatus} from 'src/api/mangadex/types';
 import CategoriesCollectionSection from 'src/components/CategoriesCollection/CategoriesCollectionSection';
 import {useBackgroundColor} from 'src/components/colors';
 import {useLibraryContext, useLibraryStatus, useSession} from 'src/prodivers';
@@ -11,9 +10,9 @@ import {usePossibleReadingStatuses} from 'src/screens/Home/screens/MyLibraryNavi
 import {useMangaDetails} from '../../ShowMangaDetails';
 
 type ButtonProps = React.ComponentProps<typeof Button>;
-type Props = Omit<ButtonProps, 'children' | 'style'>;
+type Props = Omit<ButtonProps, 'children'>;
 
-export default function LibraryButton({...props}: Props) {
+export default function LibraryButton({style, ...props}: Props) {
   const {manga} = useMangaDetails();
   const session = useSession();
   const readingStatus = useLibraryStatus(manga);
@@ -30,7 +29,7 @@ export default function LibraryButton({...props}: Props) {
   const {content} = readingStatusInfo(readingStatus);
 
   return (
-    <View>
+    <View style={style}>
       <Button icon="plus" {...props} style={{marginBottom: -5}}>
         {content}
       </Button>
