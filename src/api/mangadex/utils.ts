@@ -150,8 +150,9 @@ export function contentRatingInfo(contentRating: ContentRating): {
   }
 }
 
-export function readingStatusInfo(readingStatus: ReadingStatus): {
+export function readingStatusInfo(readingStatus?: ReadingStatus | null): {
   content: string;
+  default?: boolean;
 } {
   switch (readingStatus) {
     case ReadingStatus.Completed:
@@ -166,5 +167,7 @@ export function readingStatusInfo(readingStatus: ReadingStatus): {
       return {content: 'Re-reading'};
     case ReadingStatus.Reading:
       return {content: 'Reading'};
+    default:
+      return {content: 'Add to library', default: true};
   }
 }

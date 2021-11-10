@@ -5,8 +5,12 @@ import {
   DefaultTheme,
 } from '@react-navigation/native';
 import {Provider as PaperProvider} from 'react-native-paper';
-import {ApolloClient, InMemoryCache, ApolloProvider} from '@apollo/client';
-import {GraphQLProvider, HeaderProvider, SessionProvider} from './prodivers';
+import {
+  GraphQLProvider,
+  HeaderProvider,
+  LibraryProvider,
+  SessionProvider,
+} from './prodivers';
 import {Navigation} from './foundation';
 import {useColorScheme} from 'react-native';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
@@ -21,9 +25,11 @@ export default function App() {
         <GraphQLProvider>
           <GestureHandlerRootView style={{flex: 1}}>
             <HeaderProvider>
-              <NavigationContainer theme={theme}>
-                <Navigation />
-              </NavigationContainer>
+              <LibraryProvider>
+                <NavigationContainer theme={theme}>
+                  <Navigation />
+                </NavigationContainer>
+              </LibraryProvider>
             </HeaderProvider>
           </GestureHandlerRootView>
         </GraphQLProvider>

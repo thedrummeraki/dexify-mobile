@@ -9,11 +9,10 @@ import {
 import {Badge, Caption, useTheme} from 'react-native-paper';
 import SkeletonContent from 'react-native-skeleton-content-nonexpo';
 
-interface DimensionsProps {
+export interface ThumbnailDimensionsProps {
   width: number | string;
   height?: number | string;
   aspectRatio?: number;
-  showTitle?: boolean;
 }
 
 interface Props {
@@ -37,7 +36,7 @@ export default function Thumbnail({
   BottomComponent,
   onPress,
   onLongPress,
-}: Props & DimensionsProps) {
+}: Props & ThumbnailDimensionsProps) {
   return (
     <View style={{width, flex: 1, flexDirection: 'column'}}>
       <MaybeTouchableNativeFeedback onLongPress={onLongPress} onPress={onPress}>
@@ -85,7 +84,7 @@ export function ThumbnailSkeleton({
   width,
   height,
   aspectRatio,
-}: DimensionsProps) {
+}: ThumbnailDimensionsProps) {
   const theme = useTheme();
 
   return (

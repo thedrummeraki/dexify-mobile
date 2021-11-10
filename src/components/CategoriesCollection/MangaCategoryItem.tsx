@@ -12,6 +12,7 @@ import {
 } from '../../api/utils';
 import {UIMangaCategory} from '../../categories';
 import Thumbnail from '../../foundation/Thumbnail';
+import MangaThumbnail from '../MangaThumbnail';
 import CategoriesCollectionSection from './CategoriesCollectionSection';
 import {url} from './utils';
 
@@ -37,14 +38,13 @@ export default function MangaCategoryItem({
       data={sectionData}
       dimensions={{width: 120, height: 160}}
       renderItem={(item, dimensions) => (
-        <Thumbnail
-          key={item.id}
-          imageUrl={mangaImage(item) || '/'}
-          title={preferredMangaTitle(item)}
+        <MangaThumbnail
+          showReadingStatus
+          manga={item}
+          aspectRatio={0.75}
           hideTitle={category.hideTitle}
           width={dimensions.size || dimensions.width!}
           height={dimensions.size || dimensions.height!}
-          onPress={() => navigation.navigate('ShowManga', {id: item.id})}
         />
       )}
     />

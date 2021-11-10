@@ -19,10 +19,15 @@ import {useGetRequest, useLazyGetRequest} from 'src/api/utils';
 import {UIMangaCategory} from 'src/categories';
 import BasicList from 'src/components/BasicList';
 import CategoriesCollectionSection from 'src/components/CategoriesCollection/CategoriesCollectionSection';
+import {useBackgroundColor} from 'src/components/colors';
 import MangaThumbnail from 'src/components/MangaThumbnail';
 import {useDexifyNavigation} from 'src/foundation';
 import Thumbnail, {ThumbnailSkeleton} from 'src/foundation/Thumbnail';
-import {useUpdatedSession} from 'src/prodivers';
+import {
+  useLibraryContext,
+  useLibraryMangaIds,
+  useUpdatedSession,
+} from 'src/prodivers';
 import {occurences} from 'src/utils';
 
 export default function MyLibraryNavigationScreen() {
@@ -31,21 +36,15 @@ export default function MyLibraryNavigationScreen() {
   const [selectedReadingStatus, setSelectedReadingStatus] =
     useState<ReadingStatus>(ReadingStatus.Reading);
 
+  const heheYeaBoi = useLibraryMangaIds();
+  console.log('heheYeaBoi', heheYeaBoi);
+
   const [searchInput, setSearchInput] = useState<string>('');
   const [manga, setManga] = useState<Manga[]>([]);
 
-  const possibleReadingStatuses: {[key in ReadingStatus]: {title: string}} = {
-    [ReadingStatus.Reading]: {title: 'Reading'},
-    [ReadingStatus.Completed]: {title: 'Completed'},
-    [ReadingStatus.Dropped]: {title: 'Dropped'},
-    [ReadingStatus.OnHold]: {title: 'On hold'},
-    [ReadingStatus.PlanToRead]: {title: 'Planning'},
-    [ReadingStatus.ReReading]: {title: 'Re-reading'},
-  };
-
-  const {data} = useGetRequest<AllReadingStatusResponse>(
-    'https://api.mangadex.org/manga/status',
-  );
+  const possibleReadingStatuses = usePossibleReadingStatuses();
+  const selectedChipColor = useBackgroundColor('primary');
+  const {readingStatus: data} = useLibraryContext();
 
   const [getManga, {loading}] = useLazyGetRequest<PagedResultsList<Manga>>();
 
@@ -133,6 +132,9 @@ export default function MyLibraryNavigationScreen() {
               icon={selected ? 'check' : 'tag'}
               selected={selected}
               disabled={!clickable}
+              style={{
+                backgroundColor: selected ? selectedChipColor : undefined,
+              }}
               onPress={onPress}>
               {title}
               {countsMarkup}
@@ -147,7 +149,9 @@ export default function MyLibraryNavigationScreen() {
           loading={loading}
           data={currentMangaList}
           aspectRatio={1 / 3}
-          renderItem={item => <MangaThumbnail hideTitle manga={item} />}
+          renderItem={item => (
+            <MangaThumbnail key={item.id} hideTitle manga={item} />
+          )}
           skeletonItem={
             <ThumbnailSkeleton width="100%" aspectRatio={0.8} height="100%" />
           }
@@ -155,4 +159,17 @@ export default function MyLibraryNavigationScreen() {
       </ScrollView>
     </View>
   );
+}
+
+export function usePossibleReadingStatuses() {
+  const possibleReadingStatuses: {[key in ReadingStatus]: {title: string}} = {
+    [ReadingStatus.Reading]: {title: 'Reading'},
+    [ReadingStatus.Completed]: {title: 'Completed'},
+    [ReadingStatus.Dropped]: {title: 'Dropped'},
+    [ReadingStatus.OnHold]: {title: 'On hold'},
+    [ReadingStatus.PlanToRead]: {title: 'Planning'},
+    [ReadingStatus.ReReading]: {title: 'Re-reading'},
+  };
+
+  return possibleReadingStatuses;
 }

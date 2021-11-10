@@ -1,45 +1,88 @@
-import React from 'react';
-import {ViewStyle} from 'react-native';
-import {Button} from 'react-native-paper';
+import React, {useState} from 'react';
+import {View, ViewStyle} from 'react-native';
+import {Button, Chip} from 'react-native-paper';
 import {readingStatusInfo} from 'src/api';
-import {ReadingStatusResponse} from 'src/api/mangadex/types';
+import {ReadingStatus, ReadingStatusResponse} from 'src/api/mangadex/types';
 import {useGetRequest} from 'src/api/utils';
+import CategoriesCollectionSection from 'src/components/CategoriesCollection/CategoriesCollectionSection';
+import {useBackgroundColor} from 'src/components/colors';
+import {useLibraryContext, useLibraryStatus, useSession} from 'src/prodivers';
+import {usePossibleReadingStatuses} from 'src/screens/Home/screens/MyLibraryNavigationScreen/MyLibraryNavigationScreen';
 import {useMangaDetails} from '../../ShowMangaDetails';
 
 type ButtonProps = React.ComponentProps<typeof Button>;
-type Props = Omit<ButtonProps, 'children'>;
+type Props = Omit<ButtonProps, 'children' | 'style'>;
 
 export default function LibraryButton({...props}: Props) {
   const {manga} = useMangaDetails();
+  const session = useSession();
+  const readingStatus = useLibraryStatus(manga);
+  const possibleReadingStatuses = usePossibleReadingStatuses();
 
-  const {data, loading, error} = useGetRequest<ReadingStatusResponse>(
-    `https://api.mangadex.org/manga/${manga.id}/status`,
-  );
-
-  if (loading) {
+  if (!session) {
     return (
-      <Button loading {...props}>
-        {''}
+      <Button disabled icon="plus" {...props} onPress={undefined}>
+        Add to library
       </Button>
     );
   }
 
-  if (data?.result === 'ok' && data.status) {
-    const {content} = readingStatusInfo(data.status);
-    return (
-      <Button icon="check" {...props}>
-        {content}
-      </Button>
-    );
-  }
-
-  if (error || data?.result === 'error') {
-    return null;
-  }
+  const {content} = readingStatusInfo(readingStatus);
 
   return (
-    <Button icon="plus" {...props}>
-      Add to library
-    </Button>
+    <View>
+      <Button icon="plus" {...props} style={{marginBottom: -5}}>
+        {content}
+      </Button>
+      <CategoriesCollectionSection
+        data={Object.entries(possibleReadingStatuses)}
+        renderItem={item => {
+          const [value, {title}] = item;
+          const readingStatus = value as ReadingStatus;
+
+          return (
+            <AddToLibraryChip readingStatus={readingStatus} title={title} />
+          );
+        }}
+      />
+    </View>
+  );
+}
+
+function AddToLibraryChip({
+  readingStatus,
+  title,
+}: {
+  readingStatus: ReadingStatus;
+  title: string;
+}) {
+  const {manga} = useMangaDetails();
+  const {updateMangaReadingStatus, refreshReadingStatuses} =
+    useLibraryContext();
+  const currentReadingStatus = useLibraryStatus(manga);
+  const [updating, setUpdating] = useState(false);
+  const selectedChipColor = useBackgroundColor('primary');
+
+  const onPress = () => {
+    setUpdating(true);
+    updateMangaReadingStatus!(manga.id, readingStatus).finally(() => {
+      refreshReadingStatuses!();
+      setUpdating(false);
+    });
+  };
+
+  const selected = updating || currentReadingStatus === readingStatus;
+
+  return (
+    <Chip
+      icon="tag"
+      selected={selected}
+      disabled={updating}
+      style={{
+        backgroundColor: selected ? selectedChipColor : undefined,
+      }}
+      onPress={onPress}>
+      {title}
+    </Chip>
   );
 }

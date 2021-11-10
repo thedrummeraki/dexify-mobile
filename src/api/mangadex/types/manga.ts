@@ -155,15 +155,23 @@ export type ReadingStatusResponse =
 
 export interface AllReadingStatusResponse {
   statuses: {
-    [key: string]:
-      | 'reading'
-      | 'on_hold'
-      | 'plan_to_read'
-      | 'dropped'
-      | 're_reading'
-      | 'completed';
+    [key: string]: ReadingStatus;
   };
 }
+
+interface SuccessReadingStatusUpdateResponse
+  extends BasicReadingStatusResponse {
+  result: 'ok';
+}
+
+interface ErrorReadingStatusUpdateResponse extends BasicReadingStatusResponse {
+  result: 'error';
+  errors: MangadexError[];
+}
+
+export type ReadingStatusUpdateResponse =
+  | SuccessReadingStatusUpdateResponse
+  | ErrorReadingStatusUpdateResponse;
 
 export interface SearchState {
   title: string;
