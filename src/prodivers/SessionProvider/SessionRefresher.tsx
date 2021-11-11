@@ -88,9 +88,16 @@ export function useUpdatedSession() {
 
   const refreshToken = useCallback(
     async (otherToken?: SessionState) => {
-      const tokenToUpdate = token || otherToken;
+      console.log('token', Boolean(token));
+      let tokenToUpdate = token || otherToken || null;
       if (!tokenToUpdate) {
-        return undefined;
+        tokenToUpdate = await retrieveStoredSession();
+        if (tokenToUpdate) {
+          setSession(tokenToUpdate);
+        } else {
+          console.log('there is no token to update with.');
+          return undefined;
+        }
       }
 
       const {refresh, session} = tokenToUpdate;
@@ -130,6 +137,7 @@ export function useUpdatedSession() {
 
         return response || null;
       } catch (error) {
+        console.error(error);
         return null;
       }
     },

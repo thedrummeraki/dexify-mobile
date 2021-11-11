@@ -11,15 +11,15 @@ import {
   ReadingStatusUpdateResponse,
 } from 'src/api/mangadex/types';
 import {useLazyGetRequest, usePostRequest} from 'src/api/utils';
-import {useSession} from '.';
+import {useSession, useUpdatedSession} from '.';
 
 interface LibraryState {
   loading: boolean;
   readingStatus: AllReadingStatusResponse;
-  refreshReadingStatuses(): void;
+  refreshReadingStatuses(): Promise<AllReadingStatusResponse | undefined>;
   updateMangaReadingStatus(
     id: string,
-    status: ReadingStatus,
+    status: ReadingStatus | null,
   ): Promise<ReadingStatusUpdateResponse | undefined>;
 }
 
@@ -71,6 +71,7 @@ export function useLibraryMangaIds(readingStatus?: ReadingStatus) {
 
 export default function LibraryProvider({children}: PropsWithChildren<{}>) {
   const session = useSession();
+  const {refreshToken} = useUpdatedSession();
   const [getReadingStatus, {data: readingStatus, loading, error}] =
     useLazyGetRequest<AllReadingStatusResponse>(
       'https://api.mangadex.org/manga/status',
@@ -86,10 +87,28 @@ export default function LibraryProvider({children}: PropsWithChildren<{}>) {
   }, [session]);
 
   const updateMangaReadingStatus = useCallback(
-    (id: string, status: ReadingStatus) => {
-      return postReadingStatus(`https://api.mangadex.org/manga/${id}/status`, {
-        status,
-      });
+    async (id: string, status: ReadingStatus) => {
+      try {
+        const authResponse = await refreshToken();
+        if (authResponse && authResponse.result !== 'ok') {
+          console.warn(
+            'could not refresh session token:',
+            JSON.stringify(authResponse),
+          );
+          return;
+        } else if (!authResponse) {
+          console.warn('the session token was not refreshed!');
+        }
+
+        return await postReadingStatus(
+          `https://api.mangadex.org/manga/${id}/status`,
+          {
+            status,
+          },
+        );
+      } catch (error) {
+        console.error(error);
+      }
     },
     [],
   );

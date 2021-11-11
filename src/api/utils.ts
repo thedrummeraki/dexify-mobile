@@ -63,9 +63,10 @@ export function usePostRequest<T, Body = any>(
       return response.data;
     } catch (error) {
       if (axios.isAxiosError(error)) {
+        console.error(error, '[POST]', url);
         setError(error as AxiosError<T>);
       } else {
-        console.error(error);
+        console.error(error, '[POST]', url);
       }
     } finally {
       setLoading(false);

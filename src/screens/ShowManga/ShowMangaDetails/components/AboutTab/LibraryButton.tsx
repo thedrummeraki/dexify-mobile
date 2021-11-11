@@ -1,11 +1,20 @@
 import React, {useState} from 'react';
 import {View} from 'react-native';
-import {Button, Chip} from 'react-native-paper';
+import {Button, Caption, Chip, Text, useTheme} from 'react-native-paper';
 import {readingStatusInfo} from 'src/api';
 import {ReadingStatus} from 'src/api/mangadex/types';
 import CategoriesCollectionSection from 'src/components/CategoriesCollection/CategoriesCollectionSection';
-import {useBackgroundColor} from 'src/components/colors';
-import {useLibraryContext, useLibraryStatus, useSession} from 'src/prodivers';
+import {
+  PaperProviderForBackground,
+  useBackgroundColor,
+  useTextColor,
+} from 'src/components/colors';
+import {
+  useLibraryContext,
+  useLibraryStatus,
+  useSession,
+  useUpdatedSession,
+} from 'src/prodivers';
 import {usePossibleReadingStatuses} from 'src/screens/Home/screens/MyLibraryNavigationScreen/MyLibraryNavigationScreen';
 import {useMangaDetails} from '../../ShowMangaDetails';
 
@@ -16,7 +25,9 @@ export default function LibraryButton({style, ...props}: Props) {
   const {manga} = useMangaDetails();
   const session = useSession();
   const readingStatus = useLibraryStatus(manga);
+  const [updating, setUpdating] = useState(false);
   const possibleReadingStatuses = usePossibleReadingStatuses();
+  const [showActions, setShowActions] = useState(false);
 
   if (!session) {
     return (
@@ -26,24 +37,43 @@ export default function LibraryButton({style, ...props}: Props) {
     );
   }
 
-  const {content} = readingStatusInfo(readingStatus);
+  const {content, background, icon} = readingStatusInfo(readingStatus);
+  const backgroundColor = useBackgroundColor(background);
+  const color = useTextColor(background);
 
   return (
     <View style={style}>
-      <Button icon="plus" {...props} style={{marginBottom: -5}}>
-        {content}
-      </Button>
-      <CategoriesCollectionSection
-        data={Object.entries(possibleReadingStatuses)}
-        renderItem={item => {
-          const [value, {title}] = item;
-          const readingStatus = value as ReadingStatus;
+      <PaperProviderForBackground background={background}>
+        <Button
+          icon={icon}
+          {...props}
+          loading={updating}
+          style={{backgroundColor: updating ? undefined : backgroundColor}}
+          labelStyle={{color}}
+          onPress={() => setShowActions(value => !value)}>
+          {updating ? '' : content}
+        </Button>
+      </PaperProviderForBackground>
+      {showActions && (
+        <>
+          <CategoriesCollectionSection
+            data={Object.entries(possibleReadingStatuses)}
+            renderItem={item => {
+              const [value, {title}] = item;
+              const readingStatus = value as ReadingStatus;
 
-          return (
-            <AddToLibraryChip readingStatus={readingStatus} title={title} />
-          );
-        }}
-      />
+              return (
+                <AddToLibraryChip
+                  readingStatus={readingStatus}
+                  title={title}
+                  updating={updating}
+                  setUpdating={setUpdating}
+                />
+              );
+            }}
+          />
+        </>
+      )}
     </View>
   );
 }
@@ -51,34 +81,54 @@ export default function LibraryButton({style, ...props}: Props) {
 function AddToLibraryChip({
   readingStatus,
   title,
+  updating,
+  setUpdating,
 }: {
   readingStatus: ReadingStatus;
   title: string;
+  updating: boolean;
+  setUpdating: (updating: boolean) => void;
 }) {
   const {manga} = useMangaDetails();
   const {updateMangaReadingStatus, refreshReadingStatuses} =
     useLibraryContext();
   const currentReadingStatus = useLibraryStatus(manga);
-  const [updating, setUpdating] = useState(false);
   const selectedChipColor = useBackgroundColor('primary');
+  const theme = useTheme();
+  const {icon} = readingStatusInfo(readingStatus);
 
-  const onPress = () => {
+  const willAdd = currentReadingStatus !== readingStatus;
+
+  const onPress = async () => {
     setUpdating(true);
-    updateMangaReadingStatus!(manga.id, readingStatus).finally(() => {
-      refreshReadingStatuses!();
+    try {
+      const response = await updateMangaReadingStatus!(
+        manga.id,
+        willAdd ? readingStatus : null,
+      );
+      if (response?.result === 'ok') {
+        return await refreshReadingStatuses!();
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
       setUpdating(false);
-    });
+    }
   };
 
-  const selected = updating || currentReadingStatus === readingStatus;
+  const selected = currentReadingStatus === readingStatus;
 
   return (
     <Chip
-      icon="tag"
+      icon={icon}
       selected={selected}
       disabled={updating}
       style={{
-        backgroundColor: selected ? selectedChipColor : undefined,
+        backgroundColor: updating
+          ? theme.colors.disabled
+          : selected
+          ? selectedChipColor
+          : undefined,
       }}
       onPress={onPress}>
       {title}

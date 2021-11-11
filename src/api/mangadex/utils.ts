@@ -152,22 +152,28 @@ export function contentRatingInfo(contentRating: ContentRating): {
 
 export function readingStatusInfo(readingStatus?: ReadingStatus | null): {
   content: string;
+  background?: BackgroundColor;
+  icon?: string;
   default?: boolean;
 } {
   switch (readingStatus) {
     case ReadingStatus.Completed:
-      return {content: 'Completed'};
+      return {content: 'Completed', background: 'notification', icon: 'check'};
     case ReadingStatus.Dropped:
-      return {content: 'Dropped'};
+      return {content: 'Dropped', background: 'error', icon: 'close'};
     case ReadingStatus.OnHold:
-      return {content: 'On Hold'};
+      return {content: 'On Hold', background: 'disabled', icon: 'pause'};
     case ReadingStatus.PlanToRead:
-      return {content: 'Plan to read'};
+      return {
+        content: 'Plan to read',
+        background: 'accent',
+        icon: 'heart-outline',
+      };
     case ReadingStatus.ReReading:
-      return {content: 'Re-reading'};
+      return {content: 'Re-reading', background: 'primary', icon: 'play'};
     case ReadingStatus.Reading:
-      return {content: 'Reading'};
+      return {content: 'Reading', background: 'primary', icon: 'play'};
     default:
-      return {content: 'Add to library', default: true};
+      return {content: 'Add to library', default: true, icon: 'plus'};
   }
 }

@@ -1,14 +1,15 @@
 import React, {useCallback} from 'react';
-import {ViewStyle} from 'react-native';
-import {Button} from 'react-native-paper';
+import {StyleSheet, ViewStyle} from 'react-native';
+import {Button, FAB} from 'react-native-paper';
 import {readingStatusInfo} from 'src/api';
 import {ReadingStatusResponse} from 'src/api/mangadex/types';
 import {useGetRequest} from 'src/api/utils';
+import {useBackgroundColor} from 'src/components/colors';
 import {useDexifyNavigation} from 'src/foundation';
 import {useMangaDetails} from '../../ShowMangaDetails';
 
-type ButtonProps = React.ComponentProps<typeof Button>;
-type Props = Omit<ButtonProps, 'children'>;
+type FABProps = React.ComponentProps<typeof FAB>;
+type Props = Omit<FABProps, 'children' | 'style'>;
 
 export default function StartReadingButton({...props}: Props) {
   const navigation = useDexifyNavigation();
@@ -26,25 +27,29 @@ export default function StartReadingButton({...props}: Props) {
     }
   }, [chapterToRead]);
 
+  const backgroundColor = useBackgroundColor('primary');
+
+  const styles = StyleSheet.create({
+    fab: {
+      position: 'absolute',
+      margin: 15,
+      right: 0,
+      bottom: 0,
+      backgroundColor,
+    },
+  });
+
   if (loading) {
     return (
-      <Button loading {...props}>
+      <FAB loading {...props} style={styles.fab}>
         {''}
-      </Button>
+      </FAB>
     );
   }
 
   if (!chapterToRead) {
-    return (
-      <Button icon="play" disabled {...props}>
-        Start reading now
-      </Button>
-    );
+    return <FAB disabled {...props} style={styles.fab} />;
   }
 
-  return (
-    <Button icon="play" {...props} onPress={readFirstChapter}>
-      Start reading now
-    </Button>
-  );
+  return <FAB {...props} style={styles.fab} onPress={readFirstChapter} />;
 }

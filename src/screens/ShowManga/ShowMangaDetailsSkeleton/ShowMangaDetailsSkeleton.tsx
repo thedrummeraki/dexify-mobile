@@ -3,6 +3,7 @@ import React from 'react';
 import {View} from 'react-native';
 import FastImage from 'react-native-fast-image';
 import {ScrollView} from 'react-native-gesture-handler';
+import LinearGradient from 'react-native-linear-gradient';
 import {Button, Caption, Text, Title} from 'react-native-paper';
 import {TextBadge} from 'src/components';
 
@@ -46,17 +47,43 @@ function AboutSkeleton() {
 
   return (
     <ScrollView showsVerticalScrollIndicator={false} style={{flex: 1}}>
-      <FastImage
-        source={{uri: 'https://mangadex.org/avatar.png'}}
-        style={{width: '100%', aspectRatio: 2}}
-      />
-      <View style={{padding: 5}}>
-        <View style={{flex: 1}}>
+      <View>
+        <LinearGradient
+          colors={[
+            '#00000000',
+            '#00000050',
+            '#000000A0',
+            '#000000D0',
+            '#000000F0',
+          ]}
+          style={{
+            flex: 1,
+            width: '100%',
+            aspectRatio: 1.5,
+            position: 'absolute',
+            zIndex: 1,
+          }}
+        />
+
+        <FastImage
+          source={{uri: 'https://mangadex.org/avatar.png'}}
+          style={{width: '100%', aspectRatio: 1.5}}
+        />
+        <View
+          style={{
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            zIndex: 1,
+            paddingHorizontal: 5,
+          }}>
           <Title>{loadingMessages[index].title}</Title>
           <Caption style={{marginTop: -3, fontWeight: '700'}}>
             {loadingMessages[index].subtitle}
           </Caption>
         </View>
+      </View>
+      <View style={{padding: 5}}>
         <View
           style={{
             flexDirection: 'row',
