@@ -25,7 +25,7 @@ export default function Header({title, subtitle, goBack}: Props) {
   }, [goBack]);
 
   return (
-    <Appbar.Header style={{backgroundColor: theme.colors.background}}>
+    <Appbar.Header style={{backgroundColor: theme.colors.backdrop}}>
       {goBack && !showSearchbar && <Appbar.BackAction onPress={handleGoBack} />}
       {showSearchbar && (
         <Searchbar

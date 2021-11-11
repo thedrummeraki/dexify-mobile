@@ -54,7 +54,9 @@ export default function Thumbnail({
         </View>
       </MaybeTouchableNativeFeedback>
       {title && !hideTitle ? (
-        <Caption numberOfLines={2}>{title}</Caption>
+        <Caption numberOfLines={2} style={{lineHeight: 15}}>
+          {title}
+        </Caption>
       ) : undefined}
     </View>
   );

@@ -30,9 +30,9 @@ export default function MangaThumbnail({
   onPress,
 }: Props & Partial<ThumbnailDimensionsProps>) {
   const navigation = useDexifyNavigation();
-  const handlePress = () => {
-    navigation.navigate('ShowManga', {id: manga.id});
-  };
+  const handlePress = useCallback(() => {
+    navigation.push('ShowManga', {id: manga.id});
+  }, [manga.id]);
   const readingStatus = useLibraryStatus(manga);
   const isHentai =
     manga.attributes.contentRating === ContentRating.pornographic;

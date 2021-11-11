@@ -3,7 +3,13 @@ import {
   createNativeStackNavigator,
   NativeStackNavigationProp,
 } from '@react-navigation/native-stack';
-import {Home, ShowChapter, ShowManga, ShowMangaGallery} from 'src/screens';
+import {
+  Home,
+  ShowArtist,
+  ShowChapter,
+  ShowManga,
+  ShowMangaGallery,
+} from 'src/screens';
 import {RouteProp, useNavigation, useRoute} from '@react-navigation/core';
 import {Header} from '.';
 import {HeaderContext, useUpdatedSession} from 'src/prodivers';
@@ -13,6 +19,7 @@ type RootStackParamList = {
   ShowManga: {id: string};
   ShowMangaGallery: {id: string; number?: number};
   ShowChapter: {id: string};
+  ShowArtist: {id: string; allowHentai?: boolean};
 };
 
 type DexifyNavigationProp = NativeStackNavigationProp<
@@ -26,12 +33,11 @@ export default function Navigation() {
   const headerContext = useContext(HeaderContext);
   const {refreshToken} = useUpdatedSession();
 
-
   return (
     <Stack.Navigator
       initialRouteName="Home"
       screenOptions={{
-        header: ({navigation, route, options}) => (
+        header: ({navigation}) => (
           <Header
             goBack={navigation.canGoBack() ? navigation.goBack : undefined}
             // title={headerContext.title || options.title || route.name}
@@ -47,8 +53,8 @@ export default function Navigation() {
             hideHeader: true,
           })),
         focus: () => {
-          refreshToken()
-        }
+          refreshToken();
+        },
       }}>
       <Stack.Screen
         name="Home"
@@ -58,7 +64,7 @@ export default function Navigation() {
       <Stack.Screen
         name="ShowManga"
         component={ShowManga}
-        options={{headerShown: false}} // little hack to avoid showing "ShowManga"
+        options={{title: ' '}} // little hack to avoid showing "ShowManga"
       />
       <Stack.Screen
         name="ShowMangaGallery"
@@ -70,6 +76,7 @@ export default function Navigation() {
         component={ShowChapter}
         options={{headerShown: false}}
       />
+      <Stack.Screen name="ShowArtist" component={ShowArtist} />
     </Stack.Navigator>
   );
 }
@@ -88,4 +95,8 @@ export function useShowMangaGalleryRoute() {
 
 export function useShowChapterRoute() {
   return useRoute<RouteProp<RootStackParamList, 'ShowChapter'>>();
+}
+
+export function useShowArtistRoute() {
+  return useRoute<RouteProp<RootStackParamList, 'ShowArtist'>>();
 }

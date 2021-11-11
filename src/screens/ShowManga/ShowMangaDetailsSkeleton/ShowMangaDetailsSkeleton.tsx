@@ -59,7 +59,7 @@ function AboutSkeleton() {
           style={{
             flex: 1,
             width: '100%',
-            aspectRatio: 1.5,
+            aspectRatio: 1.2,
             position: 'absolute',
             zIndex: 1,
           }}
@@ -67,7 +67,7 @@ function AboutSkeleton() {
 
         <FastImage
           source={{uri: 'https://mangadex.org/avatar.png'}}
-          style={{width: '100%', aspectRatio: 1.5}}
+          style={{width: '100%', aspectRatio: 1.2}}
         />
         <View
           style={{

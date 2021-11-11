@@ -19,15 +19,17 @@ import {
   preferredMangaTitle,
   preferredTitle,
 } from 'src/api';
-import {Artist, Author} from 'src/api/mangadex/types';
+import {Artist, Author, ContentRating} from 'src/api/mangadex/types';
 import {TextBadge} from 'src/components';
 import MangaThumbnail from 'src/components/MangaThumbnail';
+import {useDexifyNavigation} from 'src/foundation';
 import Thumbnail from 'src/foundation/Thumbnail';
 import {useMangaDetails} from '../../ShowMangaDetails';
 import LibraryButton from './LibraryButton';
 import StartReadingButton from './StartReadingButton';
 
 export default function AboutTab() {
+  const navigation = useDexifyNavigation();
   const {manga, aggregate, coverUrl} = useMangaDetails();
 
   const initialTrim = useRef(false);
@@ -82,7 +84,7 @@ export default function AboutTab() {
             style={{
               flex: 1,
               width: '100%',
-              aspectRatio: 1.5,
+              aspectRatio: 1.2,
               position: 'absolute',
               zIndex: 1,
             }}
@@ -92,7 +94,7 @@ export default function AboutTab() {
             source={{
               uri: coverUrl || mangaImage(manga, {size: CoverSize.Medium}),
             }}
-            style={{width: '100%', aspectRatio: 1.5}}
+            style={{width: '100%', aspectRatio: 1.2}}
             resizeMode="cover"
           />
           <View
@@ -154,6 +156,14 @@ export default function AboutTab() {
                 key={artist.id}
                 content={artist.attributes.name}
                 background="surface"
+                onPress={() =>
+                  navigation.push('ShowArtist', {
+                    id: artist.id,
+                    allowHentai:
+                      manga.attributes.contentRating ===
+                      ContentRating.pornographic,
+                  })
+                }
               />
             ))}
           </View>

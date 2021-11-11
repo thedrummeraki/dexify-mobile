@@ -1,6 +1,6 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {Keyboard, ScrollView, StyleProp, View, ViewStyle} from 'react-native';
-import {Title, ActivityIndicator} from 'react-native-paper';
+import {Title} from 'react-native-paper';
 import {CoverSize, mangaImage, preferredMangaTitle} from 'src/api';
 import {Author, Manga, PagedResultsList} from 'src/api/mangadex/types';
 import {useLazyGetRequest} from 'src/api/utils';

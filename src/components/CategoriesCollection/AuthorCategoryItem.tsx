@@ -1,5 +1,6 @@
 import React from 'react';
 import {Avatar, Chip} from 'react-native-paper';
+import {useDexifyNavigation} from 'src/foundation';
 import {Author, PagedResultsList} from '../../api/mangadex/types';
 import {useCategoryRequest} from '../../api/utils';
 import {UIAuthorCategory} from '../../categories';
@@ -10,6 +11,7 @@ export default function AuthorCategoryItem({
 }: {
   category: UIAuthorCategory;
 }) {
+  const navigation = useDexifyNavigation();
   const {data, loading} =
     useCategoryRequest<PagedResultsList<Author>>(category);
   const sectionData = data?.result === 'ok' ? data.data : [];
@@ -34,6 +36,7 @@ export default function AuthorCategoryItem({
       }
       renderItem={item => (
         <Chip
+          onPress={() => navigation.push('ShowArtist', {id: item.id})}
           avatar={
             <Avatar.Image
               source={{uri: 'https://mangadex.org/avatar.png'}}
