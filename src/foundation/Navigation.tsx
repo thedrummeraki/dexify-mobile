@@ -9,6 +9,7 @@ import {
   ShowChapter,
   ShowManga,
   ShowMangaGallery,
+  ShowMangaList,
 } from 'src/screens';
 import {RouteProp, useNavigation, useRoute} from '@react-navigation/core';
 import {Header} from '.';
@@ -20,9 +21,15 @@ type RootStackParamList = {
   ShowMangaGallery: {id: string; number?: number};
   ShowChapter: {id: string};
   ShowArtist: {id: string; allowHentai?: boolean};
+  ShowMangaList: {
+    title?: string;
+    description?: string;
+    ids?: string[];
+    params?: Record<string, string>;
+  };
 };
 
-type DexifyNavigationProp = NativeStackNavigationProp<
+export type DexifyNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
   'Home'
 >;
@@ -77,6 +84,7 @@ export default function Navigation() {
         options={{headerShown: false}}
       />
       <Stack.Screen name="ShowArtist" component={ShowArtist} />
+      <Stack.Screen name="ShowMangaList" component={ShowMangaList} />
     </Stack.Navigator>
   );
 }
@@ -99,4 +107,8 @@ export function useShowChapterRoute() {
 
 export function useShowArtistRoute() {
   return useRoute<RouteProp<RootStackParamList, 'ShowArtist'>>();
+}
+
+export function useShowMangaListRoute() {
+  return useRoute<RouteProp<RootStackParamList, 'ShowMangaList'>>();
 }

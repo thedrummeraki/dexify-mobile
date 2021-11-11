@@ -1,12 +1,18 @@
 type Params = string[][] | Record<string, string> | string;
 
+export interface SecondaryAction {
+  content?: string;
+  icon?: string;
+  onAction: () => void;
+}
+
 interface UIBaseCategory {
   type: UICategoryType;
   loading?: boolean;
   title?: string;
   hideTitle?: boolean;
   description?: string;
-  viewMore?: string;
+  viewMore?: SecondaryAction;
   url?: string;
   ids?: Array<string>;
   params?: Params;

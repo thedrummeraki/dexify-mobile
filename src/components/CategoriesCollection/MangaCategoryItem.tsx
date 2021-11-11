@@ -37,6 +37,7 @@ export default function MangaCategoryItem({
       title={category.title}
       data={sectionData}
       dimensions={{width: 120, height: 160}}
+      viewMore={category.viewMore}
       renderItem={(item, dimensions) => (
         <MangaThumbnail
           showReadingStatus

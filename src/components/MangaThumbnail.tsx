@@ -1,6 +1,12 @@
 import React, {useCallback} from 'react';
 import {View} from 'react-native';
-import {coverImage, CoverSize, mangaImage, preferredMangaTitle} from 'src/api';
+import {
+  coverImage,
+  CoverSize,
+  mangaImage,
+  preferredMangaTitle,
+  readingStatusInfo,
+} from 'src/api';
 import {ContentRating, Manga} from 'src/api/mangadex/types';
 import {useDexifyNavigation} from 'src/foundation';
 import Thumbnail, {
@@ -42,7 +48,9 @@ export default function MangaThumbnail({
   ) : null;
   const readingStatusMarkup =
     showReadingStatus && readingStatus !== null ? (
-      <ThumbnailBadge>{readingStatus}</ThumbnailBadge>
+      <ThumbnailBadge>
+        {readingStatusInfo(readingStatus).content}
+      </ThumbnailBadge>
     ) : null;
 
   return (

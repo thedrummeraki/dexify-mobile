@@ -1,14 +1,20 @@
 import {UICategory} from './types';
 import {airingMangas} from 'src/api/mangadex';
 import {useSession} from 'src/prodivers';
+import {DexifyNavigationProp, useDexifyNavigation} from 'src/foundation';
 
 export function useHomeCategories(): UICategory[] {
   const session = useSession();
+  const navigation = useDexifyNavigation();
 
-  return session ? authenticatedHomeCategories() : unauthenticatedCategories();
+  return session
+    ? authenticatedHomeCategories(navigation)
+    : unauthenticatedCategories();
 }
 
-function authenticatedHomeCategories(): UICategory[] {
+function authenticatedHomeCategories(
+  navigation: DexifyNavigationProp,
+): UICategory[] {
   return [
     {
       title: 'Your feed',
@@ -21,15 +27,35 @@ function authenticatedHomeCategories(): UICategory[] {
       type: 'manga',
       description: 'Most popular manga on Mangadex.',
       url: 'https://api.mangadex.org/manga?order%5BfollowedCount%5D=desc&limit=20&includes[]=cover_art',
+      viewMore: {
+        onAction: () =>
+          navigation.push('ShowMangaList', {
+            title: 'Top 100 popular titles',
+            params: {
+              'order[followedCount]': 'desc',
+              'includes[]': 'cover_art',
+              limit: '100',
+            },
+          }),
+      },
     },
     {
       title: 'Fall 2021 Seasonal manga',
       type: 'manga',
-      description: 'These titles have an anime airing this season.',
       ids: airingMangas,
       params: {
         'includes[]': 'cover_art',
         'order[followedCount]': 'desc',
+      },
+      viewMore: {
+        onAction: () =>
+          navigation.push('ShowMangaList', {
+            title: 'Fall 2021 Seasonal manga',
+            description:
+              'These titles have an anime airing this season. Be on the look out for the "Anime" tab when viewing the manga.',
+            ids: airingMangas,
+            params: {'order[followedCount]': 'desc', 'includes[]': 'cover_art'},
+          }),
       },
     },
     {

@@ -1,6 +1,7 @@
 import React from 'react';
 import {FlatList, View} from 'react-native';
-import {Title} from 'react-native-paper';
+import {Button, Title} from 'react-native-paper';
+import {SecondaryAction} from 'src/categories';
 import {ThumbnailSkeleton} from '../../foundation/Thumbnail';
 
 interface BasicImageDimensions {
@@ -29,7 +30,7 @@ interface Props<T> {
   data: T[];
   dimensions?: ImageDimensions;
   loading?: boolean;
-  viewMore?: boolean;
+  viewMore?: SecondaryAction; // only visible when title is present
   skeletonLength?: number;
   SkeletonItem?: React.ReactElement;
   renderItem: (
@@ -79,7 +80,19 @@ export default function CategoriesCollectionSection<T>({
   return (
     <View style={{marginTop: 5, marginBottom: title ? 15 : 5}}>
       {title ? (
-        <Title style={{marginHorizontal: 20}}>{title}</Title>
+        <View
+          style={{
+            flex: 1,
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+          }}>
+          <Title style={{marginHorizontal: 20}}>{title}</Title>
+          {viewMore ? (
+            <Button icon={viewMore.icon} onPress={viewMore.onAction}>
+              {viewMore.content || 'More >'}
+            </Button>
+          ) : undefined}
+        </View>
       ) : undefined}
       <FlatList
         horizontal={horizontal}

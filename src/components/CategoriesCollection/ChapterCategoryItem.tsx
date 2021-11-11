@@ -26,6 +26,7 @@ export default function ChapterCategoryItem({
       title={category.title}
       data={sectionData}
       dimensions={{width: 120, height: 160}}
+      viewMore={category.viewMore}
       renderItem={(item, dimensions) => {
         const {chapter, volume, title: chapterTitle} = item.attributes;
         const mangaRelationship = item.relationships.find(
