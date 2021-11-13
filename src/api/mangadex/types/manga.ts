@@ -184,11 +184,15 @@ export interface SearchState {
   excludedTagsMode: TagMode[];
   status: MangaStatus[];
   originalLanguage: string[];
+  excludedOriginalLanguage: string[];
+  availableTranslatedLanguage: string[];
   publicationDemographic: PublicationDemographic[];
   createdAtSince: string;
   updatedAtSince: string;
   contentRating: ContentRating[];
   order: Order<'createdAt' | 'updatedAt'>;
+  includes: string[];
+  hasAvailableChapters: '0' | '1' | 'true' | 'false';
 }
 
 export interface MangaSearchOptions {
@@ -202,9 +206,13 @@ export interface MangaSearchOptions {
   excludedTagsMode: TagMode[];
   status: MangaStatus[];
   originalLanguage: string[];
+  excludedOriginalLanguage: string[];
+  availableTranslatedLanguage: string[];
   publicationDemographic: PublicationDemographic[];
   createdAtSince: string;
   updatedAtSince: string;
   contentRating: ContentRating[];
   order: Order<'createdAt' | 'updatedAt'>;
+  includes: string[];
+  hasAvailableChapters: '0' | '1' | 'true' | 'false';
 }
