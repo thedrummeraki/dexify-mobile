@@ -165,7 +165,7 @@ export function readingStatusInfo(readingStatus?: ReadingStatus | null): {
       return {content: 'On Hold', background: 'disabled', icon: 'pause'};
     case ReadingStatus.PlanToRead:
       return {
-        content: 'Plan to read',
+        content: 'Planning to read',
         background: 'accent',
         icon: 'heart-outline',
       };

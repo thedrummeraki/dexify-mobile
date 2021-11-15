@@ -5,7 +5,7 @@ import FastImage from 'react-native-fast-image';
 import {ScrollView} from 'react-native-gesture-handler';
 import LinearGradient from 'react-native-linear-gradient';
 import {Button, Caption, Text, Title} from 'react-native-paper';
-import {TextBadge} from 'src/components';
+import {ImageGradient, TextBadge} from 'src/components';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -48,22 +48,7 @@ function AboutSkeleton() {
   return (
     <ScrollView showsVerticalScrollIndicator={false} style={{flex: 1}}>
       <View>
-        <LinearGradient
-          colors={[
-            '#00000000',
-            '#00000050',
-            '#000000A0',
-            '#000000D0',
-            '#000000F0',
-          ]}
-          style={{
-            flex: 1,
-            width: '100%',
-            aspectRatio: 1.2,
-            position: 'absolute',
-            zIndex: 1,
-          }}
-        />
+        <ImageGradient />
 
         <FastImage
           source={{uri: 'https://mangadex.org/avatar.png'}}

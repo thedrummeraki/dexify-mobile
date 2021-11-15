@@ -14,6 +14,7 @@ import Thumbnail, {
   ThumbnailDimensionsProps,
 } from 'src/foundation/Thumbnail';
 import {useLibraryStatus} from 'src/prodivers';
+import { useBackgroundColor } from './colors';
 
 interface Props {
   manga: Manga;
@@ -46,9 +47,11 @@ export default function MangaThumbnail({
   const hentaiBadgeMarkup = isHentai ? (
     <ThumbnailBadge>18+</ThumbnailBadge>
   ) : null;
+  const readingStatusBackgroundColor = useBackgroundColor(readingStatusInfo(readingStatus).background);
+
   const readingStatusMarkup =
     showReadingStatus && readingStatus !== null ? (
-      <ThumbnailBadge>
+      <ThumbnailBadge badgeStyle={{backgroundColor: readingStatusBackgroundColor}}>
         {readingStatusInfo(readingStatus).content}
       </ThumbnailBadge>
     ) : null;
@@ -56,7 +59,7 @@ export default function MangaThumbnail({
   return (
     <Thumbnail
       TopComponent={
-        <View>
+        <View style={{flex: 1, flexDirection: 'row'}}>
           {hentaiBadgeMarkup}
           {readingStatusMarkup}
         </View>

@@ -9,9 +9,16 @@ export function url(category: UICategory) {
     return null;
   }
 
-  const additionalParams = category.params
+  let additionalParams = category.params
     ? new URLSearchParams(category.params).toString()
     : '';
+
+  if (category.type === 'manga' && category.contentRatings) {
+    additionalParams = additionalParams.concat(
+      '&',
+      category.contentRatings.map(cr => `contentRating[]=${cr}`).join('&')
+    )
+  }
 
   const idParams = category.ids
     ? category.ids.map(id => `ids[]=${id}`).join('&')

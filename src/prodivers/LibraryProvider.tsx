@@ -10,6 +10,7 @@ import {
   ReadingStatus,
   ReadingStatusUpdateResponse,
 } from 'src/api/mangadex/types';
+import { CustomList } from 'src/api/mangadex/types/custom_list';
 import {useLazyGetRequest, usePostRequest} from 'src/api/utils';
 import {useSession, useUpdatedSession} from '.';
 
@@ -21,6 +22,9 @@ interface LibraryState {
     id: string,
     status: ReadingStatus | null,
   ): Promise<ReadingStatusUpdateResponse | undefined>;
+
+  customLists: CustomList[];
+  refreshCustomLists(): Promise<CustomList[]>;
 }
 
 export const LibraryContext = React.createContext<Partial<LibraryState>>({});

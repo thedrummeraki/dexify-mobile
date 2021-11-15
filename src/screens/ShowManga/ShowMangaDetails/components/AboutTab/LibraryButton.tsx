@@ -15,7 +15,7 @@ import {
   useSession,
   useUpdatedSession,
 } from 'src/prodivers';
-import {usePossibleReadingStatuses} from 'src/screens/Home/screens/MyLibraryNavigationScreen/MyLibraryNavigationScreen';
+import {usePossibleReadingStatuses} from 'src/screens/Home/screens/FollowedMangaScreen/FollowedMangaScreen';
 import {useMangaDetails} from '../../ShowMangaDetails';
 
 type ButtonProps = React.ComponentProps<typeof Button>;

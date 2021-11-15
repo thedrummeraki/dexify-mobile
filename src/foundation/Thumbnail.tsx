@@ -109,7 +109,7 @@ export function ThumbnailBadge({
   badgeStyle?: StyleProp<TextStyle>;
 }) {
   const style = Object.assign(
-    {borderRadius: 0, borderBottomRightRadius: 7},
+    {borderRadius: 0, marginRight: 2},
     badgeStyle,
   );
   return <Badge style={style}>{children}</Badge>;

@@ -7,6 +7,7 @@ import {
   MainNavigationScreen,
   MyLibraryNavigationScreen,
   MyProfileNavigationScreen,
+  FollowedMangaScreen,
 } from './screens';
 
 export default function Home() {
@@ -26,6 +27,7 @@ function AuthenticatedBottomNavigation() {
     {key: 'main', title: 'Home', icon: 'home'},
     {key: 'browse', title: 'Browse...', icon: 'magnify'},
     {key: 'library', title: 'Library', icon: 'library-shelves'},
+    {key: 'followed', title: 'Followed', icon: 'heart'},
     {key: 'profile', title: 'My profile', icon: 'account'},
   ]);
 
@@ -33,6 +35,7 @@ function AuthenticatedBottomNavigation() {
     main: MainNavigationScreen,
     browse: BrowseNavigationScreen,
     library: MyLibraryNavigationScreen,
+    followed: FollowedMangaScreen,
     profile: MyProfileNavigationScreen,
   });
 

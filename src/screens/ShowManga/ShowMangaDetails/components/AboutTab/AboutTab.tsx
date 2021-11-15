@@ -9,6 +9,7 @@ import {
   Paragraph,
   Text,
   Title,
+  useTheme,
 } from 'react-native-paper';
 import {
   contentRatingInfo,
@@ -20,7 +21,7 @@ import {
   preferredTitle,
 } from 'src/api';
 import {Artist, Author, ContentRating} from 'src/api/mangadex/types';
-import {TextBadge} from 'src/components';
+import {ImageGradient, TextBadge} from 'src/components';
 import MangaThumbnail from 'src/components/MangaThumbnail';
 import {useDexifyNavigation} from 'src/foundation';
 import Thumbnail from 'src/foundation/Thumbnail';
@@ -30,6 +31,7 @@ import StartReadingButton from './StartReadingButton';
 
 export default function AboutTab() {
   const navigation = useDexifyNavigation();
+  const theme = useTheme();
   const {manga, aggregate, coverUrl} = useMangaDetails();
 
   const initialTrim = useRef(false);
@@ -73,22 +75,7 @@ export default function AboutTab() {
       </View>
       <ScrollView showsVerticalScrollIndicator={false} style={{flex: 1}}>
         <View>
-          <LinearGradient
-            colors={[
-              '#00000000',
-              '#00000050',
-              '#000000A0',
-              '#000000D0',
-              '#000000F0',
-            ]}
-            style={{
-              flex: 1,
-              width: '100%',
-              aspectRatio: 1.2,
-              position: 'absolute',
-              zIndex: 1,
-            }}
-          />
+          <ImageGradient />
 
           <FastImage
             source={{

@@ -42,7 +42,7 @@ export default function BasicList<T extends BasicResource>({
       <View style={style}>
         <View style={basicListStyle}>
           {Array.from({length: skeletonLength}).map((_, id) => (
-            <BasicListItem id={String(id)} flexBasis={flexBasis}>
+            <BasicListItem key={id} id={String(id)} flexBasis={flexBasis}>
               {skeletonItem}
             </BasicListItem>
           ))}
@@ -56,6 +56,7 @@ export default function BasicList<T extends BasicResource>({
       <View style={basicListStyle}>
         {data.map((item, index) => (
           <BasicListItem
+            key={item.id || item.slug || `basic-list-${index}`}
             id={item.id || item.slug || `basic-list-${index}`}
             flexBasis={flexBasis}>
             {renderItem(item, index)}

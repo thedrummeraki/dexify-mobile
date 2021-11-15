@@ -1,3 +1,5 @@
+import { ContentRating } from "src/api/mangadex/types";
+
 type Params = string[][] | Record<string, string> | string;
 
 export interface SecondaryAction {
@@ -35,6 +37,7 @@ type UIUntypedCategory = UICategoryWithResourceIds | UICategoryWithURL;
 
 export type UIMangaCategory = UIUntypedCategory & {
   type: 'manga';
+  contentRatings?: ContentRating[];
 };
 
 export type UIChapterCategory = UIUntypedCategory & {
