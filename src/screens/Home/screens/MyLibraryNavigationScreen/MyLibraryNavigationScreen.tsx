@@ -148,6 +148,7 @@ export default function MyLibraryNavigationScreen() {
           skeletonItem={
             <ThumbnailSkeleton width="100%" aspectRatio={0.8} height="100%" />
           }
+          skeletonLength={occurences(Object.values(data?.statuses || []), selectedReadingStatus)}
         />
       </ScrollView>
     </View>
