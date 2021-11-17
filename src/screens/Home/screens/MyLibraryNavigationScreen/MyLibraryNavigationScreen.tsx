@@ -35,8 +35,8 @@ import LibraryDetails from './LibraryDetails';
 
 export default function MyLibraryNavigationScreen() {
   const {session} = useUpdatedSession();
+  
 
-  const mangaIds = useLibraryMangaIds(ReadingStatus.Reading);
   const [get, {data, loading}] = useLazyGetRequest<PagedResultsList<CustomList>>(
     'https://api.mangadex.org/user/list'
   );
@@ -49,13 +49,20 @@ export default function MyLibraryNavigationScreen() {
     return <ActivityIndicator style={{flex: 1}} />
   }
 
-  if (data?.result === 'ok' && mangaIds !== null) {
+  if (data?.result === 'ok') {
+    const mangaInList = data.data.map(customList => {
+      const mangaList = findRelationships<Manga>(customList, 'manga');
+
+      return {
+        id: customList.id,
+        title: customList.attributes.name,
+        mangaCount: mangaList.length,
+        mangaId: mangaList[0]?.id,
+      }
+    })
+
     return (
-      <LibraryDetails mangaInList={data.data.map(cl => ({
-        id: cl.id,
-        mangaIds: findRelationships<Manga>(cl, 'manga').map(r => r.id), title: cl.attributes.name}))}
-        followedMangaIds={mangaIds}
-      />
+      <LibraryDetails mangaInList={mangaInList}/>
     )
   }
 

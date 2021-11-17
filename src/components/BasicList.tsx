@@ -15,16 +15,24 @@ interface Props<T extends BasicResource> {
   data: T[];
   aspectRatio?: number; // decimal numbers only. Ratio of the screen that each element should take.
   style?: StyleProp<ViewStyle>;
+  itemStyle?: StyleProp<ViewStyle>;
   loading?: boolean;
   skeletonItem?: React.ReactElement;
   skeletonLength?: number;
   renderItem: (item: T, index: number) => React.ReactNode;
 }
 
+interface BasicListItemProps {
+  id: string;
+  style?: StyleProp<ViewStyle>;
+  itemStyle?: StyleProp<ViewStyle>;
+}
+
 export default function BasicList<T extends BasicResource>({
   data,
   aspectRatio = 1 / 3,
   style,
+  itemStyle,
   loading,
   skeletonItem,
   skeletonLength = 6,
@@ -42,7 +50,12 @@ export default function BasicList<T extends BasicResource>({
       <View style={style}>
         <View style={basicListStyle}>
           {Array.from({length: skeletonLength}).map((_, id) => (
-            <BasicListItem key={id} id={String(id)} flexBasis={flexBasis}>
+            <BasicListItem
+              key={id}
+              id={String(id)}
+              style={{flexBasis, paddingHorizontal: 10, paddingVertical: 7}}
+              itemStyle={itemStyle}
+            >
               {skeletonItem}
             </BasicListItem>
           ))}
@@ -58,7 +71,9 @@ export default function BasicList<T extends BasicResource>({
           <BasicListItem
             key={item.id || item.slug || `basic-list-${index}`}
             id={item.id || item.slug || `basic-list-${index}`}
-            flexBasis={flexBasis}>
+            style={{flexBasis, paddingHorizontal: 10, paddingVertical: 7}}
+            itemStyle={itemStyle}
+          >
             {renderItem(item, index)}
           </BasicListItem>
         ))}
@@ -70,10 +85,11 @@ export default function BasicList<T extends BasicResource>({
 function BasicListItem({
   children,
   id,
-  flexBasis,
-}: PropsWithChildren<{id: string; flexBasis: string}>) {
+  style,
+  itemStyle,
+}: PropsWithChildren<BasicListItemProps>) {
   return (
-    <View key={id} style={{flexBasis, padding: 5}}>
+    <View key={id} style={Object.assign(style || {}, itemStyle)}>
       {children}
     </View>
   );

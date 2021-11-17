@@ -105,3 +105,12 @@ export function occurences<T>(array: T[], value: T) {
 
   return count;
 }
+
+export function pluralize(count: number, singular: string, singularNumberText?: string, plural?: string) {
+  if (count === 1) {
+    return [singularNumberText || '1', singular].join(' ');
+  }
+
+  const pluralText = plural !== undefined ? plural : `${singular}s`;
+  return [String(count), pluralText].join(' ');
+}

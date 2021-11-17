@@ -77,7 +77,7 @@ export default function FollowedMangaScreen() {
       getManga(
         `https://api.mangadex.org/manga?includes[]=cover_art&contentRating[]=safe&contentRating[]=erotica&contentRating[]=suggestive&contentRating[]=pornographic&${mangaIds
           .map(mangaId => `ids[]=${mangaId}`)
-          .join('&')}`,
+          .join('&')}&limit=${mangaIds.length}`,
       ).then(response => {
         if (response?.result === 'ok') {
           setManga(response.data);

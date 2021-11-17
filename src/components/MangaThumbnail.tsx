@@ -45,7 +45,7 @@ export default function MangaThumbnail({
     manga.attributes.contentRating === ContentRating.pornographic;
 
   const hentaiBadgeMarkup = isHentai ? (
-    <ThumbnailBadge>18+</ThumbnailBadge>
+    <ThumbnailBadge badgeStyle={{backgroundColor: '#f00', fontWeight: 'bold'}}>18+</ThumbnailBadge>
   ) : null;
   const readingStatusBackgroundColor = useBackgroundColor(readingStatusInfo(readingStatus).background);
 
