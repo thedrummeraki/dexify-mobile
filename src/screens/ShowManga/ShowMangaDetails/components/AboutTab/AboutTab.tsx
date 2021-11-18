@@ -3,6 +3,7 @@ import {ScrollView, View} from 'react-native';
 import FastImage from 'react-native-fast-image';
 import LinearGradient from 'react-native-linear-gradient';
 import {
+  Button,
   Caption,
   Chip,
   IconButton,
@@ -26,7 +27,7 @@ import MangaThumbnail from 'src/components/MangaThumbnail';
 import {useDexifyNavigation} from 'src/foundation';
 import Thumbnail from 'src/foundation/Thumbnail';
 import {useMangaDetails} from '../../ShowMangaDetails';
-import LibraryButton from './LibraryButton';
+import FollowMangaButton from './FollowMangaButton';
 import StartReadingButton from './StartReadingButton';
 
 export default function AboutTab() {
@@ -100,7 +101,16 @@ export default function AboutTab() {
             )}
           </View>
         </View>
-        <LibraryButton style={{marginTop: 20}} />
+        <View style={{marginTop: 20, padding: 5}}>
+          <FollowMangaButton />
+          <Button
+            mode="outlined"
+            icon="plus"
+            style={{marginTop: 5}}
+            onPress={() => navigation.push('AddToPlaylist', {manga})}>
+            Add to list...
+          </Button>
+        </View>
         <View style={{padding: 5}}>
           <View style={{flex: 1}}>
             <View
@@ -109,7 +119,7 @@ export default function AboutTab() {
                 alignItems: 'center',
                 justifyContent: 'flex-start',
                 flexWrap: 'wrap',
-                marginTop: 22,
+                marginTop: 17,
               }}>
               {contentRating && <TextBadge {...contentRating} />}
               {manga.attributes.publicationDemographic && (

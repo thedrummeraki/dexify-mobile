@@ -21,7 +21,7 @@ import {useMangaDetails} from '../../ShowMangaDetails';
 type ButtonProps = React.ComponentProps<typeof Button>;
 type Props = Omit<ButtonProps, 'children'>;
 
-export default function LibraryButton({style, ...props}: Props) {
+export default function FollowMangaButton({style, ...props}: Props) {
   const {manga} = useMangaDetails();
   const session = useSession();
   const readingStatus = useLibraryStatus(manga);
@@ -31,8 +31,8 @@ export default function LibraryButton({style, ...props}: Props) {
 
   if (!session) {
     return (
-      <Button disabled icon="plus" {...props} onPress={undefined}>
-        Add to library
+      <Button disabled icon="heart" {...props} onPress={undefined}>
+        Mark as...
       </Button>
     );
   }
@@ -68,6 +68,7 @@ export default function LibraryButton({style, ...props}: Props) {
                   title={title}
                   updating={updating}
                   setUpdating={setUpdating}
+                  onComplete={() => setShowActions(false)}
                 />
               );
             }}
@@ -83,11 +84,13 @@ function AddToLibraryChip({
   title,
   updating,
   setUpdating,
+  onComplete,
 }: {
   readingStatus: ReadingStatus;
   title: string;
   updating: boolean;
   setUpdating: (updating: boolean) => void;
+  onComplete(): void;
 }) {
   const {manga} = useMangaDetails();
   const {updateMangaReadingStatus, refreshReadingStatuses} =
@@ -107,6 +110,7 @@ function AddToLibraryChip({
         willAdd ? readingStatus : null,
       );
       if (response?.result === 'ok') {
+        onComplete();
         return await refreshReadingStatuses!();
       }
     } catch (error) {

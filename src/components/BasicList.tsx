@@ -53,9 +53,8 @@ export default function BasicList<T extends BasicResource>({
             <BasicListItem
               key={id}
               id={String(id)}
-              style={{flexBasis, paddingHorizontal: 10, paddingVertical: 7}}
-              itemStyle={itemStyle}
-            >
+              style={{flexBasis, padding: 10}}
+              itemStyle={itemStyle}>
               {skeletonItem}
             </BasicListItem>
           ))}
@@ -71,9 +70,8 @@ export default function BasicList<T extends BasicResource>({
           <BasicListItem
             key={item.id || item.slug || `basic-list-${index}`}
             id={item.id || item.slug || `basic-list-${index}`}
-            style={{flexBasis, paddingHorizontal: 10, paddingVertical: 7}}
-            itemStyle={itemStyle}
-          >
+            style={{flexBasis, padding: 10}}
+            itemStyle={itemStyle}>
             {renderItem(item, index)}
           </BasicListItem>
         ))}

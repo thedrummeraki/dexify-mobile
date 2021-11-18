@@ -10,14 +10,17 @@ import {
   ShowManga,
   ShowMangaGallery,
   ShowMangaList,
+  AddToPlaylist,
 } from 'src/screens';
 import {RouteProp, useNavigation, useRoute} from '@react-navigation/core';
 import {Header} from '.';
 import {HeaderContext, useUpdatedSession} from 'src/prodivers';
+import {Manga} from 'src/api/mangadex/types';
 
 type RootStackParamList = {
   Home: undefined;
   ShowManga: {id: string};
+  AddToPlaylist: {manga: Manga};
   ShowMangaGallery: {id: string; number?: number};
   ShowChapter: {id: string};
   ShowArtist: {id: string; allowHentai?: boolean};
@@ -73,6 +76,7 @@ export default function Navigation() {
         component={ShowManga}
         options={{title: ' '}} // little hack to avoid showing "ShowManga"
       />
+      <Stack.Screen name="AddToPlaylist" component={AddToPlaylist} />
       <Stack.Screen
         name="ShowMangaGallery"
         component={ShowMangaGallery}
@@ -95,6 +99,10 @@ export function useDexifyNavigation() {
 
 export function useShowMangaRoute() {
   return useRoute<RouteProp<RootStackParamList, 'ShowManga'>>();
+}
+
+export function useAddToPlaylistRoute() {
+  return useRoute<RouteProp<RootStackParamList, 'AddToPlaylist'>>();
 }
 
 export function useShowMangaGalleryRoute() {

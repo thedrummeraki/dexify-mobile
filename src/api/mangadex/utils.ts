@@ -174,6 +174,6 @@ export function readingStatusInfo(readingStatus?: ReadingStatus | null): {
     case ReadingStatus.Reading:
       return {content: 'Reading', background: 'primary', icon: 'play'};
     default:
-      return {content: 'Add to library', default: true, icon: 'plus'};
+      return {content: 'Mark as...', default: true, icon: 'heart'};
   }
 }
