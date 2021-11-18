@@ -16,7 +16,7 @@ export interface MangadexError {
   detail: string;
 }
 
-interface BasicResultsResponse {
+export interface BasicResultsResponse {
   result: 'ok' | 'error';
 }
 

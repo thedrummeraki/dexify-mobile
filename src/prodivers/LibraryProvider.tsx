@@ -3,16 +3,26 @@ import React, {
   useCallback,
   useContext,
   useEffect,
+  useState,
 } from 'react';
+import { findRelationships } from 'src/api';
 import {
   AllReadingStatusResponse,
   Manga,
+  CustomList,
+  PagedResultsList,
   ReadingStatus,
   ReadingStatusUpdateResponse,
+  ContentRating,
+  BasicResultsResponse,
 } from 'src/api/mangadex/types';
-import { CustomList } from 'src/api/mangadex/types/custom_list';
 import {useLazyGetRequest, usePostRequest} from 'src/api/utils';
 import {useSession, useUpdatedSession} from '.';
+
+interface CustomListInfo {
+  customList: CustomList;
+  manga: Manga[];
+}
 
 interface LibraryState {
   loading: boolean;
@@ -23,8 +33,11 @@ interface LibraryState {
     status: ReadingStatus | null,
   ): Promise<ReadingStatusUpdateResponse | undefined>;
 
-  customLists: CustomList[];
-  refreshCustomLists(): Promise<CustomList[]>;
+  customListInfo: CustomListInfo[];
+  refreshCustomLists(): Promise<PagedResultsList<CustomList> | undefined>;
+  createCustomList(options: CustomList.CreateParams): Promise<CustomList | undefined>;
+  updateCustomList(id: string, options: CustomList.UpdateParams): Promise<CustomList | undefined>;
+  addMangaToCustomList(id: string, manga: string[]): Promise<BasicResultsResponse>;
 }
 
 export const LibraryContext = React.createContext<Partial<LibraryState>>({});
@@ -76,19 +89,49 @@ export function useLibraryMangaIds(readingStatus?: ReadingStatus) {
 export default function LibraryProvider({children}: PropsWithChildren<{}>) {
   const session = useSession();
   const {refreshToken} = useUpdatedSession();
-  const [getReadingStatus, {data: readingStatus, loading, error}] =
+  
+  // Reading status (followed manga)
+  const [getReadingStatus, {data: readingStatus, loading: readingStatusLoading}] =
     useLazyGetRequest<AllReadingStatusResponse>(
       'https://api.mangadex.org/manga/status',
     );
-
   const [postReadingStatus, {loading: updating}] =
     usePostRequest<ReadingStatusUpdateResponse>();
+
+  // Custom lists (library)
+  const [customListInfo, setCustomListInfo] = useState<CustomListInfo[]>();
+  const [getCustomLists, {data: customLists, loading: customListLoading}] = useLazyGetRequest<PagedResultsList<CustomList>>(
+    'https://api.mangadex.org/user/list'
+  );
+  const [postCreateCustomList] = usePostRequest<CustomList>();
+  const [postUpdateCustomList] = usePostRequest<CustomList>();
+  const [postMddMangaToCustomList] = usePostRequest<BasicResultsResponse>();
+  const [getManga] = useLazyGetRequest<PagedResultsList<Manga>>();
+
+  const loading = readingStatusLoading || customListLoading;
 
   useEffect(() => {
     if (session) {
       getReadingStatus();
+      getCustomLists();
     }
   }, [session]);
+
+  useEffect(() => {
+    if (customLists?.result === 'ok') {
+      getManga(mangaListUrlsFrom(customLists.data)).then(response => {
+        if (response?.result === 'ok') {
+          const result: CustomListInfo[] = [];
+          for (const customList of customLists.data) {
+            const customListMangaIds = findRelationships(customList, 'manga').map(r => r.id);
+            const manga = response.data.filter(m => customListMangaIds.includes(m.id))
+            result.push({customList, manga});
+          }
+          setCustomListInfo(result);
+        }
+      }).catch(console.error)
+    }
+  }, [customLists]);
 
   const updateMangaReadingStatus = useCallback(
     async (id: string, status: ReadingStatus) => {
@@ -100,8 +143,6 @@ export default function LibraryProvider({children}: PropsWithChildren<{}>) {
             JSON.stringify(authResponse),
           );
           return;
-        } else if (!authResponse) {
-          console.warn('the session token was not refreshed!');
         }
 
         return await postReadingStatus(
@@ -117,6 +158,29 @@ export default function LibraryProvider({children}: PropsWithChildren<{}>) {
     [],
   );
 
+  const createCustomList = useCallback(async (options: CustomList.CreateParams) => {
+    try {
+      const authResponse = await refreshToken();
+      if (authResponse && authResponse.result !== 'ok') {
+        console.warn(
+          'could not refresh session token:',
+          JSON.stringify(authResponse),
+        );
+        return;
+      }
+
+      return await postCreateCustomList(
+        'https://api.mangadex.org/list',
+        {
+          ...options,
+          version: 1,
+        }
+      )
+    } catch (error) {
+      console.error('create custom list', error);
+    }
+  }, []);
+
   return (
     <LibraryContext.Provider
       value={{
@@ -124,8 +188,30 @@ export default function LibraryProvider({children}: PropsWithChildren<{}>) {
         readingStatus,
         refreshReadingStatuses: getReadingStatus,
         updateMangaReadingStatus,
+        refreshCustomLists: getCustomLists,
+        createCustomList,
+        customListInfo,
       }}>
       {children}
     </LibraryContext.Provider>
   );
+}
+
+function mangaListUrlsFrom(customLists: CustomList[]) {
+  const mangasIds: string[] = [];
+  for (const customList of customLists) {
+    for (const id of findRelationships(customList, 'manga').map(r => r.id)) {
+      if (!mangasIds.includes(id)) {
+        mangasIds.push(id);
+      }
+    }
+  }
+
+  const mangaParams = mangasIds.map(id => `ids[]=${id}`).join('&');
+  const contentRatingParams = Object.values(ContentRating).map(cr => `contentRating[]=${cr}`).join('&');
+  const otherParams = new URLSearchParams({limit: String(mangasIds.length), 'includes[]': 'cover_art'}).toString();
+
+  return (
+    `https://api.mangadex.org/manga?${otherParams}&${mangaParams}&${contentRatingParams}`
+  )
 }

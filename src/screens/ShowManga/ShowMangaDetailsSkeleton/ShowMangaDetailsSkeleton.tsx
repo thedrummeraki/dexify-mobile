@@ -17,7 +17,6 @@ export default function ShowMangaDetailsSkeleton() {
       <Tab.Navigator>
         <Tab.Screen name="About" component={AboutSkeleton} />
         <Tab.Screen name="Read" component={EmptyContent} />
-        <Tab.Screen name="Anime" component={EmptyContent} />
         <Tab.Screen name="Gallery" component={EmptyContent} />
       </Tab.Navigator>
     </View>

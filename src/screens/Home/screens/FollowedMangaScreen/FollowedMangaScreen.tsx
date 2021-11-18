@@ -140,7 +140,7 @@ export default function FollowedMangaScreen() {
           data={currentMangaList}
           aspectRatio={1 / 3}
           renderItem={item => (
-            <MangaThumbnail key={item.id} hideTitle manga={item} />
+            <MangaThumbnail key={item.id} manga={item} />
           )}
           skeletonItem={
             <ThumbnailSkeleton width="100%" aspectRatio={0.8} height="100%" />

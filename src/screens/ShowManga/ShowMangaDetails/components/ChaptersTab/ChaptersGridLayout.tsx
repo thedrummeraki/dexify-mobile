@@ -30,7 +30,7 @@ export default function ChaptersGridLayout({loading, count, chapters}: Props) {
       aspectRatio={aspectRatio}
       renderItem={item => (
         <Button
-          mode="outlined"
+          mode="contained"
           onPress={() => navigation.navigate('ShowChapter', {id: item.id})}>
           {item.attributes.chapter === 'none' || !item.attributes.chapter
             ? 'N/A'

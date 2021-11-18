@@ -72,7 +72,7 @@ export default function ShowMangaDetails({manga}: Props) {
           }}>
           <Tab.Screen name="About" component={AboutTab} />
           <Tab.Screen name="Read" component={ChaptersTab} />
-          <Tab.Screen name="Anime" component={AnimeDetailsTab} />
+          {/* <Tab.Screen name="Anime" component={AnimeDetailsTab} /> */}
           <Tab.Screen name="Gallery" component={GalleryTab} />
         </Tab.Navigator>
       </View>
