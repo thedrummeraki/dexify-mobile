@@ -1,20 +1,11 @@
-import React, {useEffect} from 'react';
-import {Touchable, TouchableNativeFeedback, View} from 'react-native';
-import {TouchableRipple} from 'react-native-paper';
+import React from 'react';
 import {useDexifyNavigation} from 'src/foundation/Navigation';
 import {useSession} from 'src/prodivers';
-import {mangaImage, preferredMangaTitle} from '../../api';
 import {Manga, PagedResultsList} from '../../api/mangadex/types';
-import {
-  useCategoryRequest,
-  useGetRequest,
-  useLazyGetRequest,
-} from '../../api/utils';
+import {useCategoryRequest} from '../../api/utils';
 import {UIMangaCategory} from '../../categories';
-import Thumbnail from '../../foundation/Thumbnail';
 import MangaThumbnail from '../MangaThumbnail';
 import CategoriesCollectionSection from './CategoriesCollectionSection';
-import {url} from './utils';
 
 export default function MangaCategoryItem({
   category,

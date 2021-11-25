@@ -1,5 +1,5 @@
-import {CoverArt, MangadexError, ScanlationGroup} from '.';
-import {Order, Relationship} from './api';
+import {CoverArt, ScanlationGroup} from '.';
+import {MangadexError, Order, Relationship} from './api';
 import {Author} from './author';
 import {Maybe} from './utils';
 

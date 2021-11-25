@@ -15,11 +15,13 @@ import {
 import {RouteProp, useNavigation, useRoute} from '@react-navigation/core';
 import {Header} from '.';
 import {HeaderContext, useUpdatedSession} from 'src/prodivers';
-import {Manga} from 'src/api/mangadex/types';
+import {Manga, MangaRequestParams} from 'src/api/mangadex/types';
+
+type MangaParams = Partial<Omit<Manga, 'type' | 'id'>> & {id: string};
 
 type RootStackParamList = {
   Home: undefined;
-  ShowManga: {id: string};
+  ShowManga: MangaParams;
   AddToPlaylist: {manga: Manga};
   ShowMangaGallery: {id: string; number?: number};
   ShowChapter: {id: string};
@@ -28,7 +30,7 @@ type RootStackParamList = {
     title?: string;
     description?: string;
     ids?: string[];
-    params?: Record<string, string>;
+    params?: MangaRequestParams;
   };
 };
 

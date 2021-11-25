@@ -1,7 +1,8 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {Keyboard, ScrollView, StyleProp, View, ViewStyle} from 'react-native';
+import {ScrollView, StyleProp, View, ViewStyle} from 'react-native';
 import {Title} from 'react-native-paper';
 import {CoverSize, mangaImage, preferredMangaTitle} from 'src/api';
+import {useLazyGetMangaList} from 'src/api/mangadex/hooks';
 import {Author, Manga, PagedResultsList} from 'src/api/mangadex/types';
 import {useLazyGetRequest} from 'src/api/utils';
 import BasicList from 'src/components/BasicList';
@@ -24,12 +25,9 @@ export default function BrowseResults({query}: Props) {
   const [offset, setOffset] = useState(0);
   const [hasMoreManga, setHasMoreManga] = useState(false);
   const [authorIds, setAuthorIds] = useState<string[]>([]);
-  const [getMangas, {data, loading, error}] =
-    useLazyGetRequest<PagedResultsList<Manga>>();
+  const [searchMangas, {data, loading, error}] = useLazyGetMangaList();
   const [getAuthors, {data: authorsData}] =
     useLazyGetRequest<PagedResultsList<Author>>();
-
-  useEffect(() => Keyboard.dismiss(), [loading]);
 
   useEffect(() => {
     if (data?.result === 'ok') {
@@ -52,9 +50,12 @@ export default function BrowseResults({query}: Props) {
   }, [authorsData]);
 
   useEffect(() => {
-    getMangas(
-      `https://api.mangadex.org/manga?title=${query}&includes[]=cover_art&order[followedCount]=desc&limit=100&offset=${offset}`,
-    );
+    searchMangas({
+      title: query,
+      order: {relevance: 'desc'},
+      limit: 100,
+      offset,
+    });
   }, [query, offset]);
   useEffect(() => {
     getAuthors(`https://api.mangadex.org/author?name=${query}&limit=100`);

@@ -16,6 +16,7 @@ import {
   ContentRating,
   BasicResultsResponse,
 } from 'src/api/mangadex/types';
+import UrlBuilder from 'src/api/mangadex/types/api/url_builder';
 import {useLazyGetRequest, usePostRequest} from 'src/api/utils';
 import {useSession, useUpdatedSession} from '.';
 
@@ -248,14 +249,9 @@ function mangaListUrlsFrom(customLists: CustomList[]) {
     }
   }
 
-  const mangaParams = mangasIds.map(id => `ids[]=${id}`).join('&');
-  const contentRatingParams = Object.values(ContentRating)
-    .map(cr => `contentRating[]=${cr}`)
-    .join('&');
-  const otherParams = new URLSearchParams({
-    limit: String(mangasIds.length),
-    'includes[]': 'cover_art',
-  }).toString();
-
-  return `https://api.mangadex.org/manga?${otherParams}&${mangaParams}&${contentRatingParams}`;
+  return UrlBuilder.mangaList({
+    ids: mangasIds,
+    limit: mangasIds.length,
+    contentRating: Object.values(ContentRating),
+  });
 }

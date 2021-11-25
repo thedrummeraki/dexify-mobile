@@ -14,7 +14,7 @@ import Thumbnail, {
   ThumbnailDimensionsProps,
 } from 'src/foundation/Thumbnail';
 import {useLibraryStatus} from 'src/prodivers';
-import { useBackgroundColor } from './colors';
+import {useBackgroundColor} from './colors';
 
 interface Props {
   manga: Manga;
@@ -38,20 +38,25 @@ export default function MangaThumbnail({
 }: Props & Partial<ThumbnailDimensionsProps>) {
   const navigation = useDexifyNavigation();
   const handlePress = useCallback(() => {
-    navigation.push('ShowManga', {id: manga.id});
+    navigation.push('ShowManga', manga);
   }, [manga.id]);
   const readingStatus = useLibraryStatus(manga);
   const isHentai =
     manga.attributes.contentRating === ContentRating.pornographic;
 
   const hentaiBadgeMarkup = isHentai ? (
-    <ThumbnailBadge badgeStyle={{backgroundColor: '#f00', fontWeight: 'bold'}}>18+</ThumbnailBadge>
+    <ThumbnailBadge badgeStyle={{backgroundColor: '#f00', fontWeight: 'bold'}}>
+      18+
+    </ThumbnailBadge>
   ) : null;
-  const readingStatusBackgroundColor = useBackgroundColor(readingStatusInfo(readingStatus).background);
+  const readingStatusBackgroundColor = useBackgroundColor(
+    readingStatusInfo(readingStatus).background,
+  );
 
   const readingStatusMarkup =
     showReadingStatus && readingStatus !== null ? (
-      <ThumbnailBadge badgeStyle={{backgroundColor: readingStatusBackgroundColor}}>
+      <ThumbnailBadge
+        badgeStyle={{backgroundColor: readingStatusBackgroundColor}}>
         {readingStatusInfo(readingStatus).content}
       </ThumbnailBadge>
     ) : null;

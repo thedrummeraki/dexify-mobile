@@ -8,8 +8,10 @@ import {
   mangaImage,
   preferredMangaTitle,
 } from 'src/api';
+import {useLazyGetMangaList} from 'src/api/mangadex/hooks';
 import {
   AllReadingStatusResponse,
+  ContentRating,
   CoverArt,
   Manga,
   PagedResultsList,
@@ -42,7 +44,7 @@ export default function FollowedMangaScreen() {
   const selectedChipColor = useBackgroundColor('primary');
   const {readingStatus: data} = useLibraryContext();
 
-  const [getManga, {loading}] = useLazyGetRequest<PagedResultsList<Manga>>();
+  const [getManga, {loading}] = useLazyGetMangaList();
 
   const filterManga = useCallback((query: string, manga: Manga[]) => {
     return manga.filter(item => {
@@ -74,11 +76,11 @@ export default function FollowedMangaScreen() {
         .map(([mangaId]) => mangaId);
 
       setManga([]);
-      getManga(
-        `https://api.mangadex.org/manga?includes[]=cover_art&contentRating[]=safe&contentRating[]=erotica&contentRating[]=suggestive&contentRating[]=pornographic&${mangaIds
-          .map(mangaId => `ids[]=${mangaId}`)
-          .join('&')}&limit=${mangaIds.length}`,
-      ).then(response => {
+      getManga({
+        contentRating: Object.values(ContentRating),
+        limit: mangaIds.length,
+        ids: mangaIds,
+      }).then(response => {
         if (response?.result === 'ok') {
           setManga(response.data);
         }
@@ -139,13 +141,14 @@ export default function FollowedMangaScreen() {
           loading={loading}
           data={currentMangaList}
           aspectRatio={1 / 3}
-          renderItem={item => (
-            <MangaThumbnail key={item.id} manga={item} />
-          )}
+          renderItem={item => <MangaThumbnail key={item.id} manga={item} />}
           skeletonItem={
             <ThumbnailSkeleton width="100%" aspectRatio={0.8} height="100%" />
           }
-          skeletonLength={occurences(Object.values(data?.statuses || []), selectedReadingStatus)}
+          skeletonLength={occurences(
+            Object.values(data?.statuses || []),
+            selectedReadingStatus,
+          )}
         />
       </ScrollView>
     </View>

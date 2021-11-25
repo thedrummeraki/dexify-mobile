@@ -1,3 +1,4 @@
+import UrlBuilder from 'src/api/mangadex/types/api/url_builder';
 import {UICategory} from '../../categories';
 
 export function url(category: UICategory) {
@@ -5,20 +6,17 @@ export function url(category: UICategory) {
     return category.url;
   }
 
+  if (category.type === 'manga') {
+    return UrlBuilder.mangaListForCategory(category);
+  }
+
   if (category.loading) {
     return null;
   }
 
   let additionalParams = category.params
-    ? new URLSearchParams(category.params).toString()
+    ? UrlBuilder.paramsToString(category.params)
     : '';
-
-  if (category.type === 'manga' && category.contentRatings) {
-    additionalParams = additionalParams.concat(
-      '&',
-      category.contentRatings.map(cr => `contentRating[]=${cr}`).join('&')
-    )
-  }
 
   const idParams = category.ids
     ? category.ids.map(id => `ids[]=${id}`).join('&')

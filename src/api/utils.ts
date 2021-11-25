@@ -9,7 +9,7 @@ import {UICategory} from 'src/categories';
 import {url} from 'src/components/CategoriesCollection/utils';
 import {useSession} from 'src/prodivers';
 
-interface RequestResult<T> {
+export interface RequestResult<T> {
   data?: T;
   response?: AxiosResponse<T>;
   loading: boolean;

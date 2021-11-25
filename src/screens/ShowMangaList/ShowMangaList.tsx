@@ -1,6 +1,7 @@
 import React from 'react';
 import {ActivityIndicator} from 'react-native-paper';
 import {Manga, PagedResultsList} from 'src/api/mangadex/types';
+import UrlBuilder from 'src/api/mangadex/types/api/url_builder';
 import {useGetRequest} from 'src/api/utils';
 import {Banner} from 'src/components';
 import MangaCollection from 'src/components/MangaCollection';
@@ -44,18 +45,13 @@ function useMangaListUrl() {
     params: {params, ids},
   } = useShowMangaListRoute();
 
-  let url = 'https://api.mangadex.org/manga';
-
-  const idParams = ids ? ids.map(id => `ids[]=${id}`).join('&') : '';
-  const additionalParams = params ? new URLSearchParams(params).toString() : '';
-
-  const finalParams = [idParams, `limit=${ids?.length || 10}`, additionalParams]
-    .filter(params => Boolean(params))
-    .join('&');
-
-  if (finalParams.length) {
-    url = url.concat('?', finalParams);
+  if (!ids) {
+    return UrlBuilder.mangaList(params);
   }
 
-  return url;
+  return UrlBuilder.mangaListForCategory({
+    type: 'manga',
+    ids,
+    params,
+  });
 }

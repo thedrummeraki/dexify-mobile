@@ -1,4 +1,10 @@
-import {Artist, Author, CoverArt, Manga, ScanlationGroup} from '.';
+import {
+  Artist,
+  Author,
+  CoverArt,
+  Manga,
+  ScanlationGroup,
+} from 'src/api/mangadex/types';
 
 export function defaultPagedResults<T>() {
   return {

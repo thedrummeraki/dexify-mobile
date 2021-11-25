@@ -26,7 +26,10 @@ function authenticatedHomeCategories(
       title: 'Most popular titles!',
       type: 'manga',
       description: 'Most popular manga on Mangadex.',
-      url: 'https://api.mangadex.org/manga?order%5BfollowedCount%5D=desc&limit=20&includes[]=cover_art',
+      params: {
+        order: {followedCount: 'desc'},
+        limit: 20,
+      },
       viewMore: {
         onAction: () =>
           navigation.push('ShowMangaList', {
@@ -43,10 +46,6 @@ function authenticatedHomeCategories(
       title: 'Fall 2021 Seasonal manga',
       type: 'manga',
       ids: airingMangas,
-      params: {
-        'includes[]': 'cover_art',
-        'order[followedCount]': 'desc',
-      },
       viewMore: {
         onAction: () =>
           navigation.push('ShowMangaList', {
@@ -57,12 +56,18 @@ function authenticatedHomeCategories(
             params: {'order[followedCount]': 'desc', 'includes[]': 'cover_art'},
           }),
       },
+      params: {
+        order: {followedCount: 'desc'},
+      },
     },
     {
       title: 'New additions',
       type: 'manga',
       description: 'Newest titles added to Mangadex',
-      url: 'https://api.mangadex.org/manga?order[createdAt]=desc&includes[]=cover_art&limit=50',
+      params: {
+        order: {createdAt: 'desc'},
+        limit: 50,
+      },
     },
   ];
 }
@@ -109,7 +114,11 @@ export function useBrowseCategories(): UICategory[] {
     },
     {
       title: 'Recently added on Mangadex',
-      url: `https://api.mangadex.org/manga?order%5BcreatedAt%5D=desc&includes[]=cover_art&limit=50`,
+      // url: `https://api.mangadex.org/manga?order%5BcreatedAt%5D=desc&includes[]=cover_art&limit=50`,
+      params: {
+        order: {createdAt: 'desc'},
+        limit: 50,
+      },
       type: 'manga',
     },
     {

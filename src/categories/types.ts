@@ -1,6 +1,5 @@
-import { ContentRating } from "src/api/mangadex/types";
-
-type Params = string[][] | Record<string, string> | string;
+import {ContentRating, MangaRequestParams} from 'src/api/mangadex/types';
+import {ParamsLike} from 'src/api/mangadex/types/api/url_builder';
 
 export interface SecondaryAction {
   content?: string;
@@ -17,8 +16,14 @@ interface UIBaseCategory {
   viewMore?: SecondaryAction;
   url?: string;
   ids?: Array<string>;
-  params?: Params;
+  params?: ParamsLike;
   requiresAuth?: boolean;
+}
+
+interface WithJustParams extends UIBaseCategory {
+  url?: undefined;
+  ids?: undefined;
+  params?: ParamsLike;
 }
 
 interface UICategoryWithURL extends UIBaseCategory {
@@ -30,14 +35,18 @@ interface UICategoryWithURL extends UIBaseCategory {
 interface UICategoryWithResourceIds extends UIBaseCategory {
   ids: Array<string>;
   url?: undefined;
-  params?: Params;
+  params?: ParamsLike;
 }
 
-type UIUntypedCategory = UICategoryWithResourceIds | UICategoryWithURL;
+type UIUntypedCategory =
+  | UICategoryWithResourceIds
+  | UICategoryWithURL
+  | WithJustParams;
 
 export type UIMangaCategory = UIUntypedCategory & {
   type: 'manga';
   contentRatings?: ContentRating[];
+  params?: MangaRequestParams;
 };
 
 export type UIChapterCategory = UIUntypedCategory & {

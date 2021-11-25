@@ -2,8 +2,9 @@ import React from 'react';
 import {RefreshControl, SafeAreaView, View, ScrollView} from 'react-native';
 import {Button, Title} from 'react-native-paper';
 import {mangaImage} from 'src/api';
-import {Manga} from 'src/api/mangadex/types';
+import {ContentRating, Manga} from 'src/api/mangadex/types';
 import BasicList from 'src/components/BasicList';
+import {useDexifyNavigation} from 'src/foundation';
 import Thumbnail from 'src/foundation/Thumbnail';
 import {useLibraryContext} from 'src/prodivers';
 
@@ -24,6 +25,7 @@ const wait = (timeout: number) => {
 };
 
 export default function LibraryDetails({mangaInList}: Props) {
+  const navigation = useDexifyNavigation();
   const {createCustomList, refreshCustomLists} = useLibraryContext();
 
   const [refreshing, setRefreshing] = React.useState(false);
@@ -64,7 +66,14 @@ export default function LibraryDetails({mangaInList}: Props) {
                 width="100%"
                 aspectRatio={1}
                 title={item.title}
-                onPress={() => console.log('hhhelllo>?>>>>>>>????')}
+                onPress={() =>
+                  navigation.push('ShowMangaList', {
+                    params: {
+                      ids: item.manga.map(m => m.id),
+                      contentRating: Object.values(ContentRating),
+                    },
+                  })
+                }
               />
             );
           }}
