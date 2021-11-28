@@ -37,7 +37,7 @@ export default function MangaRecommendationSection({section: {manga}}: Props) {
     .join(' - ');
 
   return (
-    <Card mode="outlined" style={{marginHorizontal: 20}}>
+    <Card mode="outlined" style={{margin: 15}}>
       <Card.Title title={preferredMangaTitle(manga)} subtitle={relavantInfo} />
       <Card.Cover
         source={{uri: mangaImage(manga, {size: CoverSize.Original})}}

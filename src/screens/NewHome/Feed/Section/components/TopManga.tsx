@@ -36,7 +36,7 @@ export default function TopManga({manga}: Props) {
           bottom: 30,
           left: 0,
           zIndex: 1,
-          marginHorizontal: 20,
+          marginHorizontal: 15,
         }}>
         <Title>{preferredMangaTitle(manga)}</Title>
         {description && (

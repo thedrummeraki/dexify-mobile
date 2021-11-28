@@ -60,14 +60,15 @@ export default function CategoriesCollectionSection<T>({
     return (
       <View style={{marginTop: 5, marginBottom: title ? 15 : 5}}>
         {title ? (
-          <Title style={{marginHorizontal: 20}}>{title}</Title>
+          <Title style={{marginHorizontal: 15}}>{title}</Title>
         ) : undefined}
         <FlatList
           horizontal={horizontal}
           data={Array.from({length: skeletonLength}).map((_, index) => index)} // 5 skeleton items
           style={{marginTop: 10}}
           showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{marginHorizontal: title ? 20 : 5}}
+          contentContainerStyle={{marginHorizontal: title ? 15 : 5}}
+          ListFooterComponent={<View style={{margin: 10}} />}
           renderItem={({item}) => (
             <View key={String(item)} style={{marginRight: 10}}>
               {SkeletonItem || <ThumbnailSkeleton {...dimensions} />}
@@ -86,7 +87,7 @@ export default function CategoriesCollectionSection<T>({
             flexDirection: 'row',
             justifyContent: 'space-between',
           }}>
-          <Title style={{marginHorizontal: 20}}>{title}</Title>
+          <Title style={{marginHorizontal: 15}}>{title}</Title>
           {viewMore ? (
             <Button icon={viewMore.icon} onPress={viewMore.onAction}>
               {viewMore.content || 'More >'}
@@ -99,7 +100,8 @@ export default function CategoriesCollectionSection<T>({
         data={data}
         style={{marginTop: 10}}
         showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{marginHorizontal: title ? 20 : 5}}
+        contentContainerStyle={{marginHorizontal: title ? 15 : 5}}
+        ListFooterComponent={<View style={{margin: 10}} />}
         renderItem={({item}) => (
           <View style={{marginRight: 10}}>{renderItem(item, dimensions)}</View>
         )}
