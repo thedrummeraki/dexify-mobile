@@ -9,6 +9,7 @@ import {
   MyProfileNavigationScreen,
   FollowedMangaScreen,
 } from './screens';
+import {NewHome} from '..';
 
 export default function Home() {
   useHeader({title: 'Dexify', hideHeader: true});
@@ -25,14 +26,14 @@ function AuthenticatedBottomNavigation() {
   const [index, setIndex] = useState(0);
   const [routes] = useState([
     {key: 'main', title: 'Home', icon: 'home'},
-    {key: 'browse', title: 'Browse...', icon: 'magnify'},
     {key: 'library', title: 'Library', icon: 'library-shelves'},
+    {key: 'browse', title: 'Browse...', icon: 'magnify'},
     {key: 'followed', title: 'Followed', icon: 'heart'},
     {key: 'profile', title: 'My profile', icon: 'account'},
   ]);
 
   const renderScene = BottomNavigation.SceneMap({
-    main: MainNavigationScreen,
+    main: NewHome,
     browse: BrowseNavigationScreen,
     library: MyLibraryNavigationScreen,
     followed: FollowedMangaScreen,

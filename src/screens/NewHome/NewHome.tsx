@@ -1,5 +1,5 @@
 import React, {useContext, useEffect, useRef, useState} from 'react';
-import {Text} from 'react-native-paper';
+import {ActivityIndicator, Text} from 'react-native-paper';
 import {preferredMangaTitle} from 'src/api';
 import Feed from './Feed/Feed';
 import {FeedResponse} from './Feed/types';
@@ -8,11 +8,7 @@ import HomeProvider, {HomeContext} from './HomeProvider';
 import {useFeed, useHomePresenter} from './hooks';
 
 export default function HomeScreen() {
-  return (
-    <HomeProvider>
-      <Home />
-    </HomeProvider>
-  );
+  return <Home />;
 }
 
 function Home() {
@@ -42,7 +38,7 @@ function Home() {
   }, [responseData]);
 
   if (loading && !initialized.current) {
-    return <Text>Loading...</Text>;
+    return <ActivityIndicator style={{flex: 1}} />;
   }
 
   if (error || data?.result === 'error') {

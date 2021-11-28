@@ -4,7 +4,7 @@ import {
   NativeStackNavigationProp,
 } from '@react-navigation/native-stack';
 import {
-  NewHome,
+  Home,
   ShowArtist,
   ShowChapter,
   ShowManga,
@@ -70,7 +70,7 @@ export default function Navigation() {
       }}>
       <Stack.Screen
         name="Home"
-        component={NewHome}
+        component={Home}
         options={{headerShown: false}}
       />
       <Stack.Screen

@@ -233,7 +233,7 @@ export default function AboutTab() {
               />
             ))}
           </View>
-          <View
+          {/* <View
             style={{
               display: 'none',
               flexDirection: 'row',
@@ -246,7 +246,7 @@ export default function AboutTab() {
             {altTitles.map(title => (
               <TextBadge key={title} content={title} background="surface" />
             ))}
-          </View>
+          </View> */}
         </View>
       </ScrollView>
     </>

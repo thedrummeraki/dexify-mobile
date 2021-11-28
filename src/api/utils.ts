@@ -20,18 +20,14 @@ export function useAxiosRequestConfig(): AxiosRequestConfig {
   const session = useSession();
   const headers: Record<string, string> = {};
 
-  console.log('headers 1', headers);
-
   if (session?.session?.value) {
     headers['Authorization'] = session.session.value;
     headers['x-auth-session'] = session.session.value;
   }
 
-  console.log('headers 2', headers);
   if (session?.refresh.value) {
     headers['x-auth-refresh'] = session.refresh.value;
   }
-  console.log('headers 3', headers);
 
   return {headers};
 }

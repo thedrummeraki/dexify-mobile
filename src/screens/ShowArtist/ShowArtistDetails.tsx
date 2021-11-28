@@ -19,9 +19,6 @@ export default function ShowArtistDetails({manga, author}: Props) {
     title => findRelationship<Author>(title, 'author')?.type === 'author',
   );
 
-  console.log('as art', mangaAsArtist?.length);
-  console.log('as auth', mangaAsAuthor?.length);
-
   return (
     <ScrollView style={{flex: 15}}>
       <Title style={{paddingHorizontal: 5}}>
