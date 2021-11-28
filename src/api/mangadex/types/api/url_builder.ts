@@ -6,8 +6,21 @@ import {
 import {UIMangaCategory} from 'src/categories';
 import {ContentRating} from '..';
 
+interface FeedOptions {
+  only?:
+    | 'readingNow'
+    | 'popularManga'
+    | 'airingNow'
+    | 'randomManga'
+    | 'recentlyAdded';
+}
+
 export default class UrlBuilder {
-  static API_URL = 'https://api.mangadex.org';
+  static API_URL = 'http://192.168.2.24:3001'; // 'https://api.mangadex.org';
+
+  public static feed(params?: FeedOptions) {
+    return this.buildUrl('/home/feed', params);
+  }
 
   public static mangaList(params?: Partial<MangaRequestParams>) {
     const defaultValues: Partial<MangaRequestParams> = {
@@ -96,4 +109,5 @@ export default class UrlBuilder {
 export type ParamsLike =
   | {[key: string]: string | number | string[] | Order<any>}
   | string
-  | string[][];
+  | string[][]
+  | FeedOptions;

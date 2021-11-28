@@ -85,6 +85,7 @@ export function useLibraryMangaIds(readingStatus?: ReadingStatus) {
   const ids: string[] = [];
 
   if (loading || !data?.statuses) {
+    console.log(loading, data?.statuses);
     return null;
   }
 
@@ -124,7 +125,7 @@ export default function LibraryProvider({children}: PropsWithChildren<{}>) {
 
   useEffect(() => {
     if (session) {
-      getReadingStatus();
+      getReadingStatus().catch(console.error);
       getCustomLists();
     }
   }, [session]);
