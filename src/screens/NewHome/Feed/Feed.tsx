@@ -84,8 +84,8 @@ export default function Feed({data, refreshing, onRefresh}: Props) {
       {topMangaMarkup}
       {readingNowMarkup}
       {popularMangaMarkup}
-      {airingNowMarkup}
       {randomMangaMarkup}
+      {airingNowMarkup}
       {recentlyAddedMarkup}
     </ScrollView>
   );
