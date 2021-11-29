@@ -152,7 +152,7 @@ export default function ChaptersList({
         ListHeaderComponent={flatListHeader}
         ListEmptyComponent={
           <View style={{marginHorizontal: 15}}>
-            <Title>Loading chapters1...</Title>
+            <Title>Loading chapters...</Title>
           </View>
         }
         ListFooterComponent={ListFooterComponent}

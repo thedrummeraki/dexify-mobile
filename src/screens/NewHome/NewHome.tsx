@@ -20,7 +20,7 @@ function Home() {
   const handleOnRefresh = () => {
     setRefreshing(true);
     refresh()
-      .then(() => console.log('feed updated'))
+      .then(() => console.log('[INFO] feed updated'))
       .catch(console.error)
       .finally(() => setRefreshing(false));
   };

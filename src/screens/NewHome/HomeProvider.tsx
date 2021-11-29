@@ -37,8 +37,6 @@ export default function HomeProvider({children}: PropsWithChildren<{}>) {
 
   const [getMangas] = useLazyGetMangaList();
 
-  console.log('initialize state', initialized);
-
   useEffect(() => {
     if (readingNowMangaIds && !initialized.current.readingNow) {
       initialized.current.readingNow = true;
@@ -46,7 +44,6 @@ export default function HomeProvider({children}: PropsWithChildren<{}>) {
       getMangas({ids: readingNowMangaIds}).then(response => {
         if (response?.result === 'ok') {
           setState(state => ({...state, readingNow: response.data}));
-          console.log('setting state for readingnow');
         }
       });
     }

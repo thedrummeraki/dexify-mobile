@@ -85,7 +85,6 @@ export function useLibraryMangaIds(readingStatus?: ReadingStatus) {
   const ids: string[] = [];
 
   if (loading || !data?.statuses) {
-    console.log(loading, data?.statuses);
     return null;
   }
 
