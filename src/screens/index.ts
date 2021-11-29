@@ -1,4 +1,5 @@
 export {default as Home} from './Home';
+export {default as NewHome} from './NewHome';
 export {default as ShowManga} from './ShowManga';
 export {default as ShowMangaGallery} from './ShowMangaGallery';
 export {default as ShowChapter} from './ShowChapter';

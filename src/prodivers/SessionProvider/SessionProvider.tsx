@@ -93,6 +93,10 @@ export function useSession() {
   return session || null;
 }
 
+export function useIsLoggedIn() {
+  return Boolean(useSession());
+}
+
 export function checkSessionValidity(token?: Session) {
   return token ? token.validUntil > new Date() : false;
 }

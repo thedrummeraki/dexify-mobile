@@ -76,7 +76,7 @@ export default function Navigation() {
       <Stack.Screen
         name="ShowManga"
         component={ShowManga}
-        options={{title: ' '}} // little hack to avoid showing "ShowManga"
+        options={{headerShown: false}}
       />
       <Stack.Screen name="AddToPlaylist" component={AddToPlaylist} />
       <Stack.Screen

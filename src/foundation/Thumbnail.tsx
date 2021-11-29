@@ -37,8 +37,12 @@ interface WithMultipleImages {
   imageUrl: string[];
 }
 
-type SingleImageProps = Omit<BasicProps, 'imageUrl'> & WithSingleImage & Omit<ThumbnailDimensionsProps, 'width'>;
-type MultipleImagesProps = Omit<BasicProps, 'imageUrl'> & WithMultipleImages & Omit<ThumbnailDimensionsProps, 'width'>;
+type SingleImageProps = Omit<BasicProps, 'imageUrl'> &
+  WithSingleImage &
+  Omit<ThumbnailDimensionsProps, 'width'>;
+type MultipleImagesProps = Omit<BasicProps, 'imageUrl'> &
+  WithMultipleImages &
+  Omit<ThumbnailDimensionsProps, 'width'>;
 type Props = BasicProps & WithTitleProps & ThumbnailDimensionsProps;
 
 export default function Thumbnail({
@@ -79,15 +83,16 @@ function SingleImageView({
           style={{height, aspectRatio, zIndex: -1}}
           resizeMode="cover"
         />
-        <View style={{position: 'absolute', bottom: 0}}>
-          {BottomComponent}
-        </View>
+        <View style={{position: 'absolute', bottom: 0}}>{BottomComponent}</View>
       </View>
     </MaybeTouchableNativeFeedback>
   );
 }
 
-function MultipleImageView({imageUrl: imageUrls, ...props}: MultipleImagesProps) {
+function MultipleImageView({
+  imageUrl: imageUrls,
+  ...props
+}: MultipleImagesProps) {
   const {
     height,
     aspectRatio,
@@ -98,28 +103,50 @@ function MultipleImageView({imageUrl: imageUrls, ...props}: MultipleImagesProps)
   } = props;
   if (imageUrls.length < 2) {
     const imageUrl = imageUrls[0];
-    return (
-      <SingleImageView imageUrl={imageUrl} {...props} />
-    )
+    return <SingleImageView imageUrl={imageUrl} {...props} />;
   }
-  const imagesInfo: {imageUrl?: string, style: StyleProp<ImageStyle>}[] = [
+  const imagesInfo: {imageUrl?: string; style: StyleProp<ImageStyle>}[] = [
     {
       imageUrl: imageUrls[0],
-      style: {top: 0, left: 0, width: '50%', aspectRatio: 1, position: 'absolute'},
+      style: {
+        top: 0,
+        left: 0,
+        width: '50%',
+        aspectRatio: 1,
+        position: 'absolute',
+      },
     },
     {
       imageUrl: imageUrls[1],
-      style: {top: 0, right: 0, width: '50%', aspectRatio: 1, position: 'absolute'},
+      style: {
+        top: 0,
+        right: 0,
+        width: '50%',
+        aspectRatio: 1,
+        position: 'absolute',
+      },
     },
     {
       imageUrl: imageUrls[2],
-      style: {bottom: 0, left: 0, width: '50%', aspectRatio: 1, position: 'absolute'},
+      style: {
+        bottom: 0,
+        left: 0,
+        width: '50%',
+        aspectRatio: 1,
+        position: 'absolute',
+      },
     },
     {
       imageUrl: imageUrls[3],
-      style: {bottom: 0, right: 0, width: '50%', aspectRatio: 1, position: 'absolute'},
-    }
-  ]
+      style: {
+        bottom: 0,
+        right: 0,
+        width: '50%',
+        aspectRatio: 1,
+        position: 'absolute',
+      },
+    },
+  ];
 
   return (
     <MaybeTouchableNativeFeedback onLongPress={onLongPress} onPress={onPress}>
@@ -135,11 +162,13 @@ function MultipleImageView({imageUrl: imageUrls, ...props}: MultipleImagesProps)
               <Image
                 key={`thumb-preview-${index}`}
                 source={{uri: info.imageUrl}}
-                loadingIndicatorSource={{uri: 'https://mangadex.org/avatar.png'}}
+                loadingIndicatorSource={{
+                  uri: 'https://mangadex.org/avatar.png',
+                }}
                 style={info.style}
                 resizeMode="cover"
               />
-            )
+            );
           })}
           <View style={{position: 'absolute', bottom: 0, zIndex: 2}}>
             {BottomComponent}
@@ -147,7 +176,7 @@ function MultipleImageView({imageUrl: imageUrls, ...props}: MultipleImagesProps)
         </View>
       </View>
     </MaybeTouchableNativeFeedback>
-  )
+  );
 }
 
 function ThumbnailCaption({title, hideTitle}: WithTitleProps) {
@@ -208,9 +237,6 @@ export function ThumbnailBadge({
   children?: React.ReactText;
   badgeStyle?: StyleProp<TextStyle>;
 }) {
-  const style = Object.assign(
-    {borderRadius: 0, marginRight: 2},
-    badgeStyle,
-  );
+  const style = Object.assign({borderRadius: 0, marginRight: 2}, badgeStyle);
   return <Badge style={style}>{children}</Badge>;
 }

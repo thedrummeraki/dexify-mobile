@@ -41,7 +41,7 @@ export interface MangaAttributes {
   publicationDemographic?: Maybe<PublicationDemographic>;
   status?: Maybe<MangaStatus>;
   year?: Maybe<number>;
-  contentRating?: Maybe<ContentRating>;
+  contentRating: ContentRating;
   tags: Array<Manga.Tag>;
   originalLanguage: string;
   version: number;

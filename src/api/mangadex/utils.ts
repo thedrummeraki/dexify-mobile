@@ -39,6 +39,24 @@ export function preferredMangaDescription(manga: Manga) {
   );
 }
 
+export function preferredChapterTitle(chapter: Chapter) {
+  const {title, chapter: number} = chapter.attributes;
+
+  if (!number && !title) {
+    return 'N/A';
+  }
+
+  if (number && !title) {
+    return `${number}) Chapter ${number}`;
+  }
+
+  if (number && title) {
+    return `${number}) ${title}`;
+  }
+
+  return title;
+}
+
 export function anyValidRelationship(
   resource: {relationships: Relationship[]},
   type: unknown,
@@ -135,14 +153,14 @@ export function contentRatingInfo(contentRating: ContentRating): {
       };
     case ContentRating.suggestive:
       return {
-        content: 'For everyone (13+)',
-        background: 'disabled',
+        content: 'For teens (13+)',
+        background: 'accent',
         icon: 'check',
       };
     case ContentRating.erotica:
       return {
         content: 'Erotica (15+)',
-        background: 'accent',
+        background: 'notification',
         icon: 'alert-outline',
       };
     case ContentRating.pornographic:
@@ -152,28 +170,60 @@ export function contentRatingInfo(contentRating: ContentRating): {
 
 export function readingStatusInfo(readingStatus?: ReadingStatus | null): {
   content: string;
+  phrase: string;
   background?: BackgroundColor;
   icon?: string;
-  default?: boolean;
+  defaultValue?: boolean;
 } {
   switch (readingStatus) {
     case ReadingStatus.Completed:
-      return {content: 'Completed', background: 'notification', icon: 'check'};
+      return {
+        content: 'Completed',
+        phrase: 'Done reading',
+        background: 'notification',
+        icon: 'check',
+      };
     case ReadingStatus.Dropped:
-      return {content: 'Dropped', background: 'error', icon: 'close'};
+      return {
+        content: 'Dropped',
+        phrase: 'Not reading anymore',
+        background: 'error',
+        icon: 'close',
+      };
     case ReadingStatus.OnHold:
-      return {content: 'On Hold', background: 'disabled', icon: 'pause'};
+      return {
+        content: 'On Hold',
+        phrase: 'Put on hold',
+        background: 'disabled',
+        icon: 'pause',
+      };
     case ReadingStatus.PlanToRead:
       return {
         content: 'Planning to read',
+        phrase: 'Planning to read',
         background: 'accent',
         icon: 'heart-outline',
       };
     case ReadingStatus.ReReading:
-      return {content: 'Re-reading', background: 'primary', icon: 'play'};
+      return {
+        content: 'Re-reading',
+        phrase: 'Reading again',
+        background: 'primary',
+        icon: 'play',
+      };
     case ReadingStatus.Reading:
-      return {content: 'Reading', background: 'primary', icon: 'play'};
+      return {
+        content: 'Reading',
+        phrase: 'Currently reading',
+        background: 'primary',
+        icon: 'play',
+      };
     default:
-      return {content: 'Mark as...', default: true, icon: 'heart'};
+      return {
+        content: 'Mark as...',
+        phrase: 'Follow this title...',
+        defaultValue: true,
+        icon: 'heart',
+      };
   }
 }

@@ -29,3 +29,25 @@ export type MangaRequestParams = Partial<{
 export type SingleMangaRequestParams = Partial<{
   includes: string[];
 }>;
+
+export type ChapterRequestParams = Partial<{
+  ids: string[];
+  title: string;
+  groups: string[];
+  uploader: string;
+  manga: string;
+  volume: string | string[];
+  chapter: string | string[];
+  translatedLanguage: string[];
+  originalLanguage: string[];
+  excludedOriginalLanguage: string[];
+  contentRating: ContentRating[];
+  includeFutureUpdates: '0' | '1';
+  createdAtSince: string;
+  updatedAtSince: string;
+  publishAtSince: string;
+  order: Order<'createdAt' | 'updatedAt' | 'publishAt' | 'volume' | 'chapter'>;
+  includes: string[];
+  limit: number;
+  offset: number;
+}>;

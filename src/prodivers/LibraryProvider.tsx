@@ -124,7 +124,7 @@ export default function LibraryProvider({children}: PropsWithChildren<{}>) {
 
   useEffect(() => {
     if (session) {
-      getReadingStatus();
+      getReadingStatus().catch(console.error);
       getCustomLists();
     }
   }, [session]);

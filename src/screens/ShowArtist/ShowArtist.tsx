@@ -1,5 +1,6 @@
 import React from 'react';
 import {ActivityIndicator} from 'react-native-paper';
+import {useGetMangaList} from 'src/api/mangadex/hooks';
 import {
   Artist,
   Author,
@@ -29,13 +30,11 @@ export default function ShowArtist() {
     contentRatings.push(ContentRating.pornographic);
   }
 
-  const {data: mangaData, loading: loadingManga} = useGetRequest<
-    PagedResultsList<Manga>
-  >(
-    `https://api.mangadex.org/manga?authors[]=${id}&${contentRatings
-      .map(cr => `contentRating[]=${cr}`)
-      .join('&')}&includes[]=cover_art&order[followedCount]=desc`,
-  );
+  const {data: mangaData, loading: loadingManga} = useGetMangaList({
+    authors: [id],
+    contentRating: contentRatings,
+  });
+
   const loading = loadingArtists || loadingManga;
 
   if (loading) {

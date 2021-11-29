@@ -1,4 +1,5 @@
 import {
+  ChapterRequestParams,
   MangaRequestParams,
   Order,
   SingleMangaRequestParams,
@@ -6,8 +7,21 @@ import {
 import {UIMangaCategory} from 'src/categories';
 import {ContentRating} from '..';
 
+interface FeedOptions {
+  only?:
+    | 'readingNow'
+    | 'popularManga'
+    | 'airingNow'
+    | 'randomManga'
+    | 'recentlyAdded';
+}
+
 export default class UrlBuilder {
-  static API_URL = 'https://api.mangadex.org';
+  static API_URL = 'https://mangadex-client-proxy.herokuapp.com'; // 'https://api.mangadex.org';
+
+  public static feed(params?: FeedOptions) {
+    return this.buildUrl('/home/feed', params);
+  }
 
   public static mangaList(params?: Partial<MangaRequestParams>) {
     const defaultValues: Partial<MangaRequestParams> = {
@@ -35,8 +49,6 @@ export default class UrlBuilder {
     };
 
     return this.mangaList(Object.assign(defaultParams, category.params));
-
-    // return this.buildUrl('/manga', paramsParts.filter(part => part).join('&'));
   }
 
   public static mangaById(
@@ -44,6 +56,19 @@ export default class UrlBuilder {
     params?: Partial<SingleMangaRequestParams>,
   ) {
     return this.buildUrl(`/manga/${id}`, params);
+  }
+
+  public static chaptersList(params?: Partial<ChapterRequestParams>) {
+    const defaultValues: Partial<ChapterRequestParams> = {
+      contentRating: [
+        ContentRating.safe,
+        ContentRating.suggestive,
+        ContentRating.erotica,
+      ],
+      includes: ['manga', 'scanlation_group'],
+    };
+
+    return this.buildUrl('/chapter', Object.assign(defaultValues, params));
   }
 
   public static buildUrl(path: string, params?: ParamsLike) {
@@ -96,4 +121,5 @@ export default class UrlBuilder {
 export type ParamsLike =
   | {[key: string]: string | number | string[] | Order<any>}
   | string
-  | string[][];
+  | string[][]
+  | FeedOptions;

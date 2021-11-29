@@ -18,12 +18,18 @@ export interface RequestResult<T> {
 
 export function useAxiosRequestConfig(): AxiosRequestConfig {
   const session = useSession();
+  const headers: Record<string, string> = {};
 
-  if (!session?.session?.value) {
-    return {};
+  if (session?.session?.value) {
+    headers['Authorization'] = session.session.value;
+    headers['x-auth-session'] = session.session.value;
   }
 
-  return {headers: {Authorization: session.session.value}};
+  if (session?.refresh.value) {
+    headers['x-auth-refresh'] = session.refresh.value;
+  }
+
+  return {headers};
 }
 
 export function usePostRequest<T, Body = any>(

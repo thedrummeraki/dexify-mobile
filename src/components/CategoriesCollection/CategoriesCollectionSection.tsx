@@ -1,7 +1,8 @@
-import React from 'react';
+import React, {useEffect, useRef} from 'react';
 import {FlatList, View} from 'react-native';
 import {Button, Title} from 'react-native-paper';
 import {SecondaryAction} from 'src/categories';
+import {wait} from 'src/utils';
 import {ThumbnailSkeleton} from '../../foundation/Thumbnail';
 
 interface BasicImageDimensions {
@@ -33,6 +34,7 @@ interface Props<T> {
   viewMore?: SecondaryAction; // only visible when title is present
   skeletonLength?: number;
   SkeletonItem?: React.ReactElement;
+  focusedIndex?: number;
   renderItem: (
     item: T,
     dimensions: ImageDimensions,
@@ -48,26 +50,36 @@ export default function CategoriesCollectionSection<T>({
   viewMore,
   skeletonLength = 5,
   SkeletonItem,
+  focusedIndex,
   renderItem,
 }: Props<T>) {
+  const flatListRef = useRef<FlatList | null>();
+
   const dimensions: ImageDimensions2D = imageDimensions
     ? imageDimensions.size
       ? {width: imageDimensions.size, height: imageDimensions.size}
       : (imageDimensions as ImageDimensions2D)
     : {height: 24, width: 24};
 
+  useEffect(() => {
+    if (focusedIndex !== undefined) {
+      flatListRef.current?.scrollToIndex({animated: true, index: focusedIndex});
+    }
+  }, [focusedIndex]);
+
   if (loading) {
     return (
       <View style={{marginTop: 5, marginBottom: title ? 15 : 5}}>
         {title ? (
-          <Title style={{marginHorizontal: 20}}>{title}</Title>
+          <Title style={{marginHorizontal: 15}}>{title}</Title>
         ) : undefined}
         <FlatList
           horizontal={horizontal}
           data={Array.from({length: skeletonLength}).map((_, index) => index)} // 5 skeleton items
           style={{marginTop: 10}}
           showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{marginHorizontal: title ? 20 : 5}}
+          contentContainerStyle={{marginHorizontal: title ? 15 : 5}}
+          ListFooterComponent={<View style={{margin: 10}} />}
           renderItem={({item}) => (
             <View key={String(item)} style={{marginRight: 10}}>
               {SkeletonItem || <ThumbnailSkeleton {...dimensions} />}
@@ -86,7 +98,7 @@ export default function CategoriesCollectionSection<T>({
             flexDirection: 'row',
             justifyContent: 'space-between',
           }}>
-          <Title style={{marginHorizontal: 20}}>{title}</Title>
+          <Title style={{marginHorizontal: 15}}>{title}</Title>
           {viewMore ? (
             <Button icon={viewMore.icon} onPress={viewMore.onAction}>
               {viewMore.content || 'More >'}
@@ -95,11 +107,23 @@ export default function CategoriesCollectionSection<T>({
         </View>
       ) : undefined}
       <FlatList
+        ref={ref => (flatListRef.current = ref)}
         horizontal={horizontal}
         data={data}
         style={{marginTop: 10}}
         showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{marginHorizontal: title ? 20 : 5}}
+        contentContainerStyle={{marginHorizontal: title ? 15 : 5}}
+        ListFooterComponent={<View style={{margin: 10}} />}
+        initialScrollIndex={0}
+        onScrollToIndexFailed={() => {
+          if (focusedIndex !== undefined)
+            wait(500).then(() =>
+              flatListRef.current?.scrollToIndex({
+                index: focusedIndex,
+                animated: true,
+              }),
+            );
+        }}
         renderItem={({item}) => (
           <View style={{marginRight: 10}}>{renderItem(item, dimensions)}</View>
         )}
