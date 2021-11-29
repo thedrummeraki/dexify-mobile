@@ -3,6 +3,7 @@ import {RefreshControl, ScrollView} from 'react-native';
 import Section from './Section/Section';
 import TopManga from './Section/components/TopManga';
 import {FeedData} from './types';
+import {preferredMangaDescription} from 'src/api';
 
 interface Props {
   data: FeedData;
@@ -20,14 +21,21 @@ export default function Feed({data, refreshing, onRefresh}: Props) {
     recentlyAdded,
   } = data;
 
-  const topMangaMarkup = topManga ? <TopManga manga={topManga} /> : null;
-  console.log('readingNow', readingNow);
+  const topMangaMarkup = topManga ? (
+    <TopManga
+      showReadingStatus
+      navigateToManga
+      description={preferredMangaDescription(topManga)}
+      manga={topManga}
+      primaryAction={{content: 'Read now', onPress: () => {}}}
+    />
+  ) : null;
+
   const readingNowMarkup = readingNow ? (
     <Section
       section={{
         title: 'Reading now',
         type: 'general',
-        slug: 'reading-now',
         manga: readingNow,
       }}
     />
@@ -38,7 +46,6 @@ export default function Feed({data, refreshing, onRefresh}: Props) {
       section={{
         title: 'Most popular titles',
         type: 'general',
-        slug: 'reading-now',
         manga: popularManga,
       }}
     />
@@ -49,7 +56,6 @@ export default function Feed({data, refreshing, onRefresh}: Props) {
       section={{
         title: 'Fall 2021 simulcast',
         type: 'general',
-        slug: 'reading-now',
         manga: airingNow,
       }}
     />
@@ -59,7 +65,6 @@ export default function Feed({data, refreshing, onRefresh}: Props) {
     <Section
       section={{
         type: 'manga-recommendation',
-        slug: 'manga-recommendation-1',
         manga: randomManga,
       }}
     />
@@ -70,7 +75,6 @@ export default function Feed({data, refreshing, onRefresh}: Props) {
       section={{
         title: 'Newest on Mangadex',
         type: 'general',
-        slug: 'reading-now',
         manga: recentlyAdded,
       }}
     />

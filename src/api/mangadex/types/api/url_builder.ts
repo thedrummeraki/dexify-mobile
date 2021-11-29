@@ -1,4 +1,5 @@
 import {
+  ChapterRequestParams,
   MangaRequestParams,
   Order,
   SingleMangaRequestParams,
@@ -16,7 +17,7 @@ interface FeedOptions {
 }
 
 export default class UrlBuilder {
-  static API_URL = 'http://192.168.2.24:3001'; // 'https://api.mangadex.org';
+  static API_URL = 'https://mangadex-client-proxy.herokuapp.com'; // 'https://api.mangadex.org';
 
   public static feed(params?: FeedOptions) {
     return this.buildUrl('/home/feed', params);
@@ -48,8 +49,6 @@ export default class UrlBuilder {
     };
 
     return this.mangaList(Object.assign(defaultParams, category.params));
-
-    // return this.buildUrl('/manga', paramsParts.filter(part => part).join('&'));
   }
 
   public static mangaById(
@@ -57,6 +56,19 @@ export default class UrlBuilder {
     params?: Partial<SingleMangaRequestParams>,
   ) {
     return this.buildUrl(`/manga/${id}`, params);
+  }
+
+  public static chaptersList(params?: Partial<ChapterRequestParams>) {
+    const defaultValues: Partial<ChapterRequestParams> = {
+      contentRating: [
+        ContentRating.safe,
+        ContentRating.suggestive,
+        ContentRating.erotica,
+      ],
+      includes: ['manga', 'scanlation_group'],
+    };
+
+    return this.buildUrl('/chapter', Object.assign(defaultValues, params));
   }
 
   public static buildUrl(path: string, params?: ParamsLike) {

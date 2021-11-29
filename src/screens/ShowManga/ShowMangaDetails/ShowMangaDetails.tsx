@@ -18,6 +18,7 @@ interface MangaDetails {
   loading: boolean;
   manga: Manga;
   aggregate?: Manga.VolumeAggregateInfo;
+  volumes: string[];
   error?: any;
   coverUrl?: string;
   onCoverUrlUpdate: (coverUrl: string) => void;
@@ -50,6 +51,9 @@ export default function ShowMangaDetails({manga}: Props) {
   const [coverUrl, setCoverUrl] = useState<string>();
 
   const aggregate = data?.result === 'ok' ? data.volumes : undefined;
+  const aggregateEntries = aggregate ? Object.entries(aggregate) : [];
+
+  const volumes = aggregateEntries.map(([volume, _]) => volume);
 
   const theme = useTheme();
 
@@ -57,24 +61,13 @@ export default function ShowMangaDetails({manga}: Props) {
     <ShowMangaDetailsProvider
       loading={loading}
       aggregate={aggregate}
+      volumes={volumes}
       manga={manga}
       error={error}
       coverUrl={coverUrl}
       onCoverUrlUpdate={setCoverUrl}>
       <View style={{flex: 1}}>
-        <Tab.Navigator
-          screenOptions={{
-            swipeEnabled: false,
-            lazy: true,
-            tabBarInactiveTintColor: theme.colors.disabled,
-            tabBarActiveTintColor: theme.colors.primary,
-            tabBarIndicatorStyle: {backgroundColor: theme.colors.primary},
-          }}>
-          <Tab.Screen name="About" component={AboutTab} />
-          <Tab.Screen name="Read" component={ChaptersTab} />
-          {/* <Tab.Screen name="Anime" component={AnimeDetailsTab} /> */}
-          <Tab.Screen name="Gallery" component={GalleryTab} />
-        </Tab.Navigator>
+        <AboutTab />
       </View>
     </ShowMangaDetailsProvider>
   );

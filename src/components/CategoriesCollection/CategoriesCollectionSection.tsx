@@ -1,7 +1,8 @@
-import React from 'react';
+import React, {useEffect, useRef} from 'react';
 import {FlatList, View} from 'react-native';
 import {Button, Title} from 'react-native-paper';
 import {SecondaryAction} from 'src/categories';
+import {wait} from 'src/utils';
 import {ThumbnailSkeleton} from '../../foundation/Thumbnail';
 
 interface BasicImageDimensions {
@@ -33,6 +34,7 @@ interface Props<T> {
   viewMore?: SecondaryAction; // only visible when title is present
   skeletonLength?: number;
   SkeletonItem?: React.ReactElement;
+  focusedIndex?: number;
   renderItem: (
     item: T,
     dimensions: ImageDimensions,
@@ -48,13 +50,22 @@ export default function CategoriesCollectionSection<T>({
   viewMore,
   skeletonLength = 5,
   SkeletonItem,
+  focusedIndex,
   renderItem,
 }: Props<T>) {
+  const flatListRef = useRef<FlatList | null>();
+
   const dimensions: ImageDimensions2D = imageDimensions
     ? imageDimensions.size
       ? {width: imageDimensions.size, height: imageDimensions.size}
       : (imageDimensions as ImageDimensions2D)
     : {height: 24, width: 24};
+
+  useEffect(() => {
+    if (focusedIndex !== undefined) {
+      flatListRef.current?.scrollToIndex({animated: true, index: focusedIndex});
+    }
+  }, [focusedIndex]);
 
   if (loading) {
     return (
@@ -96,12 +107,23 @@ export default function CategoriesCollectionSection<T>({
         </View>
       ) : undefined}
       <FlatList
+        ref={ref => (flatListRef.current = ref)}
         horizontal={horizontal}
         data={data}
         style={{marginTop: 10}}
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={{marginHorizontal: title ? 15 : 5}}
         ListFooterComponent={<View style={{margin: 10}} />}
+        initialScrollIndex={0}
+        onScrollToIndexFailed={() => {
+          if (focusedIndex !== undefined)
+            wait(500).then(() =>
+              flatListRef.current?.scrollToIndex({
+                index: focusedIndex,
+                animated: true,
+              }),
+            );
+        }}
         renderItem={({item}) => (
           <View style={{marginRight: 10}}>{renderItem(item, dimensions)}</View>
         )}

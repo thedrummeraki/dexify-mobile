@@ -58,7 +58,7 @@ function UnauthenticatedBottomNavigation() {
   ]);
 
   const renderScene = BottomNavigation.SceneMap({
-    main: MainNavigationScreen,
+    main: NewHome,
     browse: BrowseNavigationScreen,
     login: LoginNavigationScreen,
   });

@@ -4,7 +4,7 @@ import {
   DarkTheme,
   DefaultTheme,
 } from '@react-navigation/native';
-import {Provider as PaperProvider} from 'react-native-paper';
+import {Provider as PaperProvider, Provider} from 'react-native-paper';
 import {
   GraphQLProvider,
   HeaderProvider,
@@ -21,19 +21,21 @@ export default function App() {
 
   return (
     <PaperProvider>
-      <SessionProvider>
-        <GraphQLProvider>
-          <GestureHandlerRootView style={{flex: 1}}>
-            <HeaderProvider>
-              <LibraryProvider>
-                <NavigationContainer theme={theme}>
-                  <Navigation />
-                </NavigationContainer>
-              </LibraryProvider>
-            </HeaderProvider>
-          </GestureHandlerRootView>
-        </GraphQLProvider>
-      </SessionProvider>
+      <Provider>
+        <SessionProvider>
+          <GraphQLProvider>
+            <GestureHandlerRootView style={{flex: 1}}>
+              <HeaderProvider>
+                <LibraryProvider>
+                  <NavigationContainer theme={theme}>
+                    <Navigation />
+                  </NavigationContainer>
+                </LibraryProvider>
+              </HeaderProvider>
+            </GestureHandlerRootView>
+          </GraphQLProvider>
+        </SessionProvider>
+      </Provider>
     </PaperProvider>
   );
 }

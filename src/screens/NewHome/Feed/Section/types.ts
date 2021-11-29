@@ -3,7 +3,7 @@ import {Chapter, Manga} from 'src/api/mangadex/types';
 export namespace Sections {
   interface BasicHome {
     type: 'general' | 'continue-reading' | 'manga-recommendation';
-    slug: string;
+    slug?: string;
   }
   export interface GeneralHome extends BasicHome {
     type: 'general';

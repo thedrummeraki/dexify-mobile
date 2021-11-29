@@ -37,7 +37,9 @@ export default function FollowMangaButton({style, ...props}: Props) {
     );
   }
 
-  const {content, background, icon} = readingStatusInfo(readingStatus);
+  const {content, background, defaultValue, icon} =
+    readingStatusInfo(readingStatus);
+  const theme = useTheme();
   const backgroundColor = useBackgroundColor(background);
   const color = useTextColor(background);
 
@@ -48,6 +50,7 @@ export default function FollowMangaButton({style, ...props}: Props) {
           icon={icon}
           {...props}
           loading={updating}
+          mode={defaultValue ? 'outlined' : 'contained'}
           style={{backgroundColor: updating ? undefined : backgroundColor}}
           labelStyle={{color}}
           onPress={() => setShowActions(value => !value)}>
