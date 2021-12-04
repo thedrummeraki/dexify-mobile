@@ -21,6 +21,7 @@ interface Props<T extends BasicResource> {
   skeletonLength?: number;
   HeaderComponent?: React.ReactElement;
   HeaderComponentStyle?: StyleProp<ViewStyle>;
+  ListEmptyComponent?: React.ReactElement;
   renderItem?: (item: T, index: number) => React.ReactNode;
 }
 
@@ -40,6 +41,7 @@ export default function BasicList<T extends BasicResource>({
   skeletonLength = 6,
   HeaderComponent,
   HeaderComponentStyle,
+  ListEmptyComponent,
   renderItem,
 }: Props<T>) {
   const flexBasis = aspectRatio <= 1 ? `${aspectRatio * 100}%` : '50%';
@@ -73,6 +75,14 @@ export default function BasicList<T extends BasicResource>({
   }
 
   if (!data || !renderItem) {
+    if (renderItem) {
+      return (
+        <View style={style}>
+          {headerMarkup}
+          {ListEmptyComponent}
+        </View>
+      );
+    }
     return null;
   }
 
