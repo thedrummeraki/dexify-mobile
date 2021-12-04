@@ -1,5 +1,6 @@
 import {
   ChapterRequestParams,
+  CustomListRequestParams,
   MangaRequestParams,
   Order,
   SingleMangaRequestParams,
@@ -69,6 +70,16 @@ export default class UrlBuilder {
     };
 
     return this.buildUrl('/chapter', Object.assign(defaultValues, params));
+  }
+
+  public static currentUserCustomLists(
+    params?: Partial<CustomListRequestParams>,
+  ) {
+    return this.buildUrl('/user/list', params);
+  }
+
+  public static customList(id: string) {
+    return this.buildUrl(`/list/${id}`);
   }
 
   public static buildUrl(path: string, params?: ParamsLike) {

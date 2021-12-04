@@ -51,3 +51,5 @@ export type ChapterRequestParams = Partial<{
   limit: number;
   offset: number;
 }>;
+
+export type CustomListRequestParams = Partial<{limit: number; offset: number}>;

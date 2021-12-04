@@ -11,7 +11,7 @@ interface BasicResourceWithSlug {
 
 type BasicResource = Partial<BasicResourceWithId & BasicResourceWithSlug>;
 
-interface Props<T extends BasicResource> {
+interface RenderingProps<T extends BasicResource> {
   data: T[];
   aspectRatio?: number; // decimal numbers only. Ratio of the screen that each element should take.
   style?: StyleProp<ViewStyle>;
@@ -19,8 +19,21 @@ interface Props<T extends BasicResource> {
   loading?: boolean;
   skeletonItem?: React.ReactElement;
   skeletonLength?: number;
-  renderItem: (item: T, index: number) => React.ReactNode;
+  renderItem?: (item: T, index: number) => React.ReactNode;
 }
+
+interface LoadingProps {
+  data?: undefined;
+  loading: true;
+  skeletonItem: React.ReactElement;
+  skeletonLength?: number;
+  aspectRatio?: number; // decimal numbers only. Ratio of the screen that each element should take.
+  itemStyle?: StyleProp<ViewStyle>;
+  style?: StyleProp<ViewStyle>;
+  renderItem?: () => React.ReactNode;
+}
+
+type Props<T> = RenderingProps<T> | LoadingProps;
 
 interface BasicListItemProps {
   id: string;
@@ -61,6 +74,10 @@ export default function BasicList<T extends BasicResource>({
         </View>
       </View>
     );
+  }
+
+  if (!data || !renderItem) {
+    return null;
   }
 
   return (

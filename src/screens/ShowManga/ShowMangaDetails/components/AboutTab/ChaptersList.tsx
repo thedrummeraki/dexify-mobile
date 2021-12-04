@@ -83,7 +83,7 @@ export default function ChaptersList({
 
   useEffect(() => {
     getCover(
-      `https://api.mangadex.org/cover?manga[]=${manga.id}&limit=100`,
+      `https://api.mangadex.org/cover?manga[]=${manga.id}&limit=100&order[volume]=desc`,
     ).then(result => {
       if (result?.result === 'ok') {
         setCovers(result.data);
@@ -114,8 +114,11 @@ export default function ChaptersList({
 
   useEffect(() => {
     if (currentVolume && covers.length > 0) {
+      const lastVolume = covers[0].attributes.volume;
       const cover = covers.find(
-        cover => cover.attributes.volume === currentVolume,
+        cover =>
+          cover.attributes.volume === currentVolume ||
+          (currentVolume === 'none' && cover.attributes.volume === lastVolume),
       );
       if (cover) {
         onCoverUrlUpdate(coverImage(cover, manga.id));

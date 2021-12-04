@@ -6,8 +6,9 @@ import {
   StyleProp,
   TextStyle,
   ImageStyle,
+  ViewStyle,
 } from 'react-native';
-import {Badge, Caption, useTheme} from 'react-native-paper';
+import {Badge, Caption, Text, useTheme} from 'react-native-paper';
 import SkeletonContent from 'react-native-skeleton-content-nonexpo';
 
 export interface ThumbnailDimensionsProps {
@@ -16,8 +17,15 @@ export interface ThumbnailDimensionsProps {
   aspectRatio?: number;
 }
 
+interface BorderOptions {
+  color?: string;
+  style?: 'solid' | 'dotted' | 'dashed';
+  width?: number;
+}
+
 interface BasicProps {
   imageUrl: string | string[];
+  border?: BorderOptions;
   TopComponent?: React.ReactElement;
   BottomComponent?: React.ReactElement;
   onPress?: () => void;
@@ -26,6 +34,10 @@ interface BasicProps {
 
 interface WithTitleProps {
   title?: string;
+  subtitle?: string;
+  titleContainerStyle?: StyleProp<ViewStyle>;
+  titleStyle?: StyleProp<TextStyle>;
+  subtitleStyle?: StyleProp<TextStyle>;
   hideTitle?: boolean;
 }
 
@@ -50,16 +62,34 @@ export default function Thumbnail({
   title,
   hideTitle,
   width,
+  border,
   ...rest
 }: Props) {
+  const theme = useTheme();
+  const borderStyle: StyleProp<ViewStyle> = border
+    ? {
+        borderColor: border.color || theme.colors.primary,
+        borderStyle: border.style || 'solid',
+        borderWidth: border.width || 2,
+        padding: 5,
+      }
+    : undefined;
   return (
-    <View style={{width, flex: 1, flexDirection: 'column'}}>
+    <View
+      style={Object.assign(
+        {
+          width,
+          flex: 1,
+          flexDirection: 'column',
+        },
+        borderStyle,
+      )}>
       {Array.isArray(imageUrl) ? (
         <MultipleImageView imageUrl={imageUrl} {...rest} />
       ) : (
         <SingleImageView imageUrl={imageUrl} {...rest} />
       )}
-      <ThumbnailCaption title={title} hideTitle={hideTitle} />
+      <ThumbnailCaption title={title} hideTitle={hideTitle} {...rest} />
     </View>
   );
 }
@@ -101,7 +131,7 @@ function MultipleImageView({
     onPress,
     onLongPress,
   } = props;
-  if (imageUrls.length < 2) {
+  if (imageUrls.length < 4) {
     const imageUrl = imageUrls[0];
     return <SingleImageView imageUrl={imageUrl} {...props} />;
   }
@@ -151,7 +181,7 @@ function MultipleImageView({
   return (
     <MaybeTouchableNativeFeedback onLongPress={onLongPress} onPress={onPress}>
       <View>
-        <View style={{position: 'absolute'}}>{TopComponent}</View>
+        <View style={{position: 'absolute', zIndex: 1}}>{TopComponent}</View>
         <View style={{flex: 1, height, aspectRatio, position: 'relative'}}>
           {imagesInfo.map((info, index) => {
             if (!info.imageUrl) {
@@ -179,12 +209,43 @@ function MultipleImageView({
   );
 }
 
-function ThumbnailCaption({title, hideTitle}: WithTitleProps) {
+function ThumbnailCaption({
+  title,
+  subtitle,
+  titleContainerStyle,
+  titleStyle,
+  subtitleStyle,
+  hideTitle,
+}: WithTitleProps) {
+  const theme = useTheme();
+
   if (title && !hideTitle) {
     return (
-      <Caption numberOfLines={2} style={{lineHeight: 15}}>
-        {title}
-      </Caption>
+      <View style={Object.assign({marginTop: 5}, titleContainerStyle)}>
+        {title ? (
+          <Caption
+            numberOfLines={subtitle ? 1 : 2}
+            style={Object.assign(
+              {
+                lineHeight: 15,
+                color: theme.colors.text,
+              },
+              titleStyle,
+            )}>
+            {title}
+          </Caption>
+        ) : null}
+        {subtitle ? (
+          <Caption
+            numberOfLines={title ? 1 : 2}
+            style={Object.assign(
+              {lineHeight: 15, marginTop: -2},
+              subtitleStyle,
+            )}>
+            {subtitle}
+          </Caption>
+        ) : null}
+      </View>
     );
   }
 

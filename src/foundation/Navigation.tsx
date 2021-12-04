@@ -11,6 +11,7 @@ import {
   ShowMangaGallery,
   ShowMangaList,
   AddToPlaylist,
+  ShowCustomList,
 } from 'src/screens';
 import {RouteProp, useNavigation, useRoute} from '@react-navigation/core';
 import {Header} from '.';
@@ -32,6 +33,7 @@ type RootStackParamList = {
     ids?: string[];
     params?: MangaRequestParams;
   };
+  ShowCustomList: {id: string};
 };
 
 export type DexifyNavigationProp = NativeStackNavigationProp<
@@ -91,6 +93,11 @@ export default function Navigation() {
       />
       <Stack.Screen name="ShowArtist" component={ShowArtist} />
       <Stack.Screen name="ShowMangaList" component={ShowMangaList} />
+      <Stack.Screen
+        name="ShowCustomList"
+        component={ShowCustomList}
+        options={{headerShown: false}}
+      />
     </Stack.Navigator>
   );
 }
@@ -121,4 +128,8 @@ export function useShowArtistRoute() {
 
 export function useShowMangaListRoute() {
   return useRoute<RouteProp<RootStackParamList, 'ShowMangaList'>>();
+}
+
+export function useShowCustomListRoute() {
+  return useRoute<RouteProp<RootStackParamList, 'ShowCustomList'>>();
 }

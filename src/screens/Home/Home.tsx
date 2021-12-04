@@ -4,7 +4,6 @@ import {BottomNavigation} from 'react-native-paper';
 import {
   BrowseNavigationScreen,
   LoginNavigationScreen,
-  MainNavigationScreen,
   MyLibraryNavigationScreen,
   MyProfileNavigationScreen,
   FollowedMangaScreen,

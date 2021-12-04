@@ -1,4 +1,4 @@
-import { Relationship } from ".";
+import {Relationship} from '.';
 
 export namespace CustomList {
   export enum Visibility {
@@ -22,11 +22,11 @@ export interface CustomList {
   id: string;
   type: 'custom_list';
   attributes: CustomListAttributes;
-  relationships: Relationship[]
+  relationships: Relationship[];
 }
 
 export interface CustomListAttributes {
   name: string;
-  visibility: 'private' | 'public';
+  visibility: CustomList.Visibility;
   version: number;
 }

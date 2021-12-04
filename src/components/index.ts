@@ -5,3 +5,4 @@ export {default as ChipsContainer} from './ChipsContainer';
 export {default as Banner} from './Banner';
 export {default as TextBadge} from './TextBadge';
 export {default as ImageGradient} from './ImageGradient';
+export {default as MangaSearchCollection} from './MangaSearchCollection';

@@ -7,8 +7,9 @@ import React, {
 import {ActivityIndicator, Text} from 'react-native-paper';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import {checkSessionValidity, SessionContext, SessionState} from '.';
-import {usePostRequest} from 'src/api/utils';
+import {AxiosRequestType, useAxiosRequest, usePostRequest} from 'src/api/utils';
 import {AuthResponse} from 'src/api/mangadex/types';
+import axios from 'axios';
 
 interface Props {
   loading: boolean;
@@ -82,12 +83,11 @@ async function retrieveStoredSession(): Promise<SessionState | null> {
   }
 }
 
-export function useUpdatedSession() {
+export function useUpdatedSession(refreshNow = true) {
   const {session: token, setSession} = useContext(SessionContext);
-  const [post, response] = usePostRequest<AuthResponse>();
 
   const refreshToken = useCallback(
-    async (otherToken?: SessionState) => {
+    async (otherToken?: SessionState | null, options?: {force?: boolean}) => {
       console.log('token', Boolean(token));
       let tokenToUpdate = token || otherToken || null;
       if (!tokenToUpdate) {
@@ -102,40 +102,53 @@ export function useUpdatedSession() {
 
       const {refresh, session} = tokenToUpdate;
 
-      if (!checkSessionValidity(refresh) || checkSessionValidity(session)) {
-        const reason = checkSessionValidity(session)
-          ? 'session valid'
-          : 'no valid refresh token found';
-        console.log('no need to refresh. Reason:', reason);
-        return;
-      }
+      if (!options?.force) {
+        if (!checkSessionValidity(refresh) || checkSessionValidity(session)) {
+          const reason = checkSessionValidity(session)
+            ? 'session valid'
+            : 'no valid refresh token found';
+          console.log('no need to refresh. Reason:', reason);
+          return;
+        }
 
-      if (!checkSessionValidity(refresh)) {
-        return null;
+        if (!checkSessionValidity(refresh)) {
+          return null;
+        }
+      } else {
+        console.log('forcing the refresh to happen');
       }
 
       try {
-        const response = await post('https://api.mangadex.org/auth/refresh', {
-          token: refresh.value,
-        });
+        const response = await axios.post<AuthResponse>(
+          'https://api.mangadex.org/auth/refresh',
+          {
+            token: refresh.value,
+          },
+        );
 
-        if (response?.result === 'ok') {
-          setSession({
+        const {data} = response;
+
+        if (data?.result === 'ok') {
+          console.log('setting new session!!!', data.token);
+
+          const newSession = {
             ...tokenToUpdate,
             refresh: {
-              value: response.token.refresh,
+              value: data.token.refresh,
               validUntil: new Date(
                 new Date().getTime() + 30 * 24 * 60 * 60 * 1000,
               ),
             },
             session: {
-              value: response.token.session,
+              value: data.token.session,
               validUntil: new Date(new Date().getTime() + 14 * 60 * 1000),
             },
-          });
+          };
+          console.log('which is', newSession);
+          setSession(newSession);
         }
 
-        return response || null;
+        return data || null;
       } catch (error) {
         console.error(error);
         return null;
@@ -145,8 +158,10 @@ export function useUpdatedSession() {
   );
 
   useEffect(() => {
-    refreshToken();
-  }, []);
+    if (refreshNow) {
+      refreshToken();
+    }
+  }, [refreshNow]);
 
-  return {session: token, refreshToken, ...response};
+  return {session: token, refreshToken};
 }

@@ -221,7 +221,7 @@ export function readingStatusInfo(readingStatus?: ReadingStatus | null): {
     default:
       return {
         content: 'Mark as...',
-        phrase: 'Follow this title...',
+        phrase: 'Follow...',
         defaultValue: true,
         icon: 'heart',
       };

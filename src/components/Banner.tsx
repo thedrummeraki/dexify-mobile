@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {PropsWithChildren} from 'react';
 import {View} from 'react-native';
 import {
   Subheading,
@@ -33,11 +33,12 @@ export default function Banner({
   visible = true,
   title,
   body,
+  children,
   background = 'primary',
   primaryAction,
   secondaryAction,
   onDismiss,
-}: Props) {
+}: PropsWithChildren<Props>) {
   const theme = useTheme();
   const textColor = useTextColor(background);
 
@@ -53,7 +54,7 @@ export default function Banner({
         style={{
           flex: 1,
           backgroundColor: theme.colors[background],
-          paddingHorizontal: 20,
+          paddingHorizontal: 15,
           paddingTop: 20,
           paddingBottom,
           marginBottom: 10,
@@ -79,7 +80,7 @@ export default function Banner({
             />
           )}
         </View>
-        <Paragraph>{body}</Paragraph>
+        <Paragraph>{body || children}</Paragraph>
         <View style={{flex: 1, alignItems: 'flex-end'}}>
           <View style={{flex: 1, flexDirection: 'row'}}>
             {secondaryAction && (

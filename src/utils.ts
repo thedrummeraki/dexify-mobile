@@ -109,9 +109,9 @@ export function occurences<T>(array: T[], value: T) {
 export function pluralize(
   count: number,
   singular: string,
-  singularNumberText?: string,
-  plural?: string,
+  options?: {singularNumberText?: string; plural?: string},
 ) {
+  const {singularNumberText, plural} = options || {};
   if (count === 1) {
     return [singularNumberText || '1', singular].join(' ');
   }

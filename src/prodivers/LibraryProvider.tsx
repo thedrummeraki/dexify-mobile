@@ -15,9 +15,10 @@ import {
   ReadingStatusUpdateResponse,
   ContentRating,
   BasicResultsResponse,
+  EntityResponse,
 } from 'src/api/mangadex/types';
 import UrlBuilder from 'src/api/mangadex/types/api/url_builder';
-import {useLazyGetRequest, usePostRequest} from 'src/api/utils';
+import {useLazyGetRequest, usePostRequest, usePutRequest} from 'src/api/utils';
 import {useSession, useUpdatedSession} from '.';
 
 interface CustomListInfo {
@@ -38,11 +39,11 @@ interface LibraryState {
   refreshCustomLists(): Promise<PagedResultsList<CustomList> | undefined>;
   createCustomList(
     options: CustomList.CreateParams,
-  ): Promise<CustomList | undefined>;
+  ): Promise<EntityResponse<CustomList> | undefined>;
   updateCustomList(
-    id: string,
+    customList: CustomList,
     options: CustomList.UpdateParams,
-  ): Promise<CustomList | undefined>;
+  ): Promise<EntityResponse<CustomList> | undefined>;
   addMangaToCustomList(
     id: string,
     manga: string,
@@ -113,10 +114,10 @@ export default function LibraryProvider({children}: PropsWithChildren<{}>) {
   const [customListInfo, setCustomListInfo] = useState<CustomListInfo[]>();
   const [getCustomLists, {data: customLists, loading: customListLoading}] =
     useLazyGetRequest<PagedResultsList<CustomList>>(
-      'https://api.mangadex.org/user/list',
+      'https://api.mangadex.org/user/list?limit=100',
     );
-  const [postCreateCustomList] = usePostRequest<CustomList>();
-  const [postUpdateCustomList] = usePostRequest<CustomList>();
+  const [postCreateCustomList] = usePostRequest<EntityResponse<CustomList>>();
+  const [putUpdateCustomList] = usePutRequest<EntityResponse<CustomList>>();
   const [postAddMangaToCustomList] = usePostRequest<BasicResultsResponse>();
   const [getManga] = useLazyGetRequest<PagedResultsList<Manga>>();
 
@@ -174,7 +175,7 @@ export default function LibraryProvider({children}: PropsWithChildren<{}>) {
         console.error(error);
       }
     },
-    [],
+    [session],
   );
 
   const createCustomList = useCallback(
@@ -197,7 +198,7 @@ export default function LibraryProvider({children}: PropsWithChildren<{}>) {
         console.error('create custom list', error);
       }
     },
-    [],
+    [session],
   );
 
   const addMangaToCustomList = useCallback(
@@ -219,7 +220,24 @@ export default function LibraryProvider({children}: PropsWithChildren<{}>) {
         console.error('create custom list', error);
       }
     },
-    [],
+    [session],
+  );
+
+  const updateCustomList = useCallback(
+    async (customList: CustomList, params: CustomList.UpdateParams) => {
+      const id = customList.id;
+      const version = customList.attributes.version;
+
+      try {
+        return await putUpdateCustomList(
+          `https://api.mangadex.org/list/${id}`,
+          {...params, version},
+        );
+      } catch (error) {
+        console.error('update custom list', error);
+      }
+    },
+    [session],
   );
 
   return (
@@ -232,6 +250,7 @@ export default function LibraryProvider({children}: PropsWithChildren<{}>) {
         refreshCustomLists: getCustomLists,
         createCustomList,
         addMangaToCustomList,
+        updateCustomList,
         customListInfo,
       }}>
       {children}
