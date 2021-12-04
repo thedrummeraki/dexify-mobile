@@ -1,10 +1,13 @@
 import {useEffect, useState} from 'react';
 import {Dimensions} from 'react-native';
 
-export function useDebouncedValue<T>(value: T, delay: number) {
+export function useDebouncedValue<T>(value: T, delay?: number) {
   const [debouncedValue, setDebouncedValue] = useState(value);
 
   useEffect(() => {
+    if (value === undefined) {
+      return;
+    }
     const timer = setTimeout(() => {
       setDebouncedValue(value);
     }, delay);
@@ -12,7 +15,7 @@ export function useDebouncedValue<T>(value: T, delay: number) {
     return () => clearTimeout(timer);
   }, [value, delay]);
 
-  return debouncedValue;
+  return value === undefined ? value : debouncedValue;
 }
 
 export type ScreenOrientation = 'portrait' | 'landascape';

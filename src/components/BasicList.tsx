@@ -1,5 +1,5 @@
 import React, {PropsWithChildren} from 'react';
-import {StyleProp, View, ViewStyle} from 'react-native';
+import {StyleProp, View, ViewProps, ViewStyle} from 'react-native';
 
 interface BasicResourceWithId {
   id: any;
@@ -11,7 +11,7 @@ interface BasicResourceWithSlug {
 
 type BasicResource = Partial<BasicResourceWithId & BasicResourceWithSlug>;
 
-interface RenderingProps<T extends BasicResource> {
+interface Props<T extends BasicResource> {
   data: T[];
   aspectRatio?: number; // decimal numbers only. Ratio of the screen that each element should take.
   style?: StyleProp<ViewStyle>;
@@ -19,21 +19,10 @@ interface RenderingProps<T extends BasicResource> {
   loading?: boolean;
   skeletonItem?: React.ReactElement;
   skeletonLength?: number;
+  HeaderComponent?: React.ReactElement;
+  HeaderComponentStyle?: StyleProp<ViewStyle>;
   renderItem?: (item: T, index: number) => React.ReactNode;
 }
-
-interface LoadingProps {
-  data?: undefined;
-  loading: true;
-  skeletonItem: React.ReactElement;
-  skeletonLength?: number;
-  aspectRatio?: number; // decimal numbers only. Ratio of the screen that each element should take.
-  itemStyle?: StyleProp<ViewStyle>;
-  style?: StyleProp<ViewStyle>;
-  renderItem?: () => React.ReactNode;
-}
-
-type Props<T> = RenderingProps<T> | LoadingProps;
 
 interface BasicListItemProps {
   id: string;
@@ -49,6 +38,8 @@ export default function BasicList<T extends BasicResource>({
   loading,
   skeletonItem,
   skeletonLength = 6,
+  HeaderComponent,
+  HeaderComponentStyle,
   renderItem,
 }: Props<T>) {
   const flexBasis = aspectRatio <= 1 ? `${aspectRatio * 100}%` : '50%';
@@ -58,9 +49,14 @@ export default function BasicList<T extends BasicResource>({
     flexWrap: 'wrap',
   };
 
+  const headerMarkup = HeaderComponent && (
+    <View style={HeaderComponentStyle}>{HeaderComponent}</View>
+  );
+
   if (loading) {
     return (
       <View style={style}>
+        {headerMarkup}
         <View style={basicListStyle}>
           {Array.from({length: skeletonLength}).map((_, id) => (
             <BasicListItem
@@ -82,6 +78,7 @@ export default function BasicList<T extends BasicResource>({
 
   return (
     <View style={style}>
+      {headerMarkup}
       <View style={basicListStyle}>
         {data.map((item, index) => (
           <BasicListItem

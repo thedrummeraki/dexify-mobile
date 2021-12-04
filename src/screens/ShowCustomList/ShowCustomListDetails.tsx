@@ -57,6 +57,10 @@ export default function ShowCustomListDetails({
 
   const bodyMarkup = ids.length ? (
     <MangaSearchCollection
+      HeaderComponent={
+        <TextInput dense mode="flat" placeholder="Filter manga..." />
+      }
+      HeaderComponentStyle={{margin: 5, marginTop: 0}}
       options={{
         ids,
         limit: ids.length,
@@ -178,8 +182,6 @@ function EditingHeader({
   const visibilityStateColor = useBackgroundColor(
     visibility === 'private' ? 'error' : 'accent',
   );
-
-  console.log('visibilityStateColor', visibilityStateColor);
 
   useEffect(() => {
     setState(state => ({...state, name: inputName.trim()}));
@@ -306,7 +308,10 @@ function InfoHeader({
           />
         </View>
       </View>
-      <IconButton onPress={onEditing} icon="pencil-outline" />
+      <View style={{flexDirection: 'row'}}>
+        <IconButton onPress={onEditing} icon="plus" />
+        <IconButton onPress={onEditing} icon="pencil-outline" />
+      </View>
     </View>
   );
 }
