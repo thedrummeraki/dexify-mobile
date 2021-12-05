@@ -7,6 +7,7 @@ import {useShowCustomListRoute} from 'src/foundation';
 import ShowCustomListDetails from './ShowCustomListDetails';
 
 export default function ShowCustomList() {
+  const initialized = useRef(false);
   const [customList, setCustomList] = useState<CustomList>();
   const [refreshing, setRefreshing] = useState(false);
 
@@ -33,6 +34,7 @@ export default function ShowCustomList() {
   useEffect(() => {
     if (data?.result === 'ok') {
       setCustomList(data.data);
+      initialized.current = true;
     }
   }, [data]);
 
@@ -42,7 +44,7 @@ export default function ShowCustomList() {
     }
   }, [refreshing]);
 
-  if (loading) {
+  if (loading && !initialized.current) {
     return <ActivityIndicator style={{flex: 1}} />;
   }
 

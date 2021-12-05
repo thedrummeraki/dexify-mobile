@@ -15,39 +15,18 @@ import ShowArtistDetails from './ShowArtistDetails';
 
 export default function ShowArtist() {
   const {
-    params: {id, allowHentai},
+    params: {id},
   } = useShowArtistRoute();
-  const {data: artistData, loading: loadingArtists} = useGetRequest<
+  const {data: artistData, loading} = useGetRequest<
     EntityResponse<Author | Artist>
   >(`https://api.mangadex.org/author/${id}`);
-
-  const contentRatings = [
-    ContentRating.safe,
-    ContentRating.suggestive,
-    ContentRating.erotica,
-  ];
-  if (allowHentai) {
-    contentRatings.push(ContentRating.pornographic);
-  }
-
-  const {data: mangaData, loading: loadingManga} = useGetMangaList({
-    authors: [id],
-    contentRating: contentRatings,
-  });
-
-  const loading = loadingArtists || loadingManga;
 
   if (loading) {
     return <ActivityIndicator style={{flex: 1}} />;
   }
 
-  if (artistData?.result === 'ok' || mangaData?.result === 'ok') {
-    return (
-      <ShowArtistDetails
-        author={artistData?.result === 'ok' ? artistData?.data : undefined}
-        manga={mangaData?.result === 'ok' ? mangaData?.data : undefined}
-      />
-    );
+  if (artistData?.result === 'ok') {
+    return <ShowArtistDetails author={artistData?.data} />;
   }
 
   return null;

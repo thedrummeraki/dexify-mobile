@@ -112,14 +112,22 @@ export function occurences<T>(array: T[], value: T) {
 export function pluralize(
   count: number,
   singular: string,
-  options?: {singularNumberText?: string; plural?: string},
+  options?: {
+    singularNumberText?: string;
+    plural?: string;
+    invariable?: boolean;
+  },
 ) {
-  const {singularNumberText, plural} = options || {};
+  const {singularNumberText, plural, invariable} = options || {};
   if (count === 1) {
     return [singularNumberText || '1', singular].join(' ');
   }
 
-  const pluralText = plural !== undefined ? plural : `${singular}s`;
+  const pluralText = invariable
+    ? singular
+    : plural !== undefined
+    ? plural
+    : `${singular}s`;
   return [String(count), pluralText].join(' ');
 }
 

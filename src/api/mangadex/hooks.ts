@@ -21,7 +21,9 @@ export function useLazyGetMangaList(
   const [get, response] = useLazyGetRequest<ManyManga>();
 
   const getManga = (otherOptions?: MangaRequestParams) => {
-    const url = UrlBuilder.mangaList(Object.assign(otherOptions, options));
+    const url = UrlBuilder.mangaList(
+      Object.assign(otherOptions || {}, options || {}),
+    );
     return get(url);
   };
 

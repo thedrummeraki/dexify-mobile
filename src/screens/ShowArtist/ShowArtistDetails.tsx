@@ -1,34 +1,40 @@
 import React from 'react';
 import {ScrollView} from 'react-native-gesture-handler';
 import {Title} from 'react-native-paper';
-import {findRelationship} from 'src/api';
-import {Artist, Author, Manga} from 'src/api/mangadex/types';
-import BasicList from 'src/components/BasicList';
-import MangaThumbnail from 'src/components/MangaThumbnail';
+import {Artist, Author, ContentRating} from 'src/api/mangadex/types';
+import {MangaSearchCollection} from 'src/components';
+import {useShowArtistRoute} from 'src/foundation';
 
 interface Props {
-  manga?: Manga[];
-  author?: Author | Artist;
+  author: Author | Artist;
 }
 
-export default function ShowArtistDetails({manga, author}: Props) {
-  const mangaAsArtist = manga?.filter(
-    title => findRelationship<Artist>(title, 'artist')?.type === 'artist',
-  );
-  const mangaAsAuthor = manga?.filter(
-    title => findRelationship<Author>(title, 'author')?.type === 'author',
-  );
+export default function ShowArtistDetails({author}: Props) {
+  const {
+    params: {allowHentai},
+  } = useShowArtistRoute();
+
+  const contentRating = [
+    ContentRating.safe,
+    ContentRating.suggestive,
+    ContentRating.erotica,
+  ];
+  if (allowHentai) {
+    contentRating.push(ContentRating.pornographic);
+  }
 
   return (
-    <ScrollView style={{flex: 15}}>
-      <Title style={{paddingHorizontal: 5}}>
-        {author?.attributes.name}'s works
+    <ScrollView style={{flex: 1}}>
+      <Title style={{paddingHorizontal: 15}}>
+        {author.attributes.name}'s works
       </Title>
 
-      <BasicList
-        data={manga || []}
-        aspectRatio={1 / 3}
-        renderItem={item => <MangaThumbnail showReadingStatus manga={item} />}
+      <MangaSearchCollection
+        options={{
+          artists: [author.id],
+          contentRating,
+          order: {followedCount: 'desc'},
+        }}
       />
     </ScrollView>
   );

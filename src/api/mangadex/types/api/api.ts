@@ -4,6 +4,7 @@ import {
   CoverArt,
   Manga,
   ScanlationGroup,
+  User,
 } from 'src/api/mangadex/types';
 
 export function defaultPagedResults<T>() {
@@ -73,7 +74,8 @@ export type PossibleRelationship =
   | Author
   | Artist
   | CoverArt
-  | ScanlationGroup;
+  | ScanlationGroup
+  | User;
 export type PossibleRelationshipTypes = Pick<
   PossibleRelationship,
   'type'

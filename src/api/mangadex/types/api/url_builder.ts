@@ -82,6 +82,10 @@ export default class UrlBuilder {
     return this.buildUrl(`/list/${id}`);
   }
 
+  public static user(id: string) {
+    return this.buildUrl(`/user/${id}`);
+  }
+
   public static buildUrl(path: string, params?: ParamsLike) {
     let urlParts = [
       UrlBuilder.API_URL,

@@ -1,7 +1,6 @@
 import React, {useCallback} from 'react';
 import {View} from 'react-native';
 import {
-  coverImage,
   CoverSize,
   mangaImage,
   preferredMangaTitle,
