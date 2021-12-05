@@ -1,4 +1,10 @@
-import React, {ComponentProps, useEffect, useMemo, useState} from 'react';
+import React, {
+  ComponentProps,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import {Dimensions, StyleProp, TextStyle, View, ViewStyle} from 'react-native';
 import {ActivityIndicator, Text, TextInput} from 'react-native-paper';
 import {findRelationships} from 'src/api';
@@ -13,17 +19,25 @@ import {ThumbnailSkeleton} from 'src/foundation/Thumbnail';
 import {useDebouncedValue} from 'src/utils';
 import BasicList from '../BasicList';
 import MangaThumbnail from '../MangaThumbnail';
+import MangaListItem from './MangaListItem';
+
+export enum MangaCollectionDisplay {
+  List,
+  Images,
+}
 
 interface FilterOptions {
   placeholder?: string;
   style?: StyleProp<TextStyle>;
   containerStyle?: StyleProp<ViewStyle>;
+  vertical?: boolean;
 }
 
 type Props = {
   options?: MangaRequestParams;
   timeout?: number;
   filterOptions?: FilterOptions;
+  display?: MangaCollectionDisplay;
 } & Pick<
   ComponentProps<typeof BasicList>,
   'HeaderComponent' | 'HeaderComponentStyle'
@@ -33,6 +47,7 @@ export default function MangaSearchCollection({
   options,
   timeout,
   filterOptions,
+  display = MangaCollectionDisplay.Images,
   HeaderComponent,
   HeaderComponentStyle,
 }: Props) {
@@ -68,13 +83,28 @@ export default function MangaSearchCollection({
     </>
   );
 
+  const renderItem = useCallback(
+    (manga: Manga) => {
+      switch (display) {
+        case MangaCollectionDisplay.List:
+          return <MangaListItem manga={manga} />;
+        case MangaCollectionDisplay.Images:
+          return <MangaThumbnail manga={manga} />;
+        default:
+          return null;
+      }
+    },
+    [display],
+  );
+
   return (
     <BasicList
       loading={loading}
+      aspectRatio={display === MangaCollectionDisplay.Images ? 1 / 3 : 1}
       data={filterQuery ? filteredManga : manga}
       style={{marginHorizontal: 10}}
       itemStyle={{padding: 5}}
-      renderItem={item => <MangaThumbnail manga={item} />}
+      renderItem={renderItem}
       skeletonLength={12}
       skeletonItem={<ThumbnailSkeleton height={160} width={skeletonWidth} />}
       HeaderComponent={headerMarkup}

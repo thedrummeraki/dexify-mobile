@@ -13,6 +13,7 @@ import {findRelationships} from 'src/api';
 import {ContentRating, CustomList} from 'src/api/mangadex/types';
 import {Banner, MangaSearchCollection, TextBadge} from 'src/components';
 import {BackgroundColor, useBackgroundColor} from 'src/components/colors';
+import {MangaCollectionDisplay} from 'src/components/MangaSearchCollection/MangaSearchCollection';
 import {useLibraryContext} from 'src/prodivers';
 
 interface Props {
@@ -53,6 +54,7 @@ export default function ShowCustomListDetails({
 
   const bodyMarkup = ids.length ? (
     <MangaSearchCollection
+      display={MangaCollectionDisplay.List}
       filterOptions={{placeholder: 'Filter manga...'}}
       HeaderComponentStyle={{margin: 5, marginTop: 0}}
       options={{

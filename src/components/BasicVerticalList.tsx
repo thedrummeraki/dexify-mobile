@@ -25,15 +25,14 @@ interface Props<T extends BasicResource> {
   renderItem?: (item: T, index: number) => React.ReactNode;
 }
 
-interface BasicListItemProps {
+interface BasicVerticalListItemProps {
   id: string;
   style?: StyleProp<ViewStyle>;
   itemStyle?: StyleProp<ViewStyle>;
 }
 
-export default function BasicList<T extends BasicResource>({
+export default function BasicVerticalList<T extends BasicResource>({
   data,
-  aspectRatio = 1 / 3,
   style,
   itemStyle,
   loading,
@@ -44,7 +43,6 @@ export default function BasicList<T extends BasicResource>({
   ListEmptyComponent,
   renderItem,
 }: Props<T>) {
-  const flexBasis = aspectRatio <= 1 ? `${aspectRatio * 100}%` : '50%';
   const basicListStyle: StyleProp<ViewStyle> = {
     flex: 1,
     flexDirection: 'row',
@@ -61,13 +59,13 @@ export default function BasicList<T extends BasicResource>({
         {headerMarkup}
         <View style={basicListStyle}>
           {Array.from({length: skeletonLength}).map((_, id) => (
-            <BasicListItem
+            <BasicVerticalListItem
               key={id}
               id={String(id)}
-              style={{flexBasis, padding: 10}}
+              style={{padding: 10}}
               itemStyle={itemStyle}>
               {skeletonItem}
-            </BasicListItem>
+            </BasicVerticalListItem>
           ))}
         </View>
       </View>
@@ -91,25 +89,25 @@ export default function BasicList<T extends BasicResource>({
       {headerMarkup}
       <View style={basicListStyle}>
         {data.map((item, index) => (
-          <BasicListItem
+          <BasicVerticalListItem
             key={item.id || item.slug || `basic-list-${index}`}
             id={item.id || item.slug || `basic-list-${index}`}
-            style={{flexBasis, padding: 10}}
+            style={{padding: 10}}
             itemStyle={itemStyle}>
             {renderItem(item, index)}
-          </BasicListItem>
+          </BasicVerticalListItem>
         ))}
       </View>
     </View>
   );
 }
 
-function BasicListItem({
+function BasicVerticalListItem({
   children,
   id,
   style,
   itemStyle,
-}: PropsWithChildren<BasicListItemProps>) {
+}: PropsWithChildren<BasicVerticalListItemProps>) {
   return (
     <View key={id} style={Object.assign(style || {}, itemStyle)}>
       {children}
