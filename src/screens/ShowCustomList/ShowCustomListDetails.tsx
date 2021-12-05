@@ -10,10 +10,12 @@ import {
   Title,
 } from 'react-native-paper';
 import {findRelationships} from 'src/api';
+import {useGetMangaList} from 'src/api/mangadex/hooks';
 import {ContentRating, CustomList} from 'src/api/mangadex/types';
-import {Banner, MangaSearchCollection, TextBadge} from 'src/components';
+import {Banner, TextBadge} from 'src/components';
+import BasicList from 'src/components/BasicList';
 import {BackgroundColor, useBackgroundColor} from 'src/components/colors';
-import {MangaCollectionDisplay} from 'src/components/MangaSearchCollection/MangaSearchCollection';
+import {MangaListItem} from 'src/components/MangaSearchCollection/MangaListItem';
 import {useLibraryContext} from 'src/prodivers';
 
 interface Props {
@@ -31,6 +33,18 @@ export default function ShowCustomListDetails({
 }: Props) {
   const [editing, setEditing] = useState(false);
 
+  const ids = useMemo(
+    () => findRelationships(customList, 'manga').map(r => r.id),
+    [customList],
+  );
+  const {loading, data, error} = useGetMangaList({
+    ids,
+    limit: ids.length,
+    contentRating: Object.values(ContentRating),
+  });
+  const manga = data?.result === 'ok' ? data.data : [];
+  const [filterQuery, setFilterQuery] = useState('');
+
   useEffect(() => {
     const unsubscribe = BackHandler.addEventListener(
       'hardwareBackPress',
@@ -47,21 +61,30 @@ export default function ShowCustomListDetails({
     return () => unsubscribe.remove();
   }, [editing]);
 
-  const ids = useMemo(
-    () => findRelationships(customList, 'manga').map(r => r.id),
-    [customList],
-  );
-
   const bodyMarkup = ids.length ? (
-    <MangaSearchCollection
-      display={MangaCollectionDisplay.List}
-      filterOptions={{placeholder: 'Filter manga...'}}
+    // <MangaSearchCollection
+    //   display={MangaCollectionDisplay.List}
+    //   filterOptions={{placeholder: 'Filter manga...'}}
+    //   HeaderComponentStyle={{margin: 5, marginTop: 0}}
+    //   onMangaReady={onMangaReady}
+    //   options={{
+    //     ids,
+    //     limit: ids.length,
+    //     contentRating: Object.values(ContentRating),
+    //   }}
+    // />
+    <BasicList
+      loading={loading}
+      aspectRatio={1}
+      data={manga}
+      style={{marginHorizontal: 10}}
+      itemStyle={{padding: 5}}
+      renderItem={item => <MangaListItem manga={item} />}
+      skeletonLength={12}
+      skeletonItem={<MangaListItem.Skeleton />}
+      // HeaderComponent={headerMarkup}
       HeaderComponentStyle={{margin: 5, marginTop: 0}}
-      options={{
-        ids,
-        limit: ids.length,
-        contentRating: Object.values(ContentRating),
-      }}
+      ListEmptyComponent={<Text>Empty!</Text>}
     />
   ) : (
     <Banner

@@ -38,6 +38,7 @@ type Props = {
   timeout?: number;
   filterOptions?: FilterOptions;
   display?: MangaCollectionDisplay;
+  onMangaReady?(manga: Manga[]): void;
 } & Pick<
   ComponentProps<typeof BasicList>,
   'HeaderComponent' | 'HeaderComponentStyle'
@@ -50,6 +51,7 @@ export default function MangaSearchCollection({
   display = MangaCollectionDisplay.Images,
   HeaderComponent,
   HeaderComponentStyle,
+  onMangaReady,
 }: Props) {
   const [filterQuery, setFilterQuery] = useState('');
   const [filteredManga, setFilteredManga] = useState<Manga[]>([]);
@@ -68,6 +70,13 @@ export default function MangaSearchCollection({
       filterManga(manga, filterQuery).then(setFilteredManga);
     }
   }, [manga, filterQuery]);
+
+  useEffect(() => {
+    if (manga.length) {
+      onMangaReady?.(manga);
+      console.log('manga ready...');
+    }
+  }, [manga]);
 
   const skeletonWidth = Dimensions.get('screen').width / 3 - 5 * 3;
 
@@ -138,7 +147,7 @@ function FilterTextInput({
   );
 }
 
-async function filterManga(manga: Manga[], query: string) {
+export async function filterManga(manga: Manga[], query: string) {
   return manga.filter(item => {
     const titles = Object.values(item.attributes.title);
     const altTitles = Object.entries(item.attributes.altTitles).map(

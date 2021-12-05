@@ -10,13 +10,14 @@ import {
 import {Artist, Author, Manga} from 'src/api/mangadex/types';
 import {useDexifyNavigation} from 'src/foundation';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import Skeleton from './MangaListItemSkeleton';
 
 interface Props {
   manga: Manga;
   selected?: boolean;
 }
 
-export default function MangaListItem({manga, selected}: Props) {
+export function MangaListItem({manga, selected}: Props) {
   const imageWidth = 70;
   const width = Dimensions.get('window').width - 15 * 2 - imageWidth - 5 * 3;
   const navigation = useDexifyNavigation();
@@ -71,3 +72,5 @@ export default function MangaListItem({manga, selected}: Props) {
     </View>
   );
 }
+
+MangaListItem.Skeleton = Skeleton;
