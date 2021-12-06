@@ -17,6 +17,45 @@ interface CustomListInfo {
   manga: Manga[];
 }
 
+export function useCustomListInfo() {
+  const [customListInfo, setCustomListInfo] = useState<CustomListInfo[]>();
+
+  const [getCustomLists, {loading, data}] = useLazyGetRequest<
+    PagedResultsList<CustomList>
+  >(UrlBuilder.currentUserCustomLists({limit: 100}));
+
+  const [getManga] = useLazyGetRequest<PagedResultsList<Manga>>();
+
+  useEffect(() => {
+    if (data?.result === 'ok') {
+      getManga(mangaListUrlsFrom(data.data))
+        .then(response => {
+          if (response?.result === 'ok') {
+            const result: CustomListInfo[] = [];
+            for (const customList of data.data) {
+              const customListMangaIds = findRelationships(
+                customList,
+                'manga',
+              ).map(r => r.id);
+              const manga = response.data.filter(m =>
+                customListMangaIds.includes(m.id),
+              );
+              result.push({customList, manga});
+            }
+            setCustomListInfo(result);
+          }
+        })
+        .catch(console.error);
+    }
+  }, [data]);
+
+  useEffect(() => {
+    getCustomLists();
+  }, []);
+
+  return {customListInfo, loading, getCustomLists};
+}
+
 export default function MyLibraryNavigationScreen() {
   const initialized = useRef(false);
   const [refreshing, setRefreshing] = useState(false);

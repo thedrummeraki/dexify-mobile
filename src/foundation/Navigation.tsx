@@ -80,7 +80,11 @@ export default function Navigation() {
         component={ShowManga}
         options={{headerShown: false}}
       />
-      <Stack.Screen name="AddToPlaylist" component={AddToPlaylist} />
+      <Stack.Screen
+        name="AddToPlaylist"
+        component={AddToPlaylist}
+        options={{headerShown: false}}
+      />
       <Stack.Screen
         name="ShowMangaGallery"
         component={ShowMangaGallery}

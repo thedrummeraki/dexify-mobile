@@ -204,15 +204,6 @@ export default function LibraryProvider({children}: PropsWithChildren<{}>) {
   const addMangaToCustomList = useCallback(
     async (id: string, manga: string) => {
       try {
-        const authResponse = await refreshToken();
-        if (authResponse && authResponse.result !== 'ok') {
-          console.warn(
-            'could not refresh session token:',
-            JSON.stringify(authResponse),
-          );
-          return;
-        }
-
         return await postAddMangaToCustomList(
           `https://api.mangadex.org/manga/${manga}/list/${id}`,
         );

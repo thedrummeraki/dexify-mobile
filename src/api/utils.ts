@@ -48,10 +48,10 @@ interface MutatingRequestParams<Body> extends BasicRequestParams {
 type RequestParams<Body> = QueryRequestParams | MutatingRequestParams<Body>;
 
 export enum AxiosRequestType {
-  Get,
-  Post,
-  Put,
-  Delete,
+  Get = 'GET',
+  Post = 'POST',
+  Put = 'PUT',
+  Delete = 'DELETE',
 }
 
 export function useAxiosRequestConfig(): AxiosRequestConfig {
@@ -151,7 +151,9 @@ export function useAxiosRequest<T, Body = any>(
         );
       }
 
-      const requestMethod = session ? '[GET]' : '[?GET]';
+      const requestMethod = session
+        ? `[${params.method}]`
+        : `[?${params.method}]`;
       const config: AxiosRequestConfig = {};
 
       if (params.refreshSession) {

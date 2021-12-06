@@ -25,6 +25,7 @@ interface BorderOptions {
 
 interface BasicProps {
   imageUrl: string | string[];
+  rounded?: boolean;
   border?: BorderOptions;
   TopComponent?: React.ReactElement;
   BottomComponent?: React.ReactElement;
@@ -100,6 +101,7 @@ function SingleImageView({
   aspectRatio,
   TopComponent,
   BottomComponent,
+  rounded,
   onPress,
   onLongPress,
 }: SingleImageProps) {
@@ -110,7 +112,12 @@ function SingleImageView({
         <Image
           source={{uri: imageUrl}}
           loadingIndicatorSource={{uri: 'https://mangadex.org/avatar.png'}}
-          style={{height, aspectRatio, zIndex: -1}}
+          style={{
+            height,
+            aspectRatio,
+            zIndex: -1,
+            borderRadius: rounded ? 1000 : 0,
+          }}
           resizeMode="cover"
         />
         <View style={{position: 'absolute', bottom: 0}}>{BottomComponent}</View>
@@ -128,6 +135,7 @@ function MultipleImageView({
     aspectRatio,
     TopComponent,
     BottomComponent,
+    rounded,
     onPress,
     onLongPress,
   } = props;
@@ -180,7 +188,7 @@ function MultipleImageView({
 
   return (
     <MaybeTouchableNativeFeedback onLongPress={onLongPress} onPress={onPress}>
-      <View>
+      <View style={{borderRadius: rounded ? 1000 : 0}}>
         <View style={{position: 'absolute', zIndex: 1}}>{TopComponent}</View>
         <View style={{flex: 1, height, aspectRatio, position: 'relative'}}>
           {imagesInfo.map((info, index) => {

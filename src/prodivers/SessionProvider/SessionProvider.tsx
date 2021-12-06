@@ -1,14 +1,5 @@
-import React, {
-  PropsWithChildren,
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-} from 'react';
-import {View} from 'react-native';
+import React, {PropsWithChildren, useContext, useEffect, useState} from 'react';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import {AuthResponse} from 'src/api/mangadex/types';
-import {usePostRequest} from 'src/api/utils';
 import SessionRefresher from './SessionRefresher';
 
 interface Session {
