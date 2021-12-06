@@ -1,11 +1,23 @@
 import React, {useState} from 'react';
 import {View} from 'react-native';
-import {Searchbar} from 'react-native-paper';
+import {Chip, Searchbar} from 'react-native-paper';
+import CategoriesCollectionSection from 'src/components/CategoriesCollection/CategoriesCollectionSection';
 import {useDebouncedValue} from 'src/utils';
 import BrowseDefaultState from './BrowseDefaultState';
 import BrowseResults from './BrowseResults';
 
+export enum BrowseNavigationResource {
+  Manga = 'Manga',
+  Author = 'Authors',
+  Chapter = 'Chapters',
+  Group = 'Scanlation groups',
+  User = 'Users',
+}
+
 export function BrowseNavigationScreen() {
+  const [resourceType, setResourceType] = useState<BrowseNavigationResource>(
+    BrowseNavigationResource.Manga,
+  );
   const [searchInput, setSearchInput] = useState('');
   const [searchBarFocused, setSearchBarFocused] = useState(false);
   const query = useDebouncedValue(searchInput, 500);
@@ -21,9 +33,23 @@ export function BrowseNavigationScreen() {
         onFocus={() => setSearchBarFocused(true)}
         onBlur={() => setSearchBarFocused(false)}
       />
-      <View>
+      <View style={{marginTop: 5, paddingBottom: 115}}>
         {query ? (
-          <BrowseResults query={query} />
+          <>
+            <CategoriesCollectionSection
+              data={Object.values(BrowseNavigationResource)}
+              renderItem={item => {
+                return (
+                  <Chip
+                    selected={resourceType === item}
+                    onPress={() => setResourceType(item)}>
+                    {item}
+                  </Chip>
+                );
+              }}
+            />
+            <BrowseResults query={query} resourceType={resourceType} />
+          </>
         ) : (
           <BrowseDefaultState showSearchHistory={searchBarFocused} />
         )}

@@ -138,7 +138,32 @@ export default function AboutTab() {
           </Chip>
         </View>
       </PaperProviderForBackground>
-      <View style={{display: 'none', marginTop: -10, padding: 5}}>
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'flex-start',
+          flexWrap: 'wrap',
+          marginTop: 10,
+          paddingHorizontal: 15,
+        }}>
+        <Text style={{marginRight: 6}}>Made by:</Text>
+        {authorsAndArtists.map(artist => (
+          <TextBadge
+            key={artist.id}
+            content={artist.attributes.name}
+            background="surface"
+            onPress={() =>
+              navigation.push('ShowArtist', {
+                id: artist.id,
+                allowHentai:
+                  manga.attributes.contentRating === ContentRating.pornographic,
+              })
+            }
+          />
+        ))}
+      </View>
+      <View style={{display: 'flex', marginTop: 15, marginBottom: -10}}>
         <FollowMangaButton />
         <Button
           mode="outlined"
@@ -154,31 +179,6 @@ export default function AboutTab() {
   const chaptersListFooterMarkup = (
     <>
       <View style={{padding: 15}}>
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'flex-start',
-            flexWrap: 'wrap',
-            marginTop: 10,
-          }}>
-          <Text style={{marginRight: 6}}>Made by:</Text>
-          {authorsAndArtists.map(artist => (
-            <TextBadge
-              key={artist.id}
-              content={artist.attributes.name}
-              background="surface"
-              onPress={() =>
-                navigation.push('ShowArtist', {
-                  id: artist.id,
-                  allowHentai:
-                    manga.attributes.contentRating ===
-                    ContentRating.pornographic,
-                })
-              }
-            />
-          ))}
-        </View>
         <View style={{marginTop: 10}}>
           <Paragraph
             numberOfLines={showingFullDescripiton ? undefined : 4}
@@ -191,7 +191,7 @@ export default function AboutTab() {
             }}>
             {description || (
               <Caption style={{fontStyle: 'italic'}}>
-                No description was added for ${preferredMangaTitle(manga)}
+                No description was added for {preferredMangaTitle(manga)}
               </Caption>
             )}
           </Paragraph>

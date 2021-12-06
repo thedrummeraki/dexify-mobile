@@ -32,6 +32,7 @@ export default function ShowArtistDetails({author}: Props) {
       <MangaSearchCollection
         options={{
           artists: [author.id],
+          limit: 100,
           contentRating,
           order: {followedCount: 'desc'},
         }}

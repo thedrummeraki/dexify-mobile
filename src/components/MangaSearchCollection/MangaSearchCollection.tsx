@@ -19,7 +19,7 @@ import {ThumbnailSkeleton} from 'src/foundation/Thumbnail';
 import {useDebouncedValue} from 'src/utils';
 import BasicList from '../BasicList';
 import MangaThumbnail from '../MangaThumbnail';
-import MangaListItem from './MangaListItem';
+import {MangaListItem} from './MangaListItem';
 
 export enum MangaCollectionDisplay {
   List,

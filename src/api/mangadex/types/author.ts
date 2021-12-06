@@ -1,13 +1,17 @@
+import {Relationship} from '.';
+
 export interface Author {
   id: string;
   type: 'author';
   attributes: AuthorAttributes;
+  relationships: Relationship[];
 }
 
 export interface Artist {
   id: string;
   type: 'artist';
   attributes: AuthorAttributes;
+  relationships: Relationship[];
 }
 
 export interface AuthorAttributes {

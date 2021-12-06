@@ -53,3 +53,29 @@ export type ChapterRequestParams = Partial<{
 }>;
 
 export type CustomListRequestParams = Partial<{limit: number; offset: number}>;
+
+export type ScanlationGroupRequestParams = Partial<{
+  ids: string[];
+  name: string;
+  focusedLanguage: string;
+  includes: string[];
+  limit: number;
+  offset: number;
+  order: Order<
+    | 'name'
+    | 'createdAt'
+    | 'updatedAt'
+    | 'followedCount'
+    | 'relevance'
+    | 'latestUploadedChapter'
+  >;
+}>;
+
+export type AuthorRequestParams = Partial<{
+  ids: string[];
+  name: string;
+  includes: string[];
+  limit: number;
+  offset: number;
+  order: Order<'name'>;
+}>;

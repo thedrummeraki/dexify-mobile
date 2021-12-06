@@ -133,6 +133,7 @@ export default function ChaptersList({
           ids: chapterIds,
           limit: chapterIds.length,
           order: {chapter: 'asc'},
+          contentRating: [manga.attributes.contentRating],
         }),
       ).then(response => {
         initialized.current = response?.result === 'ok';

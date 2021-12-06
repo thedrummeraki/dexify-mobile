@@ -23,7 +23,7 @@ export default function MyLibraryNavigationScreen() {
   const [customListInfo, setCustomListInfo] = useState<CustomListInfo[]>();
   const [getCustomLists, {loading, data}] = useLazyGetRequest<
     PagedResultsList<CustomList>
-  >(UrlBuilder.currentUserCustomLists());
+  >(UrlBuilder.currentUserCustomLists({limit: 100}));
   const [getManga] = useLazyGetRequest<PagedResultsList<Manga>>();
 
   const onRefresh = () => {

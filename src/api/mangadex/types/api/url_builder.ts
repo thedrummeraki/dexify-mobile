@@ -1,12 +1,14 @@
 import {
+  AuthorRequestParams,
   ChapterRequestParams,
   CustomListRequestParams,
   MangaRequestParams,
   Order,
+  ScanlationGroupRequestParams,
   SingleMangaRequestParams,
 } from 'src/api/mangadex/types/api';
 import {UIMangaCategory} from 'src/categories';
-import {ContentRating} from '..';
+import {ContentRating, ScanlationGroup} from '..';
 
 interface FeedOptions {
   only?:
@@ -85,6 +87,24 @@ export default class UrlBuilder {
   public static user(id: string) {
     return this.buildUrl(`/user/${id}`);
   }
+
+  public static scanlationGroups(params?: ScanlationGroupRequestParams) {
+    return this.buildUrl('/group', params);
+  }
+
+  public static scanlationGroup(id: string, params?: {includes: string}) {
+    return this.buildUrl(`/group/${id}`, params);
+  }
+
+  public static authors(params?: AuthorRequestParams) {
+    return this.buildUrl('/author', params);
+  }
+
+  public static author(id: string, params?: {includes: string[]}) {
+    return this.buildUrl(`/author/${id}`, params);
+  }
+
+  // Generic methods
 
   public static buildUrl(path: string, params?: ParamsLike) {
     let urlParts = [
