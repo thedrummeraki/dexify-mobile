@@ -117,6 +117,7 @@ export default function AboutTab() {
   const chaptersListHeaderMarkup = (
     <>
       <TopManga
+        allowCloseScreen
         description={altTitle ? preferredTitle(altTitle) : undefined}
         manga={manga}
         aspectRatio={1.2}
@@ -164,7 +165,7 @@ export default function AboutTab() {
         ))}
       </View>
       <View style={{display: 'flex', marginTop: 15, marginBottom: -10}}>
-        <FollowMangaButton />
+        {/* <FollowMangaButton /> */}
         <Button
           mode="outlined"
           icon="plus"

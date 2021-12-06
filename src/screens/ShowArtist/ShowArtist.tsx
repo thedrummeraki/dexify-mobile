@@ -26,7 +26,7 @@ export default function ShowArtist() {
   }
 
   if (artistData?.result === 'ok') {
-    return <ShowArtistDetails author={artistData?.data} />;
+    return <ShowArtistDetails author={artistData.data} />;
   }
 
   return null;

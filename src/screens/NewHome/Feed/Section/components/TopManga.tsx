@@ -11,7 +11,11 @@ import {
   readingStatusInfo,
 } from 'src/api';
 import {Manga} from 'src/api/mangadex/types';
-import {ImageGradient, TextBadge} from 'src/components';
+import {
+  CloseCurrentScreenHeader,
+  ImageGradient,
+  TextBadge,
+} from 'src/components';
 import {useDexifyNavigation} from 'src/foundation';
 import {useLibraryStatus} from 'src/prodivers';
 import {useMangaDetails} from 'src/screens/ShowManga/ShowMangaDetails/ShowMangaDetails';
@@ -25,6 +29,7 @@ interface Props {
   descriptionNumberOfLines?: number;
   primaryAction?: {content: string; onPress(): void};
   FooterComponent?: React.ReactElement;
+  allowCloseScreen?: boolean;
 }
 
 export default function TopManga({
@@ -36,6 +41,7 @@ export default function TopManga({
   descriptionNumberOfLines = 2,
   primaryAction,
   FooterComponent,
+  allowCloseScreen,
 }: Props) {
   const navigation = useDexifyNavigation();
 
@@ -57,6 +63,17 @@ export default function TopManga({
       <TouchableNativeFeedback
         onPress={navigateToManga ? goToManga : undefined}>
         <View>
+          {allowCloseScreen ? (
+            <CloseCurrentScreenHeader
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                zIndex: 10000,
+              }}
+            />
+          ) : null}
           <ImageGradient aspectRatio={aspectRatio} />
           <FastImage
             source={{

@@ -91,7 +91,11 @@ export default function Navigation() {
         component={ShowChapter}
         options={{headerShown: false}}
       />
-      <Stack.Screen name="ShowArtist" component={ShowArtist} />
+      <Stack.Screen
+        name="ShowArtist"
+        component={ShowArtist}
+        options={{headerShown: false}}
+      />
       <Stack.Screen name="ShowMangaList" component={ShowMangaList} />
       <Stack.Screen
         name="ShowCustomList"

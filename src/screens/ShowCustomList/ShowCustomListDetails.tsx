@@ -4,7 +4,7 @@ import {Text, TextInput} from 'react-native-paper';
 import {findRelationships, mangaImage} from 'src/api';
 import {useGetMangaList} from 'src/api/mangadex/hooks';
 import {ContentRating, CustomList} from 'src/api/mangadex/types';
-import {Banner} from 'src/components';
+import {Banner, CloseCurrentScreenHeader} from 'src/components';
 import BasicList from 'src/components/BasicList';
 import {MangaListItem} from 'src/components/MangaSearchCollection/MangaListItem';
 import Thumbnail, {ThumbnailSkeleton} from 'src/foundation/Thumbnail';
@@ -120,24 +120,23 @@ export default function ShowCustomListDetails({
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }>
-        <View style={{marginTop: 20}}>
-          <View
-            style={{
-              flex: 1,
-              alignItems: 'center',
-            }}>
-            {thumbnailMarkup}
-          </View>
-          {editing ? (
-            <EditingCustomListActions
-              customList={customList}
-              onCustomListUpdate={onCustomListUpdate}
-              onEditingDone={() => setEditing(false)}
-            />
-          ) : (
-            <CustomListActions customList={customList} onEditing={setEditing} />
-          )}
+        <CloseCurrentScreenHeader />
+        <View
+          style={{
+            flex: 1,
+            alignItems: 'center',
+          }}>
+          {thumbnailMarkup}
         </View>
+        {editing ? (
+          <EditingCustomListActions
+            customList={customList}
+            onCustomListUpdate={onCustomListUpdate}
+            onEditingDone={() => setEditing(false)}
+          />
+        ) : (
+          <CustomListActions customList={customList} onEditing={setEditing} />
+        )}
         <View
           style={{
             opacity: editing ? 0.4 : 1,

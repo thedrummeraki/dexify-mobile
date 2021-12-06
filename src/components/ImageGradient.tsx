@@ -27,6 +27,10 @@ function useGradientColors() {
   const theme = useTheme();
   if (theme.dark) {
     return [
+      `${theme.colors.background}80`,
+      `${theme.colors.background}40`,
+      `${theme.colors.background}00`,
+      `${theme.colors.background}00`,
       `${theme.colors.background}00`,
       `${theme.colors.background}50`,
       `${theme.colors.background}A0`,
