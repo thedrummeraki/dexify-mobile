@@ -2,16 +2,19 @@ import React from 'react';
 import {Dimensions, View} from 'react-native';
 import {Title, Paragraph, Text} from 'react-native-paper';
 import {TextBadge} from 'src/components';
+import {pluralize} from 'src/utils';
 import {BrowseNavigationResource} from '..';
 
 interface Props {
   resourceType: string;
+  resourceTypePlural?: string;
   query: string;
   actionVerb?: string;
 }
 
 export default function BrowseEmptyResults({
   resourceType,
+  resourceTypePlural,
   query,
   actionVerb = 'were',
 }: Props) {
@@ -27,11 +30,15 @@ export default function BrowseEmptyResults({
         width: '100%',
       }}>
       <Title>
-        No {resourceType} {actionVerb} found.
+        {pluralize(0, resourceType, {
+          plural: resourceTypePlural,
+          zeroPrefix: 'No',
+        })}{' '}
+        {actionVerb} found.
       </Title>
       <Paragraph>
         You've searched for <Text style={{fontWeight: 'bold'}}>{query}</Text>{' '}
-        but we coun't find any manga.
+        but we coun't find any {resourceType}.
       </Paragraph>
     </View>
   );

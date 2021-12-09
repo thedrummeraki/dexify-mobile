@@ -194,7 +194,7 @@ export function readingStatusInfo(readingStatus?: ReadingStatus | null): {
       return {
         content: 'On Hold',
         phrase: 'Put on hold',
-        background: 'disabled',
+        background: 'placeholder',
         icon: 'pause',
       };
     case ReadingStatus.PlanToRead:

@@ -9,9 +9,9 @@ import BrowseResults from './BrowseResults';
 export enum BrowseNavigationResource {
   Manga = 'Manga',
   Author = 'Authors',
-  Chapter = 'Chapters',
+  // Chapter = 'Chapters',
   Group = 'Scanlation groups',
-  User = 'Users',
+  // User = 'Users',
 }
 
 export function BrowseNavigationScreen() {
@@ -33,26 +33,28 @@ export function BrowseNavigationScreen() {
         onFocus={() => setSearchBarFocused(true)}
         onBlur={() => setSearchBarFocused(false)}
       />
-      <View style={{marginTop: 5, paddingBottom: 115}}>
-        {query ? (
-          <>
-            <CategoriesCollectionSection
-              data={Object.values(BrowseNavigationResource)}
-              renderItem={item => {
-                return (
-                  <Chip
-                    selected={resourceType === item}
-                    onPress={() => setResourceType(item)}>
-                    {item}
-                  </Chip>
-                );
-              }}
-            />
-            <BrowseResults query={query} resourceType={resourceType} />
-          </>
-        ) : (
-          <BrowseDefaultState showSearchHistory={searchBarFocused} />
-        )}
+      <View style={{marginTop: -5, paddingBottom: 115}}>
+        {/* {query ? ( */}
+        {/* <> */}
+        <View style={{paddingBottom: 5}}>
+          <CategoriesCollectionSection
+            data={Object.values(BrowseNavigationResource)}
+            renderItem={item => {
+              return (
+                <Chip
+                  selected={resourceType === item}
+                  onPress={() => setResourceType(item)}>
+                  {item}
+                </Chip>
+              );
+            }}
+          />
+        </View>
+        <BrowseResults query={query} resourceType={resourceType} />
+        {/* </> */}
+        {/* ) : ( */}
+        {/* <BrowseDefaultState showSearchHistory={searchBarFocused} /> */}
+        {/* )} */}
       </View>
     </View>
   );

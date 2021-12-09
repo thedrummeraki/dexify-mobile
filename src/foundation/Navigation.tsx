@@ -22,7 +22,7 @@ type MangaParams = Partial<Omit<Manga, 'type' | 'id'>> & {id: string};
 
 type RootStackParamList = {
   Home: undefined;
-  ShowManga: MangaParams;
+  ShowManga: MangaParams & {isAiring?: boolean};
   AddToPlaylist: {manga: Manga};
   ShowMangaGallery: {id: string; number?: number};
   ShowChapter: {id: string};

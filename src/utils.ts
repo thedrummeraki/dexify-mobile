@@ -1,6 +1,11 @@
 import {useEffect, useState} from 'react';
 import {Dimensions} from 'react-native';
 
+export function appVersion() {
+  const pkg = require('../package.json');
+  return pkg.version;
+}
+
 export function useDebouncedValue<T>(value: T, delay?: number) {
   const [debouncedValue, setDebouncedValue] = useState(value);
 
@@ -113,6 +118,7 @@ export function pluralize(
   count: number,
   singular: string,
   options?: {
+    zeroPrefix?: string;
     singularNumberText?: string;
     plural?: string;
     invariable?: boolean;
@@ -128,7 +134,10 @@ export function pluralize(
     : plural !== undefined
     ? plural
     : `${singular}s`;
-  return [String(count), pluralText].join(' ');
+  return [
+    count === 0 ? options?.zeroPrefix || 'No' : String(count),
+    pluralText,
+  ].join(' ');
 }
 
 export function wait(ms: number) {

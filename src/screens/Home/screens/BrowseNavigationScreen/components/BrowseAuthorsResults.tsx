@@ -24,6 +24,7 @@ import CategoriesCollectionSection from 'src/components/CategoriesCollection/Cat
 import {List} from 'src/components/List/List';
 import {useDexifyNavigation} from 'src/foundation';
 import {occurences, pluralize} from 'src/utils';
+import BrowseEmptyResults from './BrowseEmptyResults';
 
 interface Props {
   query: string;
@@ -41,7 +42,11 @@ export default function BrowseAuthorsGroupResults({query}: Props) {
 
   return (
     <List
+      style={{padding: 5, paddingTop: 0}}
       loading={loading}
+      ListEmptyComponent={
+        <BrowseEmptyResults resourceType="author" query={query} />
+      }
       data={authors.map(author => {
         const works = findRelationships(author, 'manga');
         const subtitle =

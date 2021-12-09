@@ -23,7 +23,7 @@ interface Props {
 export default function BrowseMangaResults({query}: Props) {
   const navigation = useDexifyNavigation();
   const [searchManga, {data, loading}] = useLazyGetMangaList({
-    limit: 20,
+    limit: 100,
     order: {relevance: 'desc'},
   });
   const manga = data?.result === 'ok' ? data.data : [];
@@ -34,11 +34,12 @@ export default function BrowseMangaResults({query}: Props) {
 
   return (
     <List
-      style={{padding: 5}}
+      style={{padding: 5, paddingTop: 0}}
       loading={loading}
       ListEmptyComponent={
         <BrowseEmptyResults
           resourceType="manga"
+          resourceTypePlural="manga"
           actionVerb="was"
           query={query}
         />

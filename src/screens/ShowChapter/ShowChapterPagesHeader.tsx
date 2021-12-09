@@ -8,6 +8,7 @@ import {
   ViewStyle,
 } from 'react-native';
 import {Caption, IconButton, Subheading} from 'react-native-paper';
+import {useSettings} from 'src/prodivers';
 
 interface Props {
   title: string;
@@ -24,7 +25,7 @@ export default function ShowChapterPagesHeader({
   style,
   onPress,
 }: Props) {
-  const isDarkTheme = useColorScheme() === 'dark';
+  const {lightTheme} = useSettings();
   const opacity = useState(new Animated.Value(hidden ? 0 : 1))[0];
   const canPerformAnimation = useRef(false);
 
@@ -59,7 +60,7 @@ export default function ShowChapterPagesHeader({
         {
           opacity,
           zIndex: 1,
-          backgroundColor: isDarkTheme ? '#222' : '#ddd',
+          backgroundColor: lightTheme ? '#ddd' : '#222',
           height: 60,
           position: 'absolute',
           top: 0,

@@ -8,3 +8,6 @@ export {default as GraphQLProvider} from './GraphQLProvider';
 
 export {default as LibraryProvider} from './LibraryProvider';
 export * from './LibraryProvider';
+
+export {default as SettingsProvider} from './SettingsProvider';
+export * from './SettingsProvider';

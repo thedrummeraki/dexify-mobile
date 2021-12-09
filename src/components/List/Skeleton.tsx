@@ -18,11 +18,17 @@ export default function Skeleton({imageWidth = 0}: Props) {
         flex: 1,
         flexDirection: 'row',
         alignItems: 'center',
+        marginBottom: 5,
       }}
       animationDirection="horizontalRight"
       layout={[
         {key: 'image', width: imageWidth, height: imageWidth},
-        {key: 'text', width, height: 35, marginHorizontal: 15},
+        {
+          key: 'text',
+          width,
+          height: imageWidth ? 35 : 65,
+          marginHorizontal: 15,
+        },
       ]}
       boneColor="#222"
       highlightColor="#333333"

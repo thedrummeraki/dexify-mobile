@@ -1,6 +1,6 @@
 import React from 'react';
 import {StyleProp, View, ViewStyle} from 'react-native';
-import {IconButton, Text, Title} from 'react-native-paper';
+import {IconButton, Text} from 'react-native-paper';
 import {useDexifyNavigation} from 'src/foundation';
 
 interface Props {

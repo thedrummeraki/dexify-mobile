@@ -2,6 +2,7 @@ import {Order} from '.';
 import {MangaRequestParams} from './types';
 
 const API_URL = 'https://mangadex-client-proxy.herokuapp.com';
+// const API_URL = 'http://192.168.2.24:3001';
 
 type ParamsLike = {[key: string]: string | number | string[] | Order<any>};
 

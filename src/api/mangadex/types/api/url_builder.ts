@@ -17,22 +17,24 @@ interface FeedOptions {
     | 'airingNow'
     | 'randomManga'
     | 'recentlyAdded';
+  contentRating?: ContentRating[];
 }
 
 export default class UrlBuilder {
   static API_URL = 'https://mangadex-client-proxy.herokuapp.com'; // 'https://api.mangadex.org';
+  // static API_URL = 'http://192.168.2.24:3001';
 
   public static feed(params?: FeedOptions) {
     return this.buildUrl('/home/feed', params);
   }
 
+  public static animeAiringInfo(mangaId: string) {
+    return this.buildUrl('/home/manga/anime/airing/info', {mangaId});
+  }
+
   public static mangaList(params?: Partial<MangaRequestParams>) {
     const defaultValues: Partial<MangaRequestParams> = {
-      contentRating: [
-        ContentRating.safe,
-        ContentRating.suggestive,
-        ContentRating.erotica,
-      ],
+      contentRating: [ContentRating.pornographic],
       includes: ['cover_art', 'artist', 'author', 'tag'],
     };
 

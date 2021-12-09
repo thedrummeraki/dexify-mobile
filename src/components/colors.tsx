@@ -7,7 +7,8 @@ export type BackgroundColor =
   | 'accent'
   | 'error'
   | 'disabled'
-  | 'notification';
+  | 'notification'
+  | 'placeholder';
 
 const COLOR_MAP: {
   [key in 'dark' | 'light']: {[key in BackgroundColor]: string};
@@ -19,6 +20,7 @@ const COLOR_MAP: {
     notification: '#222',
     primary: '#222',
     surface: '#eee',
+    placeholder: '#222',
   },
   light: {
     accent: '#eee',
@@ -27,6 +29,7 @@ const COLOR_MAP: {
     notification: '#222',
     primary: '#eee',
     surface: '#111',
+    placeholder: '#eee',
   },
 };
 

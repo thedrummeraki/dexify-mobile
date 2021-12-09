@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {ActivityIndicator} from 'react-native-paper';
+import {ActivityIndicator, Text} from 'react-native-paper';
 import {findRelationships} from 'src/api';
 import {
   ContentRating,
@@ -9,8 +9,9 @@ import {
 } from 'src/api/mangadex/types';
 import UrlBuilder from 'src/api/mangadex/types/api/url_builder';
 import {useGetRequest, useLazyGetRequest} from 'src/api/utils';
-import {useLibraryContext} from 'src/prodivers';
+import {useContentRatingFitlers, useLibraryContext} from 'src/prodivers';
 import LibraryDetails from './LibraryDetails';
+import LibraryDetailsLoading from './LibraryDetailsSkeleton';
 
 interface CustomListInfo {
   customList: CustomList;
@@ -18,6 +19,7 @@ interface CustomListInfo {
 }
 
 export function useCustomListInfo() {
+  const contentRating = useContentRatingFitlers();
   const [customListInfo, setCustomListInfo] = useState<CustomListInfo[]>();
 
   const [getCustomLists, {loading, data}] = useLazyGetRequest<
@@ -28,7 +30,7 @@ export function useCustomListInfo() {
 
   useEffect(() => {
     if (data?.result === 'ok') {
-      getManga(mangaListUrlsFrom(data.data))
+      getManga(mangaListUrlsFrom(data.data, contentRating))
         .then(response => {
           if (response?.result === 'ok') {
             const result: CustomListInfo[] = [];
@@ -57,13 +59,18 @@ export function useCustomListInfo() {
 }
 
 export default function MyLibraryNavigationScreen() {
+  const contentRating = useContentRatingFitlers();
   const initialized = useRef(false);
   const [refreshing, setRefreshing] = useState(false);
   const [customListInfo, setCustomListInfo] = useState<CustomListInfo[]>();
-  const [getCustomLists, {loading, data}] = useLazyGetRequest<
-    PagedResultsList<CustomList>
-  >(UrlBuilder.currentUserCustomLists({limit: 100}));
+  const [loadingManga, setLoadingManga] = useState(true);
+  const [getCustomLists, {loading: loadingCustomLists, data}] =
+    useLazyGetRequest<PagedResultsList<CustomList>>(
+      UrlBuilder.currentUserCustomLists({limit: 100}),
+    );
   const [getManga] = useLazyGetRequest<PagedResultsList<Manga>>();
+
+  const loading = loadingCustomLists || loadingManga;
 
   const onRefresh = () => {
     setRefreshing(true);
@@ -80,7 +87,7 @@ export default function MyLibraryNavigationScreen() {
 
   useEffect(() => {
     if (data?.result === 'ok') {
-      getManga(mangaListUrlsFrom(data.data))
+      getManga(mangaListUrlsFrom(data.data, contentRating))
         .then(response => {
           if (response?.result === 'ok') {
             const result: CustomListInfo[] = [];
@@ -97,7 +104,8 @@ export default function MyLibraryNavigationScreen() {
             setCustomListInfo(result);
           }
         })
-        .catch(console.error);
+        .catch(console.error)
+        .finally(() => setLoadingManga(false));
     }
   }, [data]);
 
@@ -107,8 +115,8 @@ export default function MyLibraryNavigationScreen() {
     }
   }, [loading]);
 
-  if (loading && !initialized) {
-    return <ActivityIndicator style={{flex: 1}} />;
+  if (loading && !initialized.current) {
+    return <LibraryDetailsLoading />;
   }
 
   if (customListInfo) {
@@ -132,10 +140,13 @@ export default function MyLibraryNavigationScreen() {
     );
   }
 
-  return null;
+  return <Text>he he yee boi</Text>;
 }
 
-function mangaListUrlsFrom(customLists: CustomList[]) {
+function mangaListUrlsFrom(
+  customLists: CustomList[],
+  contentRating: ContentRating[],
+) {
   const mangasIds: string[] = [];
   for (const customList of customLists) {
     for (const id of findRelationships(customList, 'manga').map(r => r.id)) {
@@ -148,6 +159,6 @@ function mangaListUrlsFrom(customLists: CustomList[]) {
   return UrlBuilder.mangaList({
     ids: mangasIds,
     limit: mangasIds.length,
-    contentRating: Object.values(ContentRating),
+    contentRating,
   });
 }

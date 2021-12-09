@@ -4,7 +4,11 @@ import {Text, TextInput} from 'react-native-paper';
 import {findRelationships, mangaImage} from 'src/api';
 import {useGetMangaList} from 'src/api/mangadex/hooks';
 import {ContentRating, CustomList} from 'src/api/mangadex/types';
-import {Banner, CloseCurrentScreenHeader} from 'src/components';
+import {
+  Banner,
+  CloseCurrentScreenHeader,
+  HiddenMangaBanner,
+} from 'src/components';
 import BasicList from 'src/components/BasicList';
 import {MangaListItem} from 'src/components/MangaSearchCollection/MangaListItem';
 import Thumbnail, {ThumbnailSkeleton} from 'src/foundation/Thumbnail';
@@ -35,7 +39,6 @@ export default function ShowCustomListDetails({
   const {loading, data} = useGetMangaList({
     ids,
     limit: ids.length,
-    contentRating: Object.values(ContentRating),
   });
   const manga = data?.result === 'ok' ? data.data : [];
   const imageUrl =
@@ -141,6 +144,9 @@ export default function ShowCustomListDetails({
           style={{
             opacity: editing ? 0.4 : 1,
           }}>
+          {!loading && ids.length && ids.length > manga.length ? (
+            <HiddenMangaBanner />
+          ) : null}
           {bodyMarkup}
         </View>
       </ScrollView>

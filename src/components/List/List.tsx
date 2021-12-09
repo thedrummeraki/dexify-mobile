@@ -45,7 +45,7 @@ export function List<T extends BasicResource>(props: Props<T>) {
     return (
       <FlatList
         data={Array.from({length: skeletonLength})}
-        renderItem={() => <List.Item.Skeleton />}
+        renderItem={() => <List.Item.Skeleton imageWidth={70} />}
         {...rest}
       />
     );

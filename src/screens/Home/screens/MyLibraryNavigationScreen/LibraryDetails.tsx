@@ -18,8 +18,12 @@ import {
 import {mangaImage} from 'src/api';
 import {ContentRating, CustomList, Manga} from 'src/api/mangadex/types';
 import BasicList from 'src/components/BasicList';
+import {useBackgroundColor} from 'src/components/colors';
 import {useDexifyNavigation} from 'src/foundation';
-import Thumbnail, {ThumbnailBadge} from 'src/foundation/Thumbnail';
+import Thumbnail, {
+  ThumbnailBadge,
+  ThumbnailSkeleton,
+} from 'src/foundation/Thumbnail';
 import {useLibraryContext} from 'src/prodivers';
 import {pluralize} from 'src/utils';
 
@@ -208,9 +212,11 @@ function SelectableThumbnail({
     }
   }, [selected]);
 
+  const backgroundColor = useBackgroundColor('error');
+
   const visibilityBadge =
     item.visibility === 'private' ? (
-      <ThumbnailBadge>Private</ThumbnailBadge>
+      <ThumbnailBadge badgeStyle={{backgroundColor}}>Private</ThumbnailBadge>
     ) : undefined;
 
   return (

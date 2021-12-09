@@ -44,7 +44,7 @@ import StartReadingButton from './StartReadingButton';
 export default function AboutTab() {
   const navigation = useDexifyNavigation();
   const isLoggedIn = useIsLoggedIn();
-  const {manga, aggregate, coverUrl} = useMangaDetails();
+  const {manga, aggregate, coverUrl, isAiring} = useMangaDetails();
   const libraryStatus = useLibraryStatus(manga);
   const readingStatus = readingStatusInfo(libraryStatus);
   const readingStatusBackgroundColor = useBackgroundColor(
@@ -109,6 +109,9 @@ export default function AboutTab() {
         {aggregate && volumes.length > 0 && (
           <TextBadge content={volumesCountText} background="notification" />
         )}
+        {isAiring && (
+          <TextBadge content="Anime airing" icon="video" background="primary" />
+        )}
         {manga.attributes.year && <TextBadge content={manga.attributes.year} />}
       </View>
     </View>
@@ -123,7 +126,7 @@ export default function AboutTab() {
         aspectRatio={1.2}
         FooterComponent={basicInfoMarkup}
       />
-      <PaperProviderForBackground background={readingStatus.background}>
+      {/* <PaperProviderForBackground background={readingStatus.background}>
         <View
           style={{
             marginTop: -15,
@@ -138,14 +141,15 @@ export default function AboutTab() {
             {readingStatus.phrase}
           </Chip>
         </View>
-      </PaperProviderForBackground>
+      </PaperProviderForBackground> */}
       <View
         style={{
           flexDirection: 'row',
           alignItems: 'center',
           justifyContent: 'flex-start',
           flexWrap: 'wrap',
-          marginTop: 10,
+          // marginTop: 10,
+          marginTop: -15,
           paddingHorizontal: 15,
         }}>
         <Text style={{marginRight: 6}}>Made by:</Text>
@@ -165,8 +169,9 @@ export default function AboutTab() {
         ))}
       </View>
       <View style={{display: 'flex', marginTop: 15, marginBottom: -10}}>
-        {/* <FollowMangaButton /> */}
+        <FollowMangaButton />
         <Button
+          disabled={!isLoggedIn}
           mode="outlined"
           icon="plus"
           style={{marginTop: 5}}
@@ -219,7 +224,6 @@ export default function AboutTab() {
         </View>
         <View
           style={{
-            display: 'none',
             flexDirection: 'row',
             alignItems: 'center',
             justifyContent: 'flex-start',
@@ -257,10 +261,10 @@ export default function AboutTab() {
 
   return (
     <>
-      <View
+      {/* <View
         style={{position: 'absolute', top: 0, right: 0, bottom: 0, left: 0}}>
         <StartReadingButton icon="play" />
-      </View>
+      </View> */}
       <ChaptersList
         ListHeaderComponent={chaptersListHeaderMarkup}
         ListFooterComponent={chaptersListFooterMarkup}

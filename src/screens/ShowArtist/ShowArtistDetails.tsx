@@ -5,6 +5,7 @@ import {Button, IconButton, TextInput, Title} from 'react-native-paper';
 import {Artist, Author, ContentRating} from 'src/api/mangadex/types';
 import {CloseCurrentScreenHeader, MangaSearchCollection} from 'src/components';
 import {useDexifyNavigation, useShowArtistRoute} from 'src/foundation';
+import {useContentRatingFitlers} from 'src/prodivers';
 import {useDebouncedValue} from 'src/utils';
 
 interface Props {
@@ -22,12 +23,9 @@ export default function ShowArtistDetails({author}: Props) {
   const [searchMangaInput, setSearchMangaInput] = useState('');
   const searchMangaQuery = useDebouncedValue(searchMangaInput, 500);
 
-  const contentRating = [
-    ContentRating.safe,
-    ContentRating.suggestive,
-    ContentRating.erotica,
-  ];
-  if (allowHentai) {
+  const contentRating = useContentRatingFitlers();
+
+  if (allowHentai && !contentRating.includes(ContentRating.pornographic)) {
     contentRating.push(ContentRating.pornographic);
   }
 
@@ -97,7 +95,7 @@ export default function ShowArtistDetails({author}: Props) {
         options={{
           artists: [author.id],
           limit: 100,
-          contentRating,
+          contentRating: contentRating,
           order: {followedCount: 'desc'},
         }}
       />

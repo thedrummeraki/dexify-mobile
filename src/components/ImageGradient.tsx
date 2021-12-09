@@ -25,19 +25,14 @@ export default function ImageGradient({aspectRatio}: Props) {
 
 function useGradientColors() {
   const theme = useTheme();
-  if (theme.dark) {
-    return [
-      `${theme.colors.background}80`,
-      `${theme.colors.background}40`,
-      `${theme.colors.background}00`,
-      `${theme.colors.background}00`,
-      `${theme.colors.background}00`,
-      `${theme.colors.background}50`,
-      `${theme.colors.background}A0`,
-      `${theme.colors.background}D0`,
-      `${theme.colors.background}FF`,
-    ];
-  }
+  const background = theme.dark ? '#000000' : '#f2f2f2';
 
-  return ['#ffffff00', '#ffffff10', '#ffffff50', '#ffffffF0'];
+  return [
+    `${background}50`,
+    `${background}20`,
+    `${background}50`,
+    `${background}A0`,
+    `${background}D0`,
+    `${background}FF`,
+  ];
 }

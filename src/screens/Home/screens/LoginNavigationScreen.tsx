@@ -1,6 +1,6 @@
 import React, {useCallback, useContext, useEffect, useState} from 'react';
-import {View} from 'react-native';
-import {Button, Text, TextInput, Title} from 'react-native-paper';
+import {Image, Linking, View} from 'react-native';
+import {Button, Caption, Text, TextInput, Title} from 'react-native-paper';
 import {AuthResponse} from 'src/api/mangadex/types';
 import {useLazyGetRequest, usePostRequest} from 'src/api/utils';
 import {SessionContext} from 'src/prodivers';
@@ -9,8 +9,9 @@ export function LoginNavigationScreen() {
   const [post] = usePostRequest<AuthResponse>();
   const [submitEnabled, setSubmitEnabled] = useState(false);
   // const [get] = useLazyGetRequest<{result: 'ok', isAuthenticated: boolean, roles: string[], permissions: string[]}>()
-  const {session, setSession} = useContext(SessionContext);
+  const {setSession} = useContext(SessionContext);
 
+  const [submitting, setSubmitting] = useState(false);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
@@ -18,26 +19,13 @@ export function LoginNavigationScreen() {
     setSubmitEnabled(password.length >= 8 && Boolean(username));
   }, [username, password]);
 
-  // useEffect(() => {
-  //   if (data.data?.result === 'ok') {
-  //     const {token} = data.data;
-
-  //     setSession({
-  //       username,
-  //       session: {
-  //         value: token.session,
-  //         validUntil: new Date(),
-  //       },
-  //       refresh: {
-  //         value: token.session,
-  //         validUntil: new Date(),
-  //       },
-  //     });
-  //   }
-  // }, [data]);
+  const handleGoToMangadex = () => {
+    Linking.openURL('https://mangadex.org/login');
+  };
 
   const onLoginPressed = useCallback(() => {
     setSubmitEnabled(false);
+    setSubmitting(true);
     post('https://api.mangadex.org/auth/login', {
       username,
       password,
@@ -62,24 +50,55 @@ export function LoginNavigationScreen() {
           });
         }
       })
-      .catch(() => setSubmitEnabled(true));
+      .catch(() => setSubmitEnabled(true))
+      .finally(() => setSubmitting(false));
   }, [username, password]);
 
   return (
-    <View style={{flex: 1, alignContent: 'center', justifyContent: 'center'}}>
+    <View
+      style={{
+        flex: 1,
+        alignContent: 'center',
+        justifyContent: 'center',
+        padding: 20,
+      }}>
       <View>
-        <Title>Sign in with your Mangadex account</Title>
-        <TextInput mode="outlined" onChangeText={setUsername} />
+        <View
+          style={{
+            justifyContent: 'center',
+            alignItems: 'center',
+            marginBottom: 30,
+          }}>
+          <Image
+            source={require('src/images/logo-face-only.png')}
+            width={100}
+            height={100}
+            style={{width: 100, height: 100, borderRadius: 25, margin: 10}}
+          />
+          <Text style={{textAlign: 'center'}}>
+            Discover and read manga from the comfort of your mobile device!
+          </Text>
+          <Caption>Sign in with your Mangadex account</Caption>
+        </View>
         <TextInput
+          dense
+          mode="outlined"
+          onChangeText={setUsername}
+          placeholder="👤 username"
+        />
+        <TextInput
+          dense
           secureTextEntry
           mode="outlined"
           textContentType="password"
           passwordRules="required"
           keyboardType="default"
           autoCompleteType="password"
+          placeholder="🤫 password"
           onChangeText={setPassword}
         />
         <Button
+          loading={submitting}
           disabled={!submitEnabled}
           mode="contained"
           icon="lock"
@@ -88,6 +107,12 @@ export function LoginNavigationScreen() {
           Sign in
         </Button>
       </View>
+      <Caption
+        style={{marginTop: 30, fontStyle: 'italic', lineHeight: 16}}
+        onPress={handleGoToMangadex}>
+        Have trouble logging in? Don't have an account? Click here to go to
+        https://www.mangadex.org/login for more info.
+      </Caption>
     </View>
   );
 }

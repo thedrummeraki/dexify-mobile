@@ -1,41 +1,74 @@
-import React from 'react';
+import React, {PropsWithChildren} from 'react';
 import {
   NavigationContainer,
-  DarkTheme,
-  DefaultTheme,
+  DarkTheme as NavigationDarkTheme,
+  DefaultTheme as NavigationDefaultTheme,
 } from '@react-navigation/native';
-import {Provider as PaperProvider, Provider} from 'react-native-paper';
+import {
+  Provider as PaperProvider,
+  Provider,
+  DarkTheme as PaperDarkTheme,
+  DefaultTheme as PaperDefaultTheme,
+} from 'react-native-paper';
+import merge from 'deepmerge';
 import {
   GraphQLProvider,
   HeaderProvider,
   LibraryProvider,
   SessionProvider,
+  SettingsProvider,
+  useSettings,
 } from './prodivers';
 import {Navigation} from './foundation';
-import {useColorScheme} from 'react-native';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
+import {View} from 'react-native';
 
 export default function App() {
-  const useDarkTheme = useColorScheme() === 'dark';
-  const theme = useDarkTheme ? DarkTheme : DefaultTheme;
-
   return (
     <PaperProvider>
-      <Provider>
-        <SessionProvider>
+      <SessionProvider>
+        <SettingsProvider>
           <GraphQLProvider>
             <GestureHandlerRootView style={{flex: 1}}>
               <HeaderProvider>
                 <LibraryProvider>
-                  <NavigationContainer theme={theme}>
+                  <ThemeProvider>
                     <Navigation />
-                  </NavigationContainer>
+                  </ThemeProvider>
                 </LibraryProvider>
               </HeaderProvider>
             </GestureHandlerRootView>
           </GraphQLProvider>
-        </SessionProvider>
-      </Provider>
+        </SettingsProvider>
+      </SessionProvider>
     </PaperProvider>
+  );
+}
+
+function ThemeProvider({children}: PropsWithChildren<{}>) {
+  const CombinedDefaultTheme = merge(PaperDefaultTheme, NavigationDefaultTheme);
+  const CombinedDarkTheme = merge(PaperDarkTheme, NavigationDarkTheme);
+
+  const {lightTheme} = useSettings();
+  const selectedTheme = lightTheme ? CombinedDefaultTheme : CombinedDarkTheme;
+
+  const theme = {
+    ...selectedTheme,
+    colors: {
+      ...selectedTheme.colors,
+      primary: 'rgb(255, 103, 64)',
+      accent: 'rgb(103, 64, 255)',
+      notification: 'rgb(64, 255, 103)',
+    },
+  };
+
+  console.log('selected theme', selectedTheme.colors);
+  console.log('dark theme', PaperDarkTheme.colors);
+  console.log('light theme', PaperDefaultTheme.colors);
+
+  return (
+    <Provider theme={theme}>
+      <NavigationContainer theme={theme}>{children}</NavigationContainer>
+    </Provider>
   );
 }

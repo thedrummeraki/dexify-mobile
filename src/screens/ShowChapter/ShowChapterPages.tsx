@@ -6,6 +6,7 @@ import ShowChapterPagesHeader from './ShowChapterPagesHeader';
 
 import SwipeableViews from 'react-swipeable-views-native';
 import FullScreenImageSwiper from '../ShowMangaGallery/FullScreenImageSwiper';
+import {useSettings} from 'src/prodivers';
 
 interface Page {
   number: number;
@@ -20,6 +21,7 @@ interface Props {
 
 export default function ShowChapterPages({pages, chapter}: Props) {
   const navigation = useDexifyNavigation();
+  const {dataSaver} = useSettings();
 
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(pages[0]);
@@ -108,7 +110,11 @@ export default function ShowChapterPages({pages, chapter}: Props) {
                     height: '100%',
                     resizeMode: 'contain',
                   }}
-                  source={{uri: page.dataSaverImageUrl}}
+                  source={{
+                    uri: dataSaver
+                      ? page.dataSaverImageUrl
+                      : page.originalImageUrl,
+                  }}
                 />
               </View>
             </TouchableWithoutFeedback>

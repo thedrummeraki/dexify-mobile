@@ -24,6 +24,7 @@ import CategoriesCollectionSection from 'src/components/CategoriesCollection/Cat
 import {List} from 'src/components/List/List';
 import {useDexifyNavigation} from 'src/foundation';
 import {occurences} from 'src/utils';
+import BrowseEmptyResults from './BrowseEmptyResults';
 
 interface Props {
   query: string;
@@ -40,7 +41,11 @@ export default function BrowseScanlationGroupResults({query}: Props) {
 
   return (
     <List
+      style={{padding: 5, paddingTop: 0}}
       loading={loading}
+      ListEmptyComponent={
+        <BrowseEmptyResults resourceType="scanlation group" query={query} />
+      }
       data={groups.map(group => ({
         title: group.attributes.name,
         image: {url: 'https://mangadex.org/avatar.png', width: 70},

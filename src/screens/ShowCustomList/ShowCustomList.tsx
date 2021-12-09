@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {ActivityIndicator} from 'react-native-paper';
+import {ActivityIndicator, useTheme} from 'react-native-paper';
 import {CustomList, EntityResponse} from 'src/api/mangadex/types';
 import UrlBuilder from 'src/api/mangadex/types/api/url_builder';
 import {useLazyGetRequest} from 'src/api/utils';

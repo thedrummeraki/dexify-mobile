@@ -1,4 +1,5 @@
 import {useEffect} from 'react';
+import {useContentRatingFitlers} from 'src/prodivers';
 import {RequestResult, useLazyGetRequest} from '../utils';
 import {
   EntityResponse,
@@ -18,11 +19,13 @@ export function useLazyGetMangaList(
   (params?: MangaRequestParams) => Promise<ManyManga | undefined>,
   RequestResult<ManyManga>,
 ] {
+  const contentRating = useContentRatingFitlers();
   const [get, response] = useLazyGetRequest<ManyManga>();
 
   const getManga = (otherOptions?: MangaRequestParams) => {
+    const defaultOptions = {contentRating};
     const url = UrlBuilder.mangaList(
-      Object.assign(otherOptions || {}, options || {}),
+      Object.assign(defaultOptions, Object.assign(options || {}, otherOptions)),
     );
     return get(url);
   };

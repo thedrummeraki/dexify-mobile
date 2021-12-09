@@ -41,8 +41,8 @@ export default function BrowseResults({query, resourceType}: Props) {
       return <BrowseMangaResults query={query} />;
     case BrowseNavigationResource.Author:
       return <BrowseAuthorsGroupResults query={query} />;
-    case BrowseNavigationResource.Chapter:
-      return <BrowseChapterResults query={query} />;
+    // case BrowseNavigationResource.Chapter:
+    //   return <BrowseChapterResults query={query} />;
     case BrowseNavigationResource.Group:
       return <BrowseScanlationGroupResults query={query} />;
     default:

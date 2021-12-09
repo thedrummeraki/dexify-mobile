@@ -17,6 +17,7 @@ import {
 } from 'src/api/mangadex/types';
 import {ThumbnailSkeleton} from 'src/foundation/Thumbnail';
 import {useDebouncedValue} from 'src/utils';
+import {HiddenMangaBanner} from '..';
 import BasicList from '../BasicList';
 import MangaThumbnail from '../MangaThumbnail';
 import {MangaListItem} from './MangaListItem';
@@ -79,18 +80,21 @@ export default function MangaSearchCollection({
   }, [manga]);
 
   const skeletonWidth = Dimensions.get('screen').width / 3 - 5 * 3;
+  const showMissingTitlesBanner = data?.result === 'ok' && manga.length === 0;
 
-  const headerMarkup = (HeaderComponent || filterOptions) && (
-    <>
-      {HeaderComponent}
-      {filterOptions && (
-        <FilterTextInput
-          {...filterOptions}
-          onFilterQueryChange={setFilterQuery}
-        />
-      )}
-    </>
-  );
+  const headerMarkup =
+    HeaderComponent || filterOptions || showMissingTitlesBanner ? (
+      <>
+        {HeaderComponent}
+        {showMissingTitlesBanner && <HiddenMangaBanner />}
+        {filterOptions && (
+          <FilterTextInput
+            {...filterOptions}
+            onFilterQueryChange={setFilterQuery}
+          />
+        )}
+      </>
+    ) : undefined;
 
   const renderItem = useCallback(
     (manga: Manga) => {

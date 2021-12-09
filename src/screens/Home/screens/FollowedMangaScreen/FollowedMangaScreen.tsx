@@ -19,6 +19,7 @@ import {
 } from 'src/api/mangadex/types';
 import {useGetRequest, useLazyGetRequest} from 'src/api/utils';
 import {UIMangaCategory} from 'src/categories';
+import {HiddenMangaBanner} from 'src/components';
 import BasicList from 'src/components/BasicList';
 import CategoriesCollectionSection from 'src/components/CategoriesCollection/CategoriesCollectionSection';
 import {useBackgroundColor} from 'src/components/colors';
@@ -26,6 +27,7 @@ import MangaThumbnail from 'src/components/MangaThumbnail';
 import {useDexifyNavigation} from 'src/foundation';
 import Thumbnail, {ThumbnailSkeleton} from 'src/foundation/Thumbnail';
 import {
+  useContentRatingFitlers,
   useLibraryContext,
   useLibraryMangaIds,
   useUpdatedSession,
@@ -33,18 +35,19 @@ import {
 import {occurences} from 'src/utils';
 
 export default function FollowedMangaScreen() {
-  useUpdatedSession();
+  const contentRating = useContentRatingFitlers();
   const [selectedReadingStatus, setSelectedReadingStatus] =
     useState<ReadingStatus>(ReadingStatus.Reading);
 
   const [searchInput, setSearchInput] = useState<string>('');
   const [manga, setManga] = useState<Manga[]>([]);
+  const [showHiddenMangaBanner, setShowHiddenMangaBanner] = useState(false);
 
   const possibleReadingStatuses = usePossibleReadingStatuses();
   const selectedChipColor = useBackgroundColor('primary');
   const {readingStatus: data} = useLibraryContext();
 
-  const [getManga, {loading}] = useLazyGetMangaList();
+  const [getManga, {loading, data: mangaData}] = useLazyGetMangaList();
 
   const filterManga = useCallback((query: string, manga: Manga[]) => {
     return manga.filter(item => {
@@ -60,6 +63,22 @@ export default function FollowedMangaScreen() {
       return allTitles.filter(title => title.includes(query)).length > 0;
     });
   }, []);
+
+  useEffect(() => {
+    const counts = data?.statuses
+      ? occurences(Object.values(data.statuses), selectedReadingStatus)
+      : null;
+
+    console.log(loading, mangaData?.result, counts, manga.length);
+
+    setShowHiddenMangaBanner(
+      !loading &&
+        mangaData?.result === 'ok' &&
+        counts != null &&
+        manga.length > 0 &&
+        counts > manga.length,
+    );
+  }, [mangaData, manga, data, loading, selectedReadingStatus]);
 
   const currentMangaList = useMemo(
     () =>
@@ -77,7 +96,7 @@ export default function FollowedMangaScreen() {
 
       setManga([]);
       getManga({
-        contentRating: Object.values(ContentRating),
+        contentRating,
         limit: mangaIds.length,
         ids: mangaIds,
       }).then(response => {
@@ -142,6 +161,13 @@ export default function FollowedMangaScreen() {
           data={currentMangaList}
           itemStyle={{padding: 5}}
           renderItem={item => <MangaThumbnail key={item.id} manga={item} />}
+          HeaderComponent={
+            showHiddenMangaBanner ? (
+              <View style={{marginTop: 5}}>
+                <HiddenMangaBanner />
+              </View>
+            ) : undefined
+          }
           skeletonItem={
             <ThumbnailSkeleton width="100%" aspectRatio={0.8} height="100%" />
           }

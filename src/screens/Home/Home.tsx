@@ -1,5 +1,5 @@
-import React, {useState} from 'react';
-import {useHeader, useSession} from 'src/prodivers';
+import React, {useEffect, useState} from 'react';
+import {useHeader, useSession, useSettings} from 'src/prodivers';
 import {BottomNavigation} from 'react-native-paper';
 import {
   BrowseNavigationScreen,
@@ -9,6 +9,7 @@ import {
   FollowedMangaScreen,
 } from './screens';
 import {NewHome} from '..';
+import {useBackgroundColor} from 'src/components/colors';
 
 export default function Home() {
   useHeader({title: 'Dexify', hideHeader: true});
@@ -23,13 +24,23 @@ export default function Home() {
 
 function AuthenticatedBottomNavigation() {
   const [index, setIndex] = useState(0);
-  const [routes] = useState([
-    {key: 'main', title: 'Home', icon: 'home'},
-    {key: 'library', title: 'Library', icon: 'library-shelves'},
-    {key: 'browse', title: 'Browse...', icon: 'magnify'},
-    {key: 'followed', title: 'Followed', icon: 'heart'},
-    {key: 'profile', title: 'My profile', icon: 'account'},
+  const {spicyMode} = useSettings();
+  console.log('SpikcYC', spicyMode);
+
+  const background = spicyMode ? 'error' : undefined;
+  const color = useBackgroundColor(background);
+
+  const [routes, setRoutes] = useState([
+    {key: 'main', title: 'Home', icon: 'home', color},
+    {key: 'library', title: 'Library', icon: 'library-shelves', color},
+    {key: 'browse', title: 'Browse...', icon: 'magnify', color},
+    {key: 'followed', title: 'Followed', icon: 'heart', color},
+    {key: 'profile', title: 'My profile', icon: 'account', color},
   ]);
+
+  useEffect(() => {
+    setRoutes(routes => routes.map(route => ({...route, color})));
+  }, [color]);
 
   const renderScene = BottomNavigation.SceneMap({
     main: NewHome,

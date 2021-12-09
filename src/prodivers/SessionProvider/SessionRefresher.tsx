@@ -10,6 +10,7 @@ import {checkSessionValidity, SessionContext, SessionState} from '.';
 import {AxiosRequestType, useAxiosRequest, usePostRequest} from 'src/api/utils';
 import {AuthResponse} from 'src/api/mangadex/types';
 import axios from 'axios';
+import SplashScreen from 'src/components/SplashScreen';
 
 interface Props {
   loading: boolean;
@@ -53,7 +54,7 @@ export default function SessionRefresher({
   }, [session]);
 
   if (loading) {
-    return <ActivityIndicator style={{flex: 1}} />;
+    return <SplashScreen />;
   }
 
   return <>{children}</>;
