@@ -160,7 +160,7 @@ export function contentRatingInfo(contentRating: ContentRating): {
     case ContentRating.erotica:
       return {
         content: 'Erotica (15+)',
-        background: 'notification',
+        background: 'error',
         icon: 'alert-outline',
       };
     case ContentRating.pornographic:

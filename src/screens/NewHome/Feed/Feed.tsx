@@ -4,6 +4,7 @@ import Section from './Section/Section';
 import TopManga from './Section/components/TopManga';
 import {FeedData} from './types';
 import {preferredMangaDescription} from 'src/api';
+import {useDexifyNavigation} from 'src/foundation';
 
 interface Props {
   data: FeedData;
@@ -21,13 +22,18 @@ export default function Feed({data, refreshing, onRefresh}: Props) {
     recentlyAdded,
   } = data;
 
+  const navigation = useDexifyNavigation();
+
   const topMangaMarkup = topManga ? (
     <TopManga
       showReadingStatus
       navigateToManga
       description={preferredMangaDescription(topManga)}
       manga={topManga}
-      primaryAction={{content: 'Read now', onPress: () => {}}}
+      primaryAction={{
+        content: 'Read now',
+        onPress: () => navigation.push('ShowManga', topManga),
+      }}
     />
   ) : null;
 

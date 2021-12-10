@@ -94,6 +94,7 @@ export function MyProfileNavigationScreen() {
     logout()
       .then(() => EncryptedStorage.removeItem('user_session'))
       .then(() => setSession(null))
+      .then(resetSettings)
       .catch(console.error);
   };
 
