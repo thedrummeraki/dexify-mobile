@@ -4,6 +4,7 @@ import {ActivityIndicator, Text} from 'react-native-paper';
 import {Chapter, EntityResponse} from 'src/api/mangadex/types';
 import {useGetRequest} from 'src/api/utils';
 import {useShowChapterRoute} from 'src/foundation/Navigation';
+import NewShowChapterDetails from './NewShowChapterDetails';
 import ShowChapterDetails from './ShowChapterDetails';
 
 export default function ShowChapter() {

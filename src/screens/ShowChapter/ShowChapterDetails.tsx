@@ -2,6 +2,7 @@ import React from 'react';
 import {ActivityIndicator} from 'react-native-paper';
 import {Chapter} from 'src/api/mangadex/types';
 import {useGetRequest} from 'src/api/utils';
+import NewShowChapterDetails from './NewShowChapterDetails';
 import ShowChapterPages from './ShowChapterPages';
 
 interface Props {
@@ -19,8 +20,9 @@ export default function ShowChapterDetails({chapter}: Props) {
 
   if (data?.baseUrl) {
     return (
-      <ShowChapterPages
+      <NewShowChapterDetails
         chapter={chapter}
+        initialIndex={1}
         pages={chapter.attributes.data.map((_, index) => ({
           number: index + 1,
           originalImageUrl: [

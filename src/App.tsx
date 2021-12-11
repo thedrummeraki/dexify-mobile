@@ -21,7 +21,6 @@ import {
 } from './prodivers';
 import {Navigation} from './foundation';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
-import {View} from 'react-native';
 
 export default function App() {
   return (

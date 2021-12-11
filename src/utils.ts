@@ -30,6 +30,10 @@ export function isPortrait() {
   return dim.height >= dim.width;
 }
 
+export function useDimensions() {
+  return Dimensions.get('window');
+}
+
 export function useScreenOrientation(): ScreenOrientation {
   const [orientation, setOrientation] = useState<ScreenOrientation>(
     isPortrait() ? 'portrait' : 'landascape',
@@ -142,4 +146,12 @@ export function pluralize(
 
 export function wait(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+export function max(a: number, b: number) {
+  return a < b ? b : a;
+}
+
+export function min(a: number, b: number) {
+  return a < b ? a : b;
 }
