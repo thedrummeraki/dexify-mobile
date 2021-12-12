@@ -1,3 +1,4 @@
+import {rewriteURIForGET} from '@apollo/client';
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {
   Modal,
@@ -11,18 +12,28 @@ import {
   Gesture,
   GestureDetector,
   PanGestureHandler,
+  PanGestureHandlerGestureEvent,
   ScrollView,
 } from 'react-native-gesture-handler';
 import Animated, {
+  cancelAnimation,
+  useAnimatedGestureHandler,
   useAnimatedStyle,
+  useDerivedValue,
   useSharedValue,
+  withDecay,
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
 import {Chapter, Manga} from 'src/api/mangadex/types';
+import {CloseCurrentScreenHeader} from 'src/components';
 import {useDexifyNavigation} from 'src/foundation';
 import {ReadingDirection, useSettings} from 'src/prodivers';
 import {max, min, useDimensions} from 'src/utils';
+
+import ReactNativeZoomableView from '@dudigital/react-native-zoomable-view/src/ReactNativeZoomableView';
+import {transform} from '@babel/core';
+import {Title} from 'react-native-paper';
 
 interface Page {
   number: number;
@@ -60,32 +71,17 @@ interface PageState {
   next: Page | null;
 }
 
+interface PanContext {
+  x: number;
+}
+
 export default function NewShowChapterDetails({pages, initialIndex}: Props) {
   const {readingDirection} = useSettings();
   const {width, height} = useDimensions();
 
+  console.log('device', {width, height});
+
   const navigation = useDexifyNavigation();
-
-  // const [pageState, setPageState] = useState<PageState>({
-  //   prev: null,
-  //   current: null,
-  //   next: null,
-  // });
-
-  const [currentIndex, setCurrentIndex] = useState(initialIndex);
-  const [activeIndices, setActiveIndices] = useState<number[]>([]);
-
-  const [enable, setEnable] = useState(true);
-  const ref = React.createRef();
-  const scrollRef = React.createRef();
-
-  const onScrollDown = useCallback(() => {
-    if (!enable) {
-      return null;
-    }
-
-    navigation.pop();
-  }, [enable]);
 
   const horizontal =
     readingDirection === ReadingDirection.LtR ||
@@ -96,163 +92,172 @@ export default function NewShowChapterDetails({pages, initialIndex}: Props) {
     readingDirection === ReadingDirection.BtT;
 
   const [currentPageScale, setCurrentPageScale] = useState(1);
-  const [snapToDimension, setSnapToDimension] = useState(
-    horizontal ? width : height,
-  );
 
-  useEffect(() => {
-    if (pages.length === 0) {
-      setActiveIndices([]);
-    } else if (pages.length === 1) {
-      setActiveIndices([0]);
-    } else if (pages.length === 2) {
-      setActiveIndices([0, 1]);
-    } else if (currentIndex <= 0) {
-      setActiveIndices([0, 1]);
-    } else if (currentIndex < pages.length) {
-      setActiveIndices([currentIndex - 1, currentIndex, currentIndex + 1]);
-    } else {
-      setActiveIndices([0, 1]);
-    }
-  }, [pages, currentIndex]);
+  const orderedPages = useMemo(() => {
+    return readingReversed ? pages.sort(x => -x) : pages;
+  }, [pages, readingReversed]);
 
+  const offset = useSharedValue({x: 0, y: 0});
+  const savedOffset = useSharedValue({x: 0, y: 0});
+  const zooming = useSharedValue(false);
   const scale = useSharedValue(1);
-  const savedScale = useSharedValue(1);
+
+  const dragGesture = Gesture.Pan()
+    .onUpdate(e => {
+      const y = e.translationY + savedOffset.value.y;
+      if (zooming.value) {
+        const leftLimit = width / 2;
+        const rightLimit = -width / 2;
+        const x = e.translationX + savedOffset.value.x;
+
+        offset.value = {
+          x: x < rightLimit ? rightLimit : x > leftLimit ? leftLimit : x,
+          y: y > 0 ? 0 : y,
+        };
+      } else {
+        offset.value = {
+          x: 0,
+          y: y > 0 ? 0 : y,
+        };
+      }
+    })
+    .onEnd(() => {
+      console.log('onEnd', offset.value);
+      savedOffset.value = {x: offset.value.x, y: offset.value.y};
+    });
 
   const doubleTapGesture = Gesture.Tap()
     .maxDuration(1000)
     .numberOfTaps(2)
     .onStart(() => {
       if (scale.value === 1) {
-        scale.value = withTiming(2, {duration: 400});
+        scale.value = withTiming(2, {duration: 100});
+        zooming.value = true;
       } else {
-        scale.value = withTiming(1, {duration: 400});
+        scale.value = withTiming(1, {duration: 100});
+        zooming.value = false;
+
+        // when zooming out, reset horizontal position
+        offset.value = {...offset.value, x: 0};
       }
     });
 
-  const offset = useSharedValue({x: 0, y: 0});
-  const savedOffset = useSharedValue({x: 0, y: 0});
-
-  const animatedStyle = useAnimatedStyle(() => ({
+  const animatedStyles = useAnimatedStyle(() => ({
     transform: [
-      // {scale: scale.value},
       {translateX: offset.value.x},
       {translateY: offset.value.y},
+      {scale: scale.value},
     ],
   }));
 
-  // const zoomGesture = Gesture.Pinch()
-  //   .onUpdate(event => {
-  //     console.log('new scale', event.scale);
-  //     scale.value = savedScale.value * event.scale;
-  //     if (scale.value < 1) {
-  //       scale.value = 1;
-  //     }
-  //   })
-  //   .onEnd(() => {
-  //     savedScale.value = scale.value;
-  //     // zooming.value = scale.value > 1;
-  //   });
+  const {width: pageWidth} = useDimensions();
 
-  // useEffect(() => {
-  //   setSnapToDimension((horizontal ? width : height) * currentPageScale);
-  // }, [horizontal, currentPageScale, width, height]);
+  const translateX = useSharedValue(0);
+  const savedTranslateX = useSharedValue(0);
+  const clampedTranslateX = useDerivedValue(() => {
+    const minTranslateX = Math.min(translateX.value, 0);
+    const maxTranslateX = -pageWidth * (pages.length - 1);
+
+    // return minTranslateX;
+    return Math.max(minTranslateX, maxTranslateX);
+  });
 
   const panGesture = Gesture.Pan()
-    .onStart(e => {
-      console.log('on drag', e);
-      offset.value = {
-        x: e.translationX + savedOffset.value.x,
-        y: e.translationY + savedOffset.value.y,
-      };
+    .onStart(() => {
+      savedTranslateX.value = clampedTranslateX.value;
     })
-    .onEnd(() => {
-      savedOffset.value = {
-        x: offset.value.x,
-        y: offset.value.y,
-      };
+    .onUpdate(e => {
+      translateX.value = e.translationX + savedTranslateX.value;
+    })
+    .onEnd(e => {
+      translateX.value = withDecay({velocity: e.velocityX});
     });
 
-  const gesture = Gesture.Simultaneous(panGesture, doubleTapGesture);
+  const tapGesture = Gesture.Tap()
+    .numberOfTaps(1)
+    .onStart(() => {
+      cancelAnimation(translateX);
+    });
 
-  const orderedPages = useMemo(() => {
-    return readingReversed ? pages.sort(x => -x) : pages;
-  }, [pages, readingReversed]);
+  const slideScrollViewGesture = Gesture.Race(tapGesture, panGesture);
 
   return (
-    <GestureDetector gesture={gesture}>
-      {/* <Animated.ScrollView
-        horizontal={horizontal}
-        disableIntervalMomentum
-        showsHorizontalScrollIndicator={false}
-        showsVerticalScrollIndicator={false}
-        // snapToInterval={snapToDimension * 2}
+    <>
+      {/* <CloseCurrentScreenHeader /> */}
+
+      {/* <ScrollView
         removeClippedSubviews
-        snapToAlignment="center"
-        style={[animatedStyle]}>
-        {orderedPages.map(page => (
-          <Page
-            key={page.number}
-            visible
-            page={page}
-            onScaleUpdate={setCurrentPageScale}
-          />
-        ))}
-      </
-      Animated.ScrollView> */}
-      {/* <Animated.View style={[{flex: 1, flexDirection: 'row'}, animatedStyle]}>
-        {orderedPages.map(page => (
-          <Page
-            key={page.number}
-            visible
-            page={page}
-            onScaleUpdate={setCurrentPageScale}
-          />
-        ))}
-      </Animated.View> */}
-      <ScrollView
-        removeClippedSubviews
-        // waitFor={enable ? ref : scrollRef}
         scrollEventThrottle={40}
-        // onScroll={({nativeEvent}) => {
-        //   if (nativeEvent.contentOffset.y <= 0 && !enable) {
-        //     setEnable(true);
-        //   }
-        //   if (nativeEvent.contentOffset.y > 0 && enable) {
-        //     setEnable(false);
-        //   }
-        // }}
-      >
-        {/* <PanGestureHandler
-          enabled={enable}
-          ref={ref}
-          activeOffsetY={5}
-          failOffsetY={-5}
-          onGestureEvent={onScrollDown}>
-          <Animated.View>
-            {orderedPages.map(page => (
-              <Page
-                key={page.number}
-                visible
+        onScrollBeginDrag={() => console.log('onScrollBeingDrag')}>
+        {orderedPages.map(page => (
+          <Page
+            key={page.number}
+            visible
+            page={page}
+            onScaleUpdate={setCurrentPageScale}
+          />
+        ))}
+      </ScrollView> */}
+
+      {/* <Animated.ScrollView
+          removeClippedSubviews={false}
+          style={[animatedStyles]}>
+          {orderedPages.map((page, index) => (
+            <Page
+              key={page.number}
+              visible
+              page={page}
+              onScaleUpdate={setCurrentPageScale}
+            />
+          ))}
+        </Animated.ScrollView> */}
+      <View style={{flex: 1}}>
+        <GestureDetector gesture={slideScrollViewGesture}>
+          <Animated.View style={{flex: 1, flexDirection: 'row'}}>
+            {orderedPages.map((page, index) => (
+              <TestPage
+                key={String(index)}
                 page={page}
-                onScaleUpdate={setCurrentPageScale}
+                translateX={clampedTranslateX}
               />
             ))}
           </Animated.View>
-        </PanGestureHandler> */}
-        {orderedPages.map(page => (
-          <Page
-            key={page.number}
-            visible
-            page={page}
-            onScaleUpdate={setCurrentPageScale}
-          />
-        ))}
-      </ScrollView>
-    </GestureDetector>
+        </GestureDetector>
+      </View>
+    </>
   );
 
   // return <Page uri={pages[0].dataSaverImageUrl} />;
+}
+
+function TestPage({
+  page,
+  translateX,
+}: {
+  page: Page;
+  translateX: Animated.SharedValue<number>;
+}) {
+  const index = page.number - 1;
+  const {width: pageWidth} = useDimensions();
+  const pageOffset = pageWidth * index;
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{translateX: translateX.value + pageOffset}],
+  }));
+
+  return (
+    <Animated.View
+      key={String(index)}
+      style={[
+        {
+          ...StyleSheet.absoluteFillObject,
+          backgroundColor: `rgba(0, 0, 255, 0.${index + 2})`,
+        },
+        animatedStyle,
+      ]}>
+      <Title>Page {page.number}</Title>
+    </Animated.View>
+  );
 }
 
 function Page(props: PageProps) {
@@ -260,20 +265,26 @@ function Page(props: PageProps) {
   const [width, setWidth] = useState(0);
   const [height, setHeight] = useState(0);
 
+  const deviceDimensions = useDimensions();
+
   const {dataSaver} = useSettings();
   const uri = dataSaver ? page.dataSaverImageUrl : page.originalImageUrl;
 
-  Image.getSize(uri, (width, height) => {
-    setWidth(width);
-    setHeight(height);
-  });
-
-  const deviceDimensions = useDimensions();
+  Image.getSize(
+    uri,
+    (width, height) => {
+      setWidth(width);
+      setHeight(height);
+    },
+    () => {
+      setWidth(deviceDimensions.width);
+      setHeight(deviceDimensions.height);
+    },
+  );
 
   if (width === 0 || height === 0) {
     return null;
   }
-  console.log('image is ', width, 'x', height, 'for AR', width / height);
 
   return <PageWithDimensions imageDimensions={{width, height}} {...props} />;
 }
@@ -282,16 +293,22 @@ function PageWithDimensions({page, imageDimensions}: PageWithDimensionsProps) {
   const {dataSaver} = useSettings();
   const uri = dataSaver ? page.dataSaverImageUrl : page.originalImageUrl;
 
-  console.log(uri);
-
   const {width: imageWidth, height: imageHeight} = imageDimensions;
   const {width: deviceWidth, height: deviceHeight} = useDimensions();
 
   const aspectRatio = imageWidth / imageHeight;
-  console.log('aspectRatio', aspectRatio);
 
   const width = max(imageWidth, deviceWidth);
-  const height = max(imageHeight, deviceHeight);
+  const actualHeight = deviceWidth / aspectRatio;
+
+  console.log({
+    imageWidth,
+    imageHeight,
+    aspectRatio,
+    deviceWidth,
+    deviceHeight,
+    actualHeight,
+  });
 
   const offset = useSharedValue({x: 0, y: 0});
   const savedOffset = useSharedValue({x: 0, y: 0});
@@ -299,10 +316,18 @@ function PageWithDimensions({page, imageDimensions}: PageWithDimensionsProps) {
   const direction = useSharedValue<'r' | 'l' | null>(null);
   const zooming = useSharedValue(false);
   const scale = useSharedValue(1);
-  const viewHeight = useSharedValue(height);
+  const currentHeight = useSharedValue(actualHeight);
+  // const viewHeight = useSharedValue(height);
 
   const dragGesture = Gesture.Pan()
+    .shouldCancelWhenOutside(true)
     .onUpdate(event => {
+      if (zooming.value) {
+        console.log('allowing drag...');
+      } else {
+        console.log('not draging');
+        offset.value = {x: 0, y: event.translationY};
+      }
       // if (zooming.value) {
       offset.value = {
         x: event.translationX + savedOffset.value.x,
@@ -312,14 +337,16 @@ function PageWithDimensions({page, imageDimensions}: PageWithDimensionsProps) {
       //   offset.value = {x: 0, y: 0};
       // }
 
-      console.log('onUpdate', event);
+      // console.log('onUpdate', event);
     })
     .onEnd(event => {
-      savedOffset.value = {
-        x: offset.value.x,
-        y: offset.value.y,
-      };
-      console.log('onEnd', event);
+      if (zooming.value) {
+        console.log('onEnd', event);
+      }
+      // savedOffset.value = {
+      //   x: offset.value.x,
+      //   y: offset.value.y,
+      // };
     });
 
   const doubleTapGesture = Gesture.Tap()
@@ -327,38 +354,43 @@ function PageWithDimensions({page, imageDimensions}: PageWithDimensionsProps) {
     .numberOfTaps(2)
     .onStart(() => {
       if (scale.value === 1) {
-        scale.value = withTiming(2, {duration: 400});
-        viewHeight.value = withTiming(height * 1.5, {duration: 400});
+        scale.value = withTiming(2, {duration: 100});
+        currentHeight.value = withTiming(actualHeight * 2, {duration: 100});
+        zooming.value = true;
       } else {
-        scale.value = withTiming(1, {duration: 400});
-        viewHeight.value = withTiming(height * 1, {duration: 400});
+        scale.value = withTiming(1, {duration: 100});
+        currentHeight.value = withTiming(actualHeight, {duration: 100});
+        zooming.value = false;
       }
     });
 
   const animatedStyles = useAnimatedStyle(() => ({
     transform: [{scale: scale.value}],
+    height: currentHeight.value,
   }));
 
-  const wrapperAnimatedStyles = useAnimatedStyle(() => ({
-    height: viewHeight.value,
-  }));
+  const gesture = Gesture.Simultaneous(doubleTapGesture, dragGesture);
 
   return (
-    <GestureDetector gesture={doubleTapGesture}>
-      <Animated.Image
+    <View
+      style={{
+        flex: 1,
+        // position: 'absolute',
+        // transform: [{translateY: (page.number - 1) * actualHeight}],
+        marginBottom: 5,
+      }}>
+      <Image
         style={[
           {
             flex: 1,
             width: deviceWidth,
             aspectRatio,
-            marginBottom: 5,
             resizeMode: 'contain',
           },
-          animatedStyles,
         ]}
         source={{uri}}
       />
-    </GestureDetector>
+    </View>
   );
 }
 

@@ -35,7 +35,7 @@ interface SettingsContextState {
 const defaultSettings: Settings = {
   chapterLanguages: [],
   mangaLanguages: [],
-  readingDirection: ReadingDirection.LtR,
+  readingDirection: ReadingDirection.TtB,
   contentRatings: [
     ContentRating.safe,
     ContentRating.suggestive,

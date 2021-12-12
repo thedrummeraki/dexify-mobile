@@ -168,7 +168,7 @@ export default function AboutTab() {
           />
         ))}
       </View>
-      <View style={{display: 'flex', marginTop: 15, marginBottom: -10}}>
+      <View style={{display: 'flex', margin: 15, marginBottom: -10}}>
         <FollowMangaButton />
         <Button
           disabled={!isLoggedIn}
