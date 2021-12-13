@@ -22,7 +22,7 @@ export default function ShowChapterDetails({chapter}: Props) {
     return (
       <NewShowChapterDetails
         chapter={chapter}
-        initialIndex={1}
+        initialIndex={0}
         pages={chapter.attributes.data.map((_, index) => ({
           number: index + 1,
           originalImageUrl: [

@@ -61,10 +61,6 @@ function ThemeProvider({children}: PropsWithChildren<{}>) {
     },
   };
 
-  console.log('selected theme', selectedTheme.colors);
-  console.log('dark theme', PaperDarkTheme.colors);
-  console.log('light theme', PaperDefaultTheme.colors);
-
   return (
     <Provider theme={theme}>
       <NavigationContainer theme={theme}>{children}</NavigationContainer>
