@@ -178,6 +178,11 @@ export default function ChaptersList({
   }
 
   if (error || data?.result === 'error') {
+    if (error) {
+      console.error(error);
+    } else if (data?.result === 'error') {
+      console.log(JSON.stringify(data.errors));
+    }
     return (
       <FlatList
         showsVerticalScrollIndicator={false}

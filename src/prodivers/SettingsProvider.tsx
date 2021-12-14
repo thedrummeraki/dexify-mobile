@@ -22,6 +22,7 @@ export interface Settings {
 
 interface SettingsContextState {
   settings: Settings;
+  loading: boolean;
   defaultSettings: Settings;
   setSettings(settings: Partial<Settings>): void;
   resetSettings(): void;
@@ -49,6 +50,7 @@ const defaultSettings: Settings = {
 export const SettingsContext = React.createContext<SettingsContextState>({
   settings: defaultSettings,
   defaultSettings,
+  loading: false,
   setSettings: () => console.log('setSettings: {NOOP}'),
   resetSettings: () => console.log('resetSettings: {NOOP}'),
   overrideSettings: () => console.log('overrideSettings: {NOOP}'),
@@ -89,6 +91,7 @@ export default function SettingsProvider({children}: PropsWithChildren<{}>) {
     <SettingsContext.Provider
       value={{
         settings: session ? settings : defaultSettings,
+        loading,
         defaultSettings,
         setSettings: handleSettings,
         overrideSettings: setSettings,

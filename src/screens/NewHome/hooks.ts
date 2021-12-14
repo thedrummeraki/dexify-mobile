@@ -9,7 +9,7 @@ import {FeedResponse} from './Feed/types';
 import {useGetRequest, useLazyGetRequest} from 'src/api/utils';
 import UrlBuilder from 'src/api/mangadex/types/api/url_builder';
 import {AxiosError} from 'axios';
-import {useContentRatingFitlers} from 'src/prodivers';
+import {useContentRatingFitlers, useSettingsContext} from 'src/prodivers';
 
 interface FeedPresenter {
   loading: boolean;
@@ -19,14 +19,15 @@ interface FeedPresenter {
 }
 
 export function useFeed(): FeedPresenter {
+  const {loading} = useSettingsContext();
   const contentRating = useContentRatingFitlers();
   const [refresh, response] = useLazyGetRequest<FeedResponse>(
     UrlBuilder.feed({contentRating}),
   );
 
   useEffect(() => {
-    refresh();
-  }, []);
+    if (!loading) refresh();
+  }, [loading]);
 
   return {...response, refresh};
 }

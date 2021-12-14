@@ -8,7 +8,7 @@ export type MangaRequestParams = Partial<{
   ids: string[];
   year: number;
   includedTags: string[];
-  includedTagsMode: TagMode[];
+  includedTagsMode: TagMode;
   excludedTags: string[];
   excludedTagsMode: TagMode[];
   status: MangaStatus[];

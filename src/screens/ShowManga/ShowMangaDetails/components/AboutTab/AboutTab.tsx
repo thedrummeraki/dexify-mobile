@@ -237,7 +237,7 @@ export default function AboutTab() {
               key={tag.id}
               background="disabled"
               content={tag.attributes.name.en}
-              onPress={() => {}}
+              onPress={() => navigation.push('ShowMangaByTags', {tags: [tag]})}
             />
           ))}
         </View>
