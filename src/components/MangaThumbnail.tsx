@@ -2,11 +2,12 @@ import React, {useCallback} from 'react';
 import {View} from 'react-native';
 import {
   CoverSize,
+  findRelationship,
   mangaImage,
   preferredMangaTitle,
   readingStatusInfo,
 } from 'src/api';
-import {ContentRating, Manga} from 'src/api/mangadex/types';
+import {Artist, Author, ContentRating, Manga} from 'src/api/mangadex/types';
 import {useDexifyNavigation} from 'src/foundation';
 import Thumbnail, {
   ThumbnailBadge,
@@ -19,6 +20,7 @@ interface Props {
   manga: Manga;
   showReadingStatus?: boolean;
   hideTitle?: boolean;
+  hideAuthor?: boolean;
   clickable?: boolean;
   coverSize?: CoverSize;
   onPress?(): void;
@@ -28,6 +30,7 @@ export default function MangaThumbnail({
   manga,
   showReadingStatus,
   hideTitle,
+  hideAuthor,
   clickable = true,
   coverSize = CoverSize.Small,
   width,
@@ -42,6 +45,11 @@ export default function MangaThumbnail({
   const readingStatus = useLibraryStatus(manga);
   const isHentai =
     manga.attributes.contentRating === ContentRating.pornographic;
+
+  const author =
+    findRelationship<Author>(manga, 'author') ||
+    findRelationship<Artist>(manga, 'artist');
+  const authorPresent = Boolean(author && author.attributes);
 
   const hentaiBadgeMarkup = isHentai ? (
     <ThumbnailBadge badgeStyle={{backgroundColor: '#f00', fontWeight: 'bold'}}>
@@ -71,6 +79,9 @@ export default function MangaThumbnail({
       hideTitle={hideTitle}
       imageUrl={mangaImage(manga, {size: coverSize}) || '/'}
       title={preferredMangaTitle(manga)}
+      subtitle={
+        hideAuthor || !authorPresent ? undefined : author?.attributes.name
+      }
       width={width || '100%'}
       height={height}
       aspectRatio={aspectRatio || 0.8}
