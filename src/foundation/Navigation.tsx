@@ -16,7 +16,7 @@ import {
 } from 'src/screens';
 import {RouteProp, useNavigation, useRoute} from '@react-navigation/core';
 import {Header} from '.';
-import {HeaderContext, useUpdatedSession} from 'src/prodivers';
+import {HeaderContext} from 'src/prodivers';
 import {Manga, MangaRequestParams} from 'src/api/mangadex/types';
 
 type MangaParams = Partial<Omit<Manga, 'type' | 'id'>> & {id: string};
@@ -47,7 +47,6 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function Navigation() {
   const headerContext = useContext(HeaderContext);
-  const {refreshToken} = useUpdatedSession();
 
   return (
     <Stack.Navigator
@@ -60,17 +59,6 @@ export default function Navigation() {
             subtitle={headerContext.subtitle || undefined}
           />
         ),
-      }}
-      screenListeners={{
-        beforeRemove: () =>
-          headerContext.setState(state => ({
-            ...state,
-            title: '',
-            hideHeader: true,
-          })),
-        focus: () => {
-          refreshToken();
-        },
       }}>
       <Stack.Screen
         name="Home"
