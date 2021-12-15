@@ -79,3 +79,13 @@ export type AuthorRequestParams = Partial<{
   offset: number;
   order: Order<'name'>;
 }>;
+
+export type CoverRequestParams = Partial<{
+  manga: string[];
+  ids: string[];
+  uploaders: string[];
+  order: Order<'createdAt' | 'updatedAt' | 'volume'>;
+  includes: string[];
+  limit: number;
+  offset: number;
+}>;

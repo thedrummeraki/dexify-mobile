@@ -1,6 +1,7 @@
 import {
   AuthorRequestParams,
   ChapterRequestParams,
+  CoverRequestParams,
   CustomListRequestParams,
   MangaRequestParams,
   Order,
@@ -61,6 +62,10 @@ export default class UrlBuilder {
     params?: Partial<SingleMangaRequestParams>,
   ) {
     return this.buildUrl(`/manga/${id}`, params);
+  }
+
+  public static covers(params?: Partial<CoverRequestParams>) {
+    return this.buildUrl('/cover', params);
   }
 
   public static chaptersList(params?: Partial<ChapterRequestParams>) {

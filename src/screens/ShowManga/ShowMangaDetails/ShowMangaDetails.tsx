@@ -2,7 +2,13 @@ import React, {PropsWithChildren, useContext, useState} from 'react';
 import {ImageBackground, View} from 'react-native';
 import {Text, useTheme} from 'react-native-paper';
 import {CoverSize, findRelationships, mangaImage} from 'src/api';
-import {Artist, Author, Manga} from 'src/api/mangadex/types';
+import {
+  Artist,
+  Author,
+  CoverArt,
+  Manga,
+  PagedResultsList,
+} from 'src/api/mangadex/types';
 import {useGetRequest} from 'src/api/utils';
 import {AboutTab, ChaptersTab, AnimeDetailsTab, GalleryTab} from './components';
 
@@ -21,6 +27,7 @@ interface MangaDetails {
   manga: Manga;
   isAiring?: boolean;
   aggregate?: Manga.VolumeAggregateInfo;
+  covers: CoverArt[];
   volumes: string[];
   error?: any;
   coverUrl?: string;
@@ -55,6 +62,10 @@ export default function ShowMangaDetails({manga}: Props) {
     airing: boolean;
   }>(UrlBuilder.animeAiringInfo(manga.id));
 
+  const {data: coverData} = useGetRequest<PagedResultsList<CoverArt>>(
+    UrlBuilder.covers({manga: [manga.id], limit: 100, order: {volume: 'desc'}}),
+  );
+
   const {
     params: {isAiring},
   } = useShowMangaRoute();
@@ -64,6 +75,7 @@ export default function ShowMangaDetails({manga}: Props) {
   const aggregateEntries = aggregate ? Object.entries(aggregate) : [];
 
   const volumes = aggregateEntries.map(([volume, _]) => volume);
+  const covers = coverData?.result === 'ok' ? coverData.data : [];
 
   return (
     <ShowMangaDetailsProvider
@@ -74,6 +86,7 @@ export default function ShowMangaDetails({manga}: Props) {
       error={error}
       coverUrl={coverUrl}
       isAiring={airingNow?.airing}
+      covers={covers}
       onCoverUrlUpdate={setCoverUrl}>
       <View style={{flex: 1}}>
         <AboutTab />

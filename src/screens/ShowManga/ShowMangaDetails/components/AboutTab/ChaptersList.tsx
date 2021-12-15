@@ -30,12 +30,12 @@ export default function ChaptersList({
     volumes,
     loading: aggregateLoading,
     aggregate,
+    covers,
     onCoverUrlUpdate,
   } = useMangaDetails();
   const initialized = useRef(false);
   const [showAllVolumes, setShowAllVolumes] = useState(false);
   const [currentVolume, setCurrentVolume] = useState<string>();
-  const [covers, setCovers] = useState<CoverArt[]>([]);
   const [chapterIds, setChapterIds] = useState<string[]>();
   const [chapters, setChapters] = useState<Chapter[]>([]);
   const selectedVolumeBackgroundColor = useBackgroundColor('primary');
@@ -82,13 +82,6 @@ export default function ChaptersList({
   );
 
   useEffect(() => {
-    getCover(
-      `https://api.mangadex.org/cover?manga[]=${manga.id}&limit=100&order[volume]=desc`,
-    ).then(result => {
-      if (result?.result === 'ok') {
-        setCovers(result.data);
-      }
-    });
     if (!currentVolume) {
       // prefer last numbered, then anything else.
       const preferredLastVolume =
