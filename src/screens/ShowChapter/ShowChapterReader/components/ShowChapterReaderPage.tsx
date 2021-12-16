@@ -40,6 +40,9 @@ export default function ShowChapterReaderPage(props: Props) {
   const positionX = useSharedValue(0);
   const positionY = useSharedValue(0);
 
+  const savedPositionX = useSharedValue(0);
+  const savedPositionY = useSharedValue(0);
+
   const clampedPositionX = useDerivedValue(() => {
     const minTranslate = Math.min(positionX.value, deviceWidth / 4);
     const maxTranslate = Math.max(positionX.value, -deviceWidth / 4);
@@ -70,18 +73,16 @@ export default function ShowChapterReaderPage(props: Props) {
     return 0;
   });
 
-  const savedPosition = useSharedValue({x: 0, y: 0});
+  // const savedPosition = useSharedValue({x: 0, y: 0});
 
   const onDragImageGestureEvent = useAnimatedGestureHandler({
     onActive: e => {
-      positionX.value = e.translationX / 2 + savedPosition.value.x;
-      positionY.value = e.translationY / 2 + savedPosition.value.y;
+      positionX.value = e.translationX / 2 + savedPositionX.value;
+      positionY.value = e.translationY / 2 + savedPositionY.value;
     },
     onEnd: () => {
-      savedPosition.value = {
-        x: clampedPositionX.value,
-        y: clampedPositionY.value,
-      };
+      savedPositionX.value = clampedPositionX.value;
+      savedPositionY.value = clampedPositionY.value;
     },
   });
 

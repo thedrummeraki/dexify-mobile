@@ -11,3 +11,6 @@ export * from './LibraryProvider';
 
 export {default as SettingsProvider} from './SettingsProvider';
 export * from './SettingsProvider';
+
+export {default as ReadingStateProvider} from './ReadingStateProvider';
+export * from './ReadingStateProvider';

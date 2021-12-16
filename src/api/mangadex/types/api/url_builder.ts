@@ -61,7 +61,11 @@ export default class UrlBuilder {
     id: string,
     params?: Partial<SingleMangaRequestParams>,
   ) {
-    return this.buildUrl(`/manga/${id}`, params);
+    const defaultValues: Partial<SingleMangaRequestParams> = {
+      includes: ['cover_art', 'artist', 'author', 'tag'],
+    };
+
+    return this.buildUrl(`/manga/${id}`, Object.assign(defaultValues, params));
   }
 
   public static covers(params?: Partial<CoverRequestParams>) {

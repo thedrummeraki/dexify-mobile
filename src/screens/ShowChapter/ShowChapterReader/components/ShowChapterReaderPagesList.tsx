@@ -1,18 +1,20 @@
-import React, {useEffect, useState} from 'react';
-import {ScrollView} from 'react-native-gesture-handler';
-import {useDimensions} from 'src/utils';
+import React, {useEffect, useRef, useState} from 'react';
+import {FlatList, ScrollView} from 'react-native-gesture-handler';
+import {useDimensions, wait} from 'src/utils';
 import {Page, ReaderActionState} from '../types';
 import ShowChapterReaderPage from './ShowChapterReaderPage';
 
 interface Props {
   pages: Page[];
+  initialIndex: number;
   onPageNumberChange?(pageNumber: number): void;
   onActionsStateChange?(state: ReaderActionState): void;
 }
 
 // Shows a VERTICAL list of pages
 export default function ShowChapterReaderPagesList(props: Props) {
-  const {pages, onPageNumberChange, onActionsStateChange} = props;
+  const {pages, initialIndex, onPageNumberChange, onActionsStateChange} = props;
+  const flatListRef = useRef<FlatList | null>();
 
   const {height} = useDimensions();
   const [scrollEnabled, setScrollEnabled] = useState(true);
@@ -24,24 +26,40 @@ export default function ShowChapterReaderPagesList(props: Props) {
 
   useEffect(() => {
     onActionsStateChange?.(ReaderActionState.Initial);
+    if (initialIndex) {
+      console.log('actully scrolling to', initialIndex);
+      flatListRef.current?.scrollToIndex({index: initialIndex});
+    }
   }, []);
 
   return (
-    <ScrollView
+    <FlatList
+      ref={ref => (flatListRef.current = ref)}
+      data={pages}
+      keyExtractor={item => String(item.number)}
+      initialScrollIndex={initialIndex}
       pagingEnabled
-      removeClippedSubviews
       disableIntervalMomentum
+      removeClippedSubviews
       scrollEnabled={scrollEnabled}
       onMomentumScrollEnd={e => {
         setCurrentPage(Math.round(e.nativeEvent.contentOffset.y / height) + 1);
-      }}>
-      {pages.map(page => (
+      }}
+      renderItem={({item: page}) => (
         <ShowChapterReaderPage
           key={page.number}
           page={page}
           onZoomStateChanged={zooming => setScrollEnabled(!zooming)}
         />
-      ))}
-    </ScrollView>
+      )}
+      onScrollToIndexFailed={() => {
+        wait(500).then(() =>
+          flatListRef.current?.scrollToIndex({
+            index: initialIndex,
+            animated: true,
+          }),
+        );
+      }}
+    />
   );
 }

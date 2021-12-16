@@ -10,6 +10,15 @@ export enum ReadingDirection {
   BtT,
 }
 
+export enum MangaScreenDisplay {
+  PerVolume,
+  PerChapter,
+}
+
+export interface ContinueSettings {
+  reading?: {id: string; coverUrl: string; page: number; volume?: string}; // chapter
+}
+
 export interface Settings {
   chapterLanguages: string[]; // null means all languages
   mangaLanguages: string[];
@@ -18,6 +27,8 @@ export interface Settings {
   spicyMode: boolean;
   readingDirection: ReadingDirection;
   lightTheme: boolean;
+  mangaScreenDisplay: MangaScreenDisplay;
+  continue: ContinueSettings;
 }
 
 interface SettingsContextState {
@@ -45,6 +56,8 @@ const defaultSettings: Settings = {
   dataSaver: true,
   spicyMode: false,
   lightTheme: false,
+  mangaScreenDisplay: MangaScreenDisplay.PerVolume,
+  continue: {},
 };
 
 export const SettingsContext = React.createContext<SettingsContextState>({

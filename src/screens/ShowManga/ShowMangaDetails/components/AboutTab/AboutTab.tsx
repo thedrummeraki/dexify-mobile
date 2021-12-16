@@ -44,12 +44,7 @@ import StartReadingButton from './StartReadingButton';
 export default function AboutTab() {
   const navigation = useDexifyNavigation();
   const isLoggedIn = useIsLoggedIn();
-  const {manga, aggregate, coverUrl, isAiring} = useMangaDetails();
-  const libraryStatus = useLibraryStatus(manga);
-  const readingStatus = readingStatusInfo(libraryStatus);
-  const readingStatusBackgroundColor = useBackgroundColor(
-    readingStatus.background,
-  );
+  const {manga, aggregate, isAiring} = useMangaDetails();
 
   const initialTrim = useRef(false);
 
@@ -72,10 +67,7 @@ export default function AboutTab() {
   );
   const description = preferredMangaDescription(manga)?.trim();
 
-  const contentRating = manga.attributes.contentRating
-    ? contentRatingInfo(manga.attributes.contentRating)
-    : undefined;
-
+  const contentRating = contentRatingInfo(manga.attributes.contentRating);
   const contentRatingTextColor = useBackgroundColor(contentRating?.background);
 
   const aggregateEntries = Object.entries(aggregate || {});
@@ -93,13 +85,11 @@ export default function AboutTab() {
           flexWrap: 'wrap',
           marginTop: 10,
         }}>
-        {contentRating && (
-          <TextBadge
-            content={contentRating.content}
-            icon={contentRating.icon}
-            textStyle={{color: contentRatingTextColor}}
-          />
-        )}
+        <TextBadge
+          content={contentRating.content}
+          icon={contentRating.icon}
+          textStyle={{color: contentRatingTextColor}}
+        />
         {manga.attributes.publicationDemographic && (
           <TextBadge
             content={manga.attributes.publicationDemographic}
@@ -126,22 +116,6 @@ export default function AboutTab() {
         aspectRatio={1.2}
         FooterComponent={basicInfoMarkup}
       />
-      {/* <PaperProviderForBackground background={readingStatus.background}>
-        <View
-          style={{
-            marginTop: -15,
-            marginHorizontal: 15,
-            flexDirection: 'row',
-          }}>
-          <Chip
-            disabled={!isLoggedIn}
-            icon={readingStatus.icon}
-            style={{backgroundColor: readingStatusBackgroundColor}}
-            onPress={isLoggedIn ? () => {} : undefined}>
-            {readingStatus.phrase}
-          </Chip>
-        </View>
-      </PaperProviderForBackground> */}
       <View
         style={{
           flexDirection: 'row',
@@ -156,6 +130,7 @@ export default function AboutTab() {
         {authorsAndArtists.map(artist => (
           <TextBadge
             key={artist.id}
+            icon="check"
             content={artist.attributes.name}
             background="surface"
             onPress={() =>

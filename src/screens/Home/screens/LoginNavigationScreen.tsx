@@ -36,7 +36,7 @@ export function LoginNavigationScreen() {
           const {token} = result;
 
           setSession({
-            username,
+            username: username.toLocaleLowerCase(),
             session: {
               value: token.session,
               validUntil: new Date(new Date().getTime() + 14 * 60 * 1000), // 14 minutes

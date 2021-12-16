@@ -1,4 +1,5 @@
 import {Chapter, Manga} from 'src/api/mangadex/types';
+import {ReadingState} from 'src/prodivers';
 
 export namespace Sections {
   interface BasicHome {
@@ -14,7 +15,7 @@ export namespace Sections {
 
   export interface ContinueReading extends BasicHome {
     type: 'continue-reading';
-    chapter: Chapter;
+    chapters: ReadingState.Chapter[];
   }
 
   export interface MangaRecommendation extends BasicHome {

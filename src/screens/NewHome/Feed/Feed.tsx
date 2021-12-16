@@ -5,6 +5,10 @@ import TopManga from './Section/components/TopManga';
 import {FeedData} from './types';
 import {preferredMangaDescription} from 'src/api';
 import {useDexifyNavigation} from 'src/foundation';
+import {
+  useContinueReadingChaptersList,
+  useReadingStateContext,
+} from 'src/prodivers';
 
 interface Props {
   data: FeedData;
@@ -24,6 +28,8 @@ export default function Feed({data, refreshing, onRefresh}: Props) {
 
   const navigation = useDexifyNavigation();
 
+  const continueReadingChapters = useContinueReadingChaptersList();
+
   const topMangaMarkup = topManga ? (
     <TopManga
       showReadingStatus
@@ -36,6 +42,17 @@ export default function Feed({data, refreshing, onRefresh}: Props) {
       }}
     />
   ) : null;
+
+  const continueReadingMarkup =
+    continueReadingChapters.length > 0 ? (
+      <Section
+        section={{
+          type: 'continue-reading',
+          chapters: continueReadingChapters,
+          slug: 'continue-reading',
+        }}
+      />
+    ) : null;
 
   const readingNowMarkup = readingNow ? (
     <Section
@@ -92,6 +109,7 @@ export default function Feed({data, refreshing, onRefresh}: Props) {
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
       }>
       {topMangaMarkup}
+      {continueReadingMarkup}
       {readingNowMarkup}
       {popularMangaMarkup}
       {randomMangaMarkup}

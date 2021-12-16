@@ -26,7 +26,7 @@ type RootStackParamList = {
   ShowManga: MangaParams & {isAiring?: boolean};
   AddToPlaylist: {manga: Manga};
   ShowMangaGallery: {id: string; number?: number};
-  ShowChapter: {id: string};
+  ShowChapter: {id: string; jumpToPage?: number};
   ShowArtist: {id: string; allowHentai?: boolean};
   ShowMangaList: {
     title?: string;

@@ -1,8 +1,9 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {Image, View} from 'react-native';
 import {Text} from 'react-native-paper';
+import {mangaImage, preferredChapterTitle, preferredMangaTitle} from 'src/api';
 import {Chapter, Manga} from 'src/api/mangadex/types';
-import {useSettings} from 'src/prodivers';
+import {useReadingStateContext, useSettings} from 'src/prodivers';
 import {useDimensions} from 'src/utils';
 import ShowChapterReaderPagesList from './components/ShowChapterReaderPagesList';
 import {Page} from './types';
@@ -10,15 +11,46 @@ import {Page} from './types';
 interface Props {
   baseUrl: string;
   chapter: Chapter;
-  // manga: Manga;
+  manga: Manga;
+  jumpToPage?: number;
 }
 
-export default function ShowChapterReader({baseUrl, chapter}: Props) {
+export default function ShowChapterReader({
+  baseUrl,
+  chapter,
+  manga,
+  jumpToPage,
+}: Props) {
   const initialized = useRef(false);
   const [loading, setLoading] = useState(true);
   const [pages, setPages] = useState<Page[]>([]);
   const {width: deviceWidth, height: deviceHeight} = useDimensions();
   const {dataSaver} = useSettings();
+  const {updateChapter} = useReadingStateContext();
+  const totalPageCount = chapter.attributes.data.length;
+  const initialIndex =
+    jumpToPage === undefined
+      ? 0
+      : jumpToPage < 1 || jumpToPage > totalPageCount
+      ? 0
+      : jumpToPage - 1;
+
+  console.log('starting at', {jumpToPage, initialIndex});
+
+  const handleOnPageNumberChange = useCallback(
+    (page: number) => {
+      updateChapter({
+        chapter,
+        coverUrl: mangaImage(manga),
+        imageUrl: 'https://mangadex.org/avatar.png',
+        mangaId: manga.id,
+        mangaName: preferredMangaTitle(manga),
+        page,
+        totalPageCount,
+      });
+    },
+    [chapter.id],
+  );
 
   useEffect(() => {
     if (initialized.current) {
@@ -72,7 +104,11 @@ export default function ShowChapterReader({baseUrl, chapter}: Props) {
 
   return (
     <View style={{flex: 1}}>
-      <ShowChapterReaderPagesList pages={sortedPages} />
+      <ShowChapterReaderPagesList
+        pages={sortedPages}
+        initialIndex={initialIndex}
+        onPageNumberChange={handleOnPageNumberChange}
+      />
     </View>
   );
 }

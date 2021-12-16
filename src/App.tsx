@@ -18,6 +18,7 @@ import {
   SessionProvider,
   SettingsProvider,
   useSettings,
+  ReadingStateProvider,
 } from './prodivers';
 import {Navigation} from './foundation';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
@@ -32,7 +33,9 @@ export default function App() {
               <HeaderProvider>
                 <LibraryProvider>
                   <ThemeProvider>
-                    <Navigation />
+                    <ReadingStateProvider>
+                      <Navigation />
+                    </ReadingStateProvider>
                   </ThemeProvider>
                 </LibraryProvider>
               </HeaderProvider>

@@ -225,6 +225,31 @@ export default function ChaptersList({
 function ChapterItem({chapter}: {chapter: Chapter}) {
   const width = Dimensions.get('window').width - 30;
   const navigation = useDexifyNavigation();
+  const theme = useTheme();
+
+  const pagesCount = chapter.attributes.data.length;
+
+  if (pagesCount === 0) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          flexDirection: 'row',
+          alignItems: 'center',
+          marginBottom: 5,
+        }}>
+        <View
+          style={{paddingVertical: 5, paddingHorizontal: 15, width: '100%'}}>
+          <Text numberOfLines={1} style={{width, color: theme.colors.disabled}}>
+            {preferredChapterTitle(chapter)}
+          </Text>
+          <Caption style={{marginTop: 0, color: theme.colors.disabled}}>
+            No pages
+          </Caption>
+        </View>
+      </View>
+    );
+  }
 
   return (
     <View
@@ -243,7 +268,7 @@ function ChapterItem({chapter}: {chapter: Chapter}) {
             {preferredChapterTitle(chapter)}
           </Text>
           <Caption style={{marginTop: 0}}>
-            {pluralize(chapter.attributes.data.length, 'page')}
+            {pluralize(pagesCount, 'page')}
           </Caption>
         </View>
       </TouchableNativeFeedback>
