@@ -40,6 +40,7 @@ import ChaptersTab from '../ChaptersTab';
 import ChaptersList from './ChaptersList';
 import FollowMangaButton from './FollowMangaButton';
 import StartReadingButton from './StartReadingButton';
+import VolumesList from './VolumesList';
 
 export default function AboutTab() {
   const navigation = useDexifyNavigation();
@@ -240,10 +241,15 @@ export default function AboutTab() {
         style={{position: 'absolute', top: 0, right: 0, bottom: 0, left: 0}}>
         <StartReadingButton icon="play" />
       </View> */}
-      <ChaptersList
+      {/* <ChaptersList
         ListHeaderComponent={chaptersListHeaderMarkup}
         ListFooterComponent={chaptersListFooterMarkup}
-      />
+      /> */}
+      <ScrollView>
+        {chaptersListHeaderMarkup}
+        <VolumesList volumesCount={volumes.length} />
+        {chaptersListFooterMarkup}
+      </ScrollView>
     </>
   );
 }

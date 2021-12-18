@@ -62,7 +62,9 @@ export default function ShowMangaDetails({manga}: Props) {
     airing: boolean;
   }>(UrlBuilder.animeAiringInfo(manga.id));
 
-  const {data: coverData} = useGetRequest<PagedResultsList<CoverArt>>(
+  const {data: coverData, loading: coversLoading} = useGetRequest<
+    PagedResultsList<CoverArt>
+  >(
     UrlBuilder.covers({manga: [manga.id], limit: 100, order: {volume: 'desc'}}),
   );
 
@@ -79,7 +81,7 @@ export default function ShowMangaDetails({manga}: Props) {
 
   return (
     <ShowMangaDetailsProvider
-      loading={loading}
+      loading={loading || coversLoading}
       aggregate={aggregate}
       volumes={volumes}
       manga={manga}

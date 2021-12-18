@@ -10,9 +10,26 @@ import {
 } from './screens';
 import {NewHome} from '..';
 import {useBackgroundColor} from 'src/components/colors';
+import {useDexifyNavigation} from 'src/foundation';
+import {Linking} from 'react-native';
+
+const MANGA_URL_REGEX = /https:\/\/mangadex.org\/title\/([\w-]+)(\/\s.)?/;
 
 export default function Home() {
-  useHeader({title: 'Dexify', hideHeader: true});
+  const navigation = useDexifyNavigation();
+
+  useEffect(() => {
+    const event = Linking.addEventListener('url', ({url}) => {
+      const match = url.match(MANGA_URL_REGEX);
+      if (match && match.length > 1) {
+        navigation.push('ShowManga', {id: match[1]});
+      } else {
+        console.log("Didn't know how to open mangadex URL", url);
+      }
+    });
+
+    return () => event.remove();
+  }, []);
 
   const session = useSession();
   if (session) {

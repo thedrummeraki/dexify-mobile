@@ -222,7 +222,13 @@ export default function ChaptersList({
   );
 }
 
-function ChapterItem({chapter}: {chapter: Chapter}) {
+export function ChapterItem({
+  chapter,
+  onPress,
+}: {
+  chapter: Chapter;
+  onPress?(): void;
+}) {
   const width = Dimensions.get('window').width - 30;
   const navigation = useDexifyNavigation();
   const theme = useTheme();
@@ -261,7 +267,10 @@ function ChapterItem({chapter}: {chapter: Chapter}) {
       }}>
       <TouchableNativeFeedback
         useForeground
-        onPress={() => navigation.push('ShowChapter', {id: chapter.id})}
+        onPress={() => {
+          onPress?.();
+          navigation.push('ShowChapter', {id: chapter.id});
+        }}
         style={{width: '100%'}}>
         <View style={{paddingVertical: 5, paddingHorizontal: 15}}>
           <Text numberOfLines={1} style={{width}}>

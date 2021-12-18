@@ -6,10 +6,17 @@ import {useDexifyNavigation} from 'src/foundation';
 interface Props {
   title?: string;
   style?: StyleProp<ViewStyle>;
+  onClose?(): void;
 }
 
-export default function CloseCurrentScreenHeader({title, style}: Props) {
+export default function CloseCurrentScreenHeader({
+  title,
+  style,
+  onClose,
+}: Props) {
   const navigation = useDexifyNavigation();
+
+  const defaultOnClose = () => navigation.pop();
 
   return (
     <View
@@ -17,7 +24,7 @@ export default function CloseCurrentScreenHeader({title, style}: Props) {
         {height: 55, zIndex: 100, flexDirection: 'row', alignItems: 'center'},
         style,
       )}>
-      <IconButton icon="close" onPress={() => navigation.pop()} />
+      <IconButton icon="close" onPress={onClose || defaultOnClose} />
       {title ? (
         <Text numberOfLines={1} style={{marginLeft: 7, fontSize: 16}}>
           {title}

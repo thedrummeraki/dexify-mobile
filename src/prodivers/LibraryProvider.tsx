@@ -21,11 +21,6 @@ import UrlBuilder from 'src/api/mangadex/types/api/url_builder';
 import {useLazyGetRequest, usePostRequest, usePutRequest} from 'src/api/utils';
 import {useSession, useUpdatedSession} from '.';
 
-interface CustomListInfo {
-  customList: CustomList;
-  manga: Manga[];
-}
-
 interface LibraryState {
   loading: boolean;
   readingStatus: AllReadingStatusResponse;
@@ -34,8 +29,6 @@ interface LibraryState {
     id: string,
     status: ReadingStatus | null,
   ): Promise<ReadingStatusUpdateResponse | undefined>;
-
-  customListInfo: CustomListInfo[];
   refreshCustomLists(): Promise<PagedResultsList<CustomList> | undefined>;
   createCustomList(
     options: CustomList.CreateParams,
@@ -111,47 +104,17 @@ export default function LibraryProvider({children}: PropsWithChildren<{}>) {
     usePostRequest<ReadingStatusUpdateResponse>();
 
   // Custom lists (library)
-  const [customListInfo, setCustomListInfo] = useState<CustomListInfo[]>();
-  const [getCustomLists, {data: customLists, loading: customListLoading}] =
-    useLazyGetRequest<PagedResultsList<CustomList>>(
-      'https://api.mangadex.org/user/list?limit=100',
-    );
   const [postCreateCustomList] = usePostRequest<EntityResponse<CustomList>>();
   const [putUpdateCustomList] = usePutRequest<EntityResponse<CustomList>>();
   const [postAddMangaToCustomList] = usePostRequest<BasicResultsResponse>();
-  const [getManga] = useLazyGetRequest<PagedResultsList<Manga>>();
 
-  const loading = readingStatusLoading || customListLoading;
+  const loading = readingStatusLoading;
 
   useEffect(() => {
     if (session) {
       getReadingStatus().catch(console.error);
-      getCustomLists();
     }
   }, [session]);
-
-  useEffect(() => {
-    if (customLists?.result === 'ok') {
-      getManga(mangaListUrlsFrom(customLists.data))
-        .then(response => {
-          if (response?.result === 'ok') {
-            const result: CustomListInfo[] = [];
-            for (const customList of customLists.data) {
-              const customListMangaIds = findRelationships(
-                customList,
-                'manga',
-              ).map(r => r.id);
-              const manga = response.data.filter(m =>
-                customListMangaIds.includes(m.id),
-              );
-              result.push({customList, manga});
-            }
-            setCustomListInfo(result);
-          }
-        })
-        .catch(console.error);
-    }
-  }, [customLists]);
 
   const updateMangaReadingStatus = useCallback(
     async (id: string, status: ReadingStatus) => {
@@ -238,30 +201,11 @@ export default function LibraryProvider({children}: PropsWithChildren<{}>) {
         readingStatus,
         refreshReadingStatuses: getReadingStatus,
         updateMangaReadingStatus,
-        refreshCustomLists: getCustomLists,
         createCustomList,
         addMangaToCustomList,
         updateCustomList,
-        customListInfo,
       }}>
       {children}
     </LibraryContext.Provider>
   );
-}
-
-function mangaListUrlsFrom(customLists: CustomList[]) {
-  const mangasIds: string[] = [];
-  for (const customList of customLists) {
-    for (const id of findRelationships(customList, 'manga').map(r => r.id)) {
-      if (!mangasIds.includes(id)) {
-        mangasIds.push(id);
-      }
-    }
-  }
-
-  return UrlBuilder.mangaList({
-    ids: mangasIds,
-    limit: mangasIds.length,
-    contentRating: Object.values(ContentRating),
-  });
 }
