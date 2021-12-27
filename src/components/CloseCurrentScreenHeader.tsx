@@ -5,12 +5,14 @@ import {useDexifyNavigation} from 'src/foundation';
 
 interface Props {
   title?: string;
+  icon?: string;
   style?: StyleProp<ViewStyle>;
   onClose?(): void;
 }
 
 export default function CloseCurrentScreenHeader({
   title,
+  icon,
   style,
   onClose,
 }: Props) {
@@ -24,7 +26,7 @@ export default function CloseCurrentScreenHeader({
         {height: 55, zIndex: 100, flexDirection: 'row', alignItems: 'center'},
         style,
       )}>
-      <IconButton icon="close" onPress={onClose || defaultOnClose} />
+      <IconButton icon={icon || "close"} onPress={onClose || defaultOnClose} />
       {title ? (
         <Text numberOfLines={1} style={{marginLeft: 7, fontSize: 16}}>
           {title}

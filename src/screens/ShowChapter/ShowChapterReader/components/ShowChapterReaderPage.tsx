@@ -20,7 +20,7 @@ interface Props {
   onZoomStateChanged?(zooming: boolean): void;
 }
 
-export default function ShowChapterReaderPage(props: Props) {
+export function ShowChapterReaderPage(props: Props) {
   const {page, onZoomStateChanged} = props;
 
   const {
@@ -97,6 +97,8 @@ export default function ShowChapterReaderPage(props: Props) {
 
   const doubleTapRef = useRef(null);
 
+  // console.log({deviceHeight, deviceWidth, aspectRatio})
+
   return (
     <View
       style={{
@@ -105,6 +107,8 @@ export default function ShowChapterReaderPage(props: Props) {
         height: deviceHeight,
         alignContent: 'center',
         justifyContent: 'center',
+        borderColor: 'red',
+        borderWidth: 1,
       }}>
       <TapGestureHandler
         waitFor={doubleTapRef}
@@ -165,3 +169,7 @@ export default function ShowChapterReaderPage(props: Props) {
     </View>
   );
 }
+
+export default React.memo(ShowChapterReaderPage, (prevProps, nextProps) => {
+  return prevProps.page.image.uri === nextProps.page.image.uri;
+})

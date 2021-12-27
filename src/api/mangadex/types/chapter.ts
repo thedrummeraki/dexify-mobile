@@ -12,9 +12,6 @@ export interface ChapterAttributes {
   volume: string | null;
   chapter: string | null;
   translatedLanguage: string;
-  hash: string;
-  data: Array<string>;
-  dataSaver: Array<string>;
   uploader: string;
   version: number;
   createdAt: string;

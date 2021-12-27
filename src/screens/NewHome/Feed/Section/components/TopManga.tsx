@@ -1,5 +1,5 @@
 import React from 'react';
-import {Dimensions, TouchableNativeFeedback, View} from 'react-native';
+import {Dimensions, Image, TouchableNativeFeedback, View} from 'react-native';
 import FastImage from 'react-native-fast-image';
 import {Title, Caption, Text, Button} from 'react-native-paper';
 import {
@@ -75,7 +75,7 @@ export default function TopManga({
             />
           ) : null}
           <ImageGradient aspectRatio={aspectRatio} />
-          <FastImage
+          <Image
             source={{
               uri: coverUrl || mangaImage(manga, {size: CoverSize.Original}),
             }}

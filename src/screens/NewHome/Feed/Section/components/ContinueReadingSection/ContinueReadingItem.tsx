@@ -1,5 +1,5 @@
 import React from 'react';
-import {TouchableNativeFeedback, View} from 'react-native';
+import {TouchableNativeFeedback, Vibration, View} from 'react-native';
 import FastImage from 'react-native-fast-image';
 import {useTheme, Caption, ProgressBar, Text, Button} from 'react-native-paper';
 import {useDexifyNavigation} from 'src/foundation';
@@ -26,6 +26,7 @@ export default function ContinueReadingItem({
     totalPageCount,
     id,
     mangaName,
+    mangaId,
     volume,
     chapter,
     imageUrl,
@@ -59,7 +60,11 @@ export default function ContinueReadingItem({
             id,
             jumpToPage: actions[action].initialPage || currentPage,
           })
-        }>
+        }
+        onLongPress={() => {
+          Vibration.vibrate(5);
+          navigation.push('ShowManga', {id: mangaId});
+        }}>
         <View style={{position: 'relative'}}>
           <FastImage
             source={{uri: coverUrl}}

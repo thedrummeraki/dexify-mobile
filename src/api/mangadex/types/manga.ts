@@ -75,6 +75,7 @@ export namespace Manga {
 
   interface VolumeAggregateDetailsChapter {
     chapter: string;
+    others: string[];
     id: string;
     count: number;
   }

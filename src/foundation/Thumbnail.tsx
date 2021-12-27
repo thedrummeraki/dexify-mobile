@@ -7,6 +7,7 @@ import {
   TextStyle,
   ImageStyle,
   ViewStyle,
+  Pressable,
 } from 'react-native';
 import {Badge, Caption, Text, useTheme} from 'react-native-paper';
 import SkeletonContent from 'react-native-skeleton-content-nonexpo';
@@ -30,6 +31,7 @@ interface BasicProps {
   TopComponent?: React.ReactElement;
   BottomComponent?: React.ReactElement;
   onPress?: () => void;
+  onSubtitlePress?: () => void;
   onLongPress?: () => void;
 }
 
@@ -40,6 +42,7 @@ interface WithTitleProps {
   titleStyle?: StyleProp<TextStyle>;
   subtitleStyle?: StyleProp<TextStyle>;
   hideTitle?: boolean;
+  onSubtitlePress?(): void;
 }
 
 interface WithSingleImage {
@@ -224,6 +227,7 @@ function ThumbnailCaption({
   titleStyle,
   subtitleStyle,
   hideTitle,
+  onSubtitlePress,
 }: WithTitleProps) {
   const theme = useTheme();
 
@@ -244,14 +248,16 @@ function ThumbnailCaption({
           </Caption>
         ) : null}
         {subtitle ? (
-          <Caption
-            numberOfLines={title ? 1 : 2}
-            style={Object.assign(
-              {lineHeight: 15, marginTop: -2},
-              subtitleStyle,
-            )}>
-            {subtitle}
-          </Caption>
+          <Pressable onPress={onSubtitlePress}>
+            <Caption
+              numberOfLines={title ? 1 : 2}
+              style={Object.assign(
+                {lineHeight: 15, marginTop: -2},
+                subtitleStyle,
+              )}>
+              {subtitle}
+            </Caption>
+          </Pressable>
         ) : null}
       </View>
     );

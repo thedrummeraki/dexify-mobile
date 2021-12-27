@@ -12,13 +12,7 @@ const Tab = createMaterialTopTabNavigator();
 export default function ShowMangaDetailsSkeleton() {
   return (
     <View style={{flex: 1}}>
-      <View style={{}} />
-
-      <Tab.Navigator>
-        <Tab.Screen name="About" component={AboutSkeleton} />
-        <Tab.Screen name="Read" component={EmptyContent} />
-        <Tab.Screen name="Gallery" component={EmptyContent} />
-      </Tab.Navigator>
+      <AboutSkeleton />
     </View>
   );
 }
@@ -47,61 +41,28 @@ function AboutSkeleton() {
   return (
     <ScrollView showsVerticalScrollIndicator={false} style={{flex: 1}}>
       <View>
-        <ImageGradient />
+        <ImageGradient aspectRatio={1.2} />
 
         <FastImage
           source={{uri: 'https://mangadex.org/avatar.png'}}
           style={{width: '100%', aspectRatio: 1.2}}
         />
         <View
-          style={{
-            position: 'absolute',
-            bottom: 0,
-            left: 0,
-            zIndex: 1,
-            paddingHorizontal: 5,
-          }}>
-          <Title>{loadingMessages[index].title}</Title>
-          <Caption style={{marginTop: -3, fontWeight: '700'}}>
+        style={{
+          position: 'absolute',
+          bottom: 30,
+          left: 0,
+          zIndex: 1,
+          marginHorizontal: 15,
+        }}>
+        <Title style={{lineHeight: 22}}>{loadingMessages[index].title}</Title>
+        <Text
+            numberOfLines={2}
+            ellipsizeMode="tail"
+            style={{fontSize: 12, marginTop: 10}}>
             {loadingMessages[index].subtitle}
-          </Caption>
-        </View>
+          </Text>
       </View>
-      <View style={{padding: 5}}>
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'flex-start',
-            flexWrap: 'wrap',
-            marginTop: 7,
-          }}>
-          <TextBadge content="Please" background="accent" />
-          <TextBadge content="wait..." background="disabled" />
-        </View>
-        {/* <View style={{flex: 1, marginTop: 22, marginBottom: 12}}>
-          <Button loading mode="contained" style={{marginVertical: 3}}>
-            {''}
-          </Button>
-          <Button
-            loading
-            icon="plus"
-            mode="outlined"
-            style={{marginVertical: 3}}>
-            {''}
-          </Button>
-        </View>
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'flex-start',
-            flexWrap: 'wrap',
-            marginTop: 3,
-          }}>
-          <Text style={{marginRight: 6}}>Made by:</Text>
-          <TextBadge content="Yours Truly" background="surface" />
-        </View> */}
       </View>
     </ScrollView>
   );

@@ -22,6 +22,11 @@ interface Props {
   manga: Manga;
 }
 
+export interface VolumeInfo {
+  volume: string | null;
+  chapterIds: string[];
+}
+
 interface MangaDetails {
   loading: boolean;
   manga: Manga;
@@ -29,6 +34,7 @@ interface MangaDetails {
   aggregate?: Manga.VolumeAggregateInfo;
   covers: CoverArt[];
   volumes: string[];
+  volumeInfos: VolumeInfo[];
   error?: any;
   coverUrl?: string;
   onCoverUrlUpdate: (coverUrl: string) => void;
@@ -79,11 +85,21 @@ export default function ShowMangaDetails({manga}: Props) {
   const volumes = aggregateEntries.map(([volume, _]) => volume);
   const covers = coverData?.result === 'ok' ? coverData.data : [];
 
+  const volumeInfos: VolumeInfo[] = aggregateEntries.map(([volume, details]) => {
+    const chapterIds = Object.entries(details.chapters).map(([_, detail]) => detail.id);
+
+    return {
+      volume: volume === 'none' ? null : volume,
+      chapterIds,
+    }
+  })
+
   return (
     <ShowMangaDetailsProvider
       loading={loading || coversLoading}
       aggregate={aggregate}
       volumes={volumes}
+      volumeInfos={volumeInfos}
       manga={manga}
       error={error}
       coverUrl={coverUrl}

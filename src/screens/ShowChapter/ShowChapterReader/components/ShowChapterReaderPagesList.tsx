@@ -14,6 +14,7 @@ interface Props {
 // Shows a VERTICAL list of pages
 export default function ShowChapterReaderPagesList(props: Props) {
   const {pages, initialIndex, onPageNumberChange, onActionsStateChange} = props;
+  const scrolled = useRef(false);
   const flatListRef = useRef<FlatList | null>();
 
   const {height} = useDimensions();
@@ -26,21 +27,20 @@ export default function ShowChapterReaderPagesList(props: Props) {
 
   useEffect(() => {
     onActionsStateChange?.(ReaderActionState.Initial);
-    if (initialIndex) {
-      console.log('actully scrolling to', initialIndex);
-      flatListRef.current?.scrollToIndex({index: initialIndex});
-    }
   }, []);
 
   return (
     <FlatList
-      ref={ref => (flatListRef.current = ref)}
+      ref={ref => {
+        flatListRef.current = ref;
+      }}
       data={pages}
-      keyExtractor={item => String(item.number)}
-      initialScrollIndex={initialIndex}
+      keyExtractor={item => item.image.uri}
       pagingEnabled
       disableIntervalMomentum
       removeClippedSubviews
+      snapToAlignment='center'
+      snapToInterval={height}
       scrollEnabled={scrollEnabled}
       onMomentumScrollEnd={e => {
         setCurrentPage(Math.round(e.nativeEvent.contentOffset.y / height) + 1);
@@ -52,6 +52,9 @@ export default function ShowChapterReaderPagesList(props: Props) {
           onZoomStateChanged={zooming => setScrollEnabled(!zooming)}
         />
       )}
+      onLayout={() => {
+        flatListRef.current?.scrollToIndex({index: initialIndex})
+      }}
       onScrollToIndexFailed={() => {
         wait(500).then(() =>
           flatListRef.current?.scrollToIndex({

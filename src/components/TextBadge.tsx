@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 
 interface Props {
-  content: React.ReactText;
+  content: React.ReactNode;
   background?: BackgroundColor;
   icon?: string;
   onPress?: () => void;

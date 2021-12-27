@@ -40,12 +40,13 @@ import ChaptersTab from '../ChaptersTab';
 import ChaptersList from './ChaptersList';
 import FollowMangaButton from './FollowMangaButton';
 import StartReadingButton from './StartReadingButton';
+import VolumesContainer from './VolumesContainer';
 import VolumesList from './VolumesList';
 
 export default function AboutTab() {
   const navigation = useDexifyNavigation();
   const isLoggedIn = useIsLoggedIn();
-  const {manga, aggregate, isAiring} = useMangaDetails();
+  const {manga, volumeInfos, isAiring} = useMangaDetails();
 
   const initialTrim = useRef(false);
 
@@ -53,8 +54,8 @@ export default function AboutTab() {
   const artists = findRelationships<Artist>(manga, 'artist');
 
   const authorsAndArtistsObjects: Array<Author | Artist> = [];
-  artists.forEach(artist => authorsAndArtistsObjects.push(artist));
   authors.forEach(author => authorsAndArtistsObjects.push(author));
+  artists.forEach(artist => authorsAndArtistsObjects.push(artist));
 
   const authorsAndArtists = authorsAndArtistsObjects.filter(
     (value, index, self) => self.findIndex(v => v.id === value.id) === index,
@@ -71,10 +72,10 @@ export default function AboutTab() {
   const contentRating = contentRatingInfo(manga.attributes.contentRating);
   const contentRatingTextColor = useBackgroundColor(contentRating?.background);
 
-  const aggregateEntries = Object.entries(aggregate || {});
-  const volumes = aggregateEntries.map(([volume, _]) => volume);
+  const existingVolumes = volumeInfos.filter(info => info.chapterIds.length > 0);
+
   const volumesCountText =
-    volumes.length === 1 ? '1 volume' : `${volumes.length} volumes`;
+    existingVolumes.length === 1 ? '1 volume' : `${existingVolumes.length} volumes`;
 
   const basicInfoMarkup = (
     <View style={{flex: 1}}>
@@ -97,7 +98,7 @@ export default function AboutTab() {
             background="disabled"
           />
         )}
-        {aggregate && volumes.length > 0 && (
+        {existingVolumes.length > 0 && (
           <TextBadge content={volumesCountText} background="notification" />
         )}
         {isAiring && (
@@ -131,7 +132,7 @@ export default function AboutTab() {
         {authorsAndArtists.map(artist => (
           <TextBadge
             key={artist.id}
-            icon="check"
+            icon={artist.type === 'artist' ? 'palette' : 'account'}
             content={artist.attributes.name}
             background="surface"
             onPress={() =>
@@ -144,17 +145,10 @@ export default function AboutTab() {
           />
         ))}
       </View>
-      <View style={{display: 'flex', margin: 15, marginBottom: -10}}>
-        <FollowMangaButton />
-        <Button
-          disabled={!isLoggedIn}
-          mode="outlined"
-          icon="plus"
-          style={{marginTop: 5}}
-          onPress={() => navigation.push('AddToPlaylist', {manga})}>
-          Add to list...
-        </Button>
-      </View>
+      <FollowMangaButton
+        style={{margin: 15, marginBottom: -10}}
+        buttonContainerStyle={{flex: 1, flexDirection: 'row', justifyContent: "space-evenly"}}
+      />
     </>
   );
 
@@ -247,7 +241,7 @@ export default function AboutTab() {
       /> */}
       <ScrollView>
         {chaptersListHeaderMarkup}
-        <VolumesList volumesCount={volumes.length} />
+        <VolumesContainer />
         {chaptersListFooterMarkup}
       </ScrollView>
     </>

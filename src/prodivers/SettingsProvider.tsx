@@ -29,6 +29,7 @@ export interface Settings {
   lightTheme: boolean;
   mangaScreenDisplay: MangaScreenDisplay;
   continue: ContinueSettings;
+  volumeSortOrder: 'asc' | 'desc';
 }
 
 interface SettingsContextState {
@@ -58,6 +59,7 @@ const defaultSettings: Settings = {
   lightTheme: false,
   mangaScreenDisplay: MangaScreenDisplay.PerVolume,
   continue: {},
+  volumeSortOrder: 'desc',
 };
 
 export const SettingsContext = React.createContext<SettingsContextState>({

@@ -8,7 +8,8 @@ export type BackgroundColor =
   | 'error'
   | 'disabled'
   | 'notification'
-  | 'placeholder';
+  | 'placeholder'
+  | 'background';
 
 const COLOR_MAP: {
   [key in 'dark' | 'light']: {[key in BackgroundColor]: string};
@@ -20,6 +21,7 @@ const COLOR_MAP: {
     notification: '#222',
     primary: '#222',
     surface: '#eee',
+    background: '#eee',
     placeholder: '#222',
   },
   light: {
@@ -29,6 +31,7 @@ const COLOR_MAP: {
     notification: '#222',
     primary: '#eee',
     surface: '#111',
+    background: '#111',
     placeholder: '#eee',
   },
 };

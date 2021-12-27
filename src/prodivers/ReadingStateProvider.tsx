@@ -71,6 +71,17 @@ export function useContinueReadingChapter() {
   return chapters[0];
 }
 
+export function useChapterProgress(chapterId: string) {
+  const continueReadingChapters = useContinueReadingChaptersList();
+  const info = continueReadingChapters.find(chapter => chapter.id === chapterId)
+
+  if (!info) {
+    return null;
+  }
+
+  return info.currentPage / info.totalPageCount;
+}
+
 export function useContinueReadingChaptersList() {
   const {
     readingState: {chapters},

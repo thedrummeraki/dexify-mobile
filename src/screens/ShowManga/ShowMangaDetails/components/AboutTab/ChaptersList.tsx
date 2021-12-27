@@ -1,3 +1,4 @@
+import { DateTime } from 'luxon';
 import React, {useEffect, useRef, useState} from 'react';
 import {
   Dimensions,
@@ -5,17 +6,19 @@ import {
   TouchableNativeFeedback,
   View,
 } from 'react-native';
-import {Caption, Chip, Text, Title, useTheme} from 'react-native-paper';
+import {Caption, Chip, Colors, ProgressBar, Text, Title, useTheme} from 'react-native-paper';
 import {coverImage, preferredChapterTitle} from 'src/api';
 import {Chapter, CoverArt, PagedResultsList} from 'src/api/mangadex/types';
 import UrlBuilder from 'src/api/mangadex/types/api/url_builder';
 import {useLazyGetRequest} from 'src/api/utils';
+import { TextBadge } from 'src/components';
 import BasicList from 'src/components/BasicList';
 import CategoriesCollectionSection from 'src/components/CategoriesCollection/CategoriesCollectionSection';
 import {useBackgroundColor} from 'src/components/colors';
 import {useDexifyNavigation} from 'src/foundation';
 import Thumbnail from 'src/foundation/Thumbnail';
-import {isNumber, pluralize} from 'src/utils';
+import { useChapterProgress, useContinueReadingChapter, useContinueReadingChaptersList } from 'src/prodivers';
+import {isNumber, localizedDateTime, pluralize} from 'src/utils';
 import {useMangaDetails} from '../../ShowMangaDetails';
 
 type FlatListProps = React.ComponentProps<typeof FlatList>;
@@ -231,31 +234,9 @@ export function ChapterItem({
 }) {
   const width = Dimensions.get('window').width - 30;
   const navigation = useDexifyNavigation();
-  const theme = useTheme();
 
-  const pagesCount = chapter.attributes.data.length;
-
-  if (pagesCount === 0) {
-    return (
-      <View
-        style={{
-          flex: 1,
-          flexDirection: 'row',
-          alignItems: 'center',
-          marginBottom: 5,
-        }}>
-        <View
-          style={{paddingVertical: 5, paddingHorizontal: 15, width: '100%'}}>
-          <Text numberOfLines={1} style={{width, color: theme.colors.disabled}}>
-            {preferredChapterTitle(chapter)}
-          </Text>
-          <Caption style={{marginTop: 0, color: theme.colors.disabled}}>
-            No pages
-          </Caption>
-        </View>
-      </View>
-    );
-  }
+  const info = useContinueReadingChaptersList().find(info => info.id === chapter.id);
+  const progress = useChapterProgress(chapter.id);
 
   return (
     <View
@@ -266,19 +247,25 @@ export function ChapterItem({
         marginBottom: 5,
       }}>
       <TouchableNativeFeedback
-        useForeground
         onPress={() => {
           onPress?.();
-          navigation.push('ShowChapter', {id: chapter.id});
+          navigation.push('ShowChapter', {id: chapter.id, jumpToPage: info?.currentPage});
         }}
         style={{width: '100%'}}>
         <View style={{paddingVertical: 5, paddingHorizontal: 15}}>
           <Text numberOfLines={1} style={{width}}>
             {preferredChapterTitle(chapter)}
           </Text>
-          <Caption style={{marginTop: 0}}>
-            {pluralize(pagesCount, 'page')}
-          </Caption>
+          <TextBadge
+            icon='clock-outline'
+            style={{marginLeft: -5}}
+            content={(
+              <Caption>
+                Published on {localizedDateTime(chapter.attributes.publishAt, DateTime.DATE_MED)}
+              </Caption>
+            )}
+          />
+          {progress ? <ProgressBar progress={progress} style={{height: 1}} /> : null}
         </View>
       </TouchableNativeFeedback>
     </View>

@@ -25,7 +25,7 @@ type RootStackParamList = {
   Home: undefined;
   ShowManga: MangaParams & {isAiring?: boolean};
   AddToPlaylist: {manga: Manga};
-  ShowMangaGallery: {id: string; number?: number};
+  ShowMangaGallery: {manga: Manga; number?: number};
   ShowChapter: {id: string; jumpToPage?: number};
   ShowArtist: {id: string; allowHentai?: boolean};
   ShowMangaList: {
@@ -78,7 +78,7 @@ export default function Navigation() {
       <Stack.Screen
         name="ShowMangaGallery"
         component={ShowMangaGallery}
-        options={{title: 'Covers gallery'}}
+        options={{headerShown: false}}
       />
       <Stack.Screen
         name="ShowChapter"

@@ -75,7 +75,7 @@ export default function GalleryTab() {
               title={title}
               onPress={() =>
                 navigation.navigate('ShowMangaGallery', {
-                  id: manga.id,
+                  manga,
                   number: index + 1,
                 })
               }

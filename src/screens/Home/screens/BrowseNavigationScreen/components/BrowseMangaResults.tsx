@@ -9,6 +9,7 @@ import {
 } from 'src/api';
 import {useGetMangaList, useLazyGetMangaList} from 'src/api/mangadex/hooks';
 import {Artist, Author} from 'src/api/mangadex/types';
+import { ResponseStatus } from 'src/api/utils';
 import {MangaSearchCollection} from 'src/components';
 import CategoriesCollectionSection from 'src/components/CategoriesCollection/CategoriesCollectionSection';
 import {List} from 'src/components/List/List';
@@ -22,7 +23,7 @@ interface Props {
 
 export default function BrowseMangaResults({query}: Props) {
   const navigation = useDexifyNavigation();
-  const [searchManga, {data, loading}] = useLazyGetMangaList({
+  const [searchManga, {data, status}] = useLazyGetMangaList({
     limit: 100,
     order: {relevance: 'desc'},
   });
@@ -35,7 +36,7 @@ export default function BrowseMangaResults({query}: Props) {
   return (
     <List
       style={{padding: 5, paddingTop: 0}}
-      loading={loading}
+      loading={status === ResponseStatus.Initiated || status === ResponseStatus.Pending}
       ListEmptyComponent={
         <BrowseEmptyResults
           resourceType="manga"

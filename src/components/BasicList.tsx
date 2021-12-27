@@ -74,7 +74,7 @@ export default function BasicList<T extends BasicResource>({
     );
   }
 
-  if (!data || !renderItem) {
+  if (!data || !renderItem || data.length === 0) {
     if (renderItem) {
       return (
         <View style={style}>

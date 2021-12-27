@@ -1,16 +1,17 @@
 import React, {useEffect} from 'react';
-import {View} from 'react-native';
-import {ActivityIndicator, Text} from 'react-native-paper';
+import {BackHandler, View} from 'react-native';
+import {ActivityIndicator, Caption, Text} from 'react-native-paper';
 import {findRelationship} from 'src/api';
 import {Chapter, EntityResponse, Manga} from 'src/api/mangadex/types';
 import UrlBuilder from 'src/api/mangadex/types/api/url_builder';
 import {useGetRequest, useLazyGetRequest} from 'src/api/utils';
-import {useShowChapterRoute} from 'src/foundation/Navigation';
+import {useDexifyNavigation, useShowChapterRoute} from 'src/foundation/Navigation';
 import NewShowChapterDetails from './NewShowChapterDetails';
 import ShowChapterDetails from './ShowChapterDetails';
 
 export default function ShowChapter() {
   const route = useShowChapterRoute();
+  const navigation = useDexifyNavigation();
   const {data, loading, error} = useGetRequest<EntityResponse<Chapter>>(
     `https://api.mangadex.org/chapter/${route.params.id}?includes[]=manga`,
   );
@@ -26,16 +27,33 @@ export default function ShowChapter() {
     }
   }, [data]);
 
+  useEffect(() => {
+    const unsubscribe = BackHandler.addEventListener('hardwareBackPress', () => {
+      navigation.pop();
+      return true;
+    });
+
+    return () => unsubscribe.remove();
+  }, []);
+
   if (loading || mangaLoading) {
-    return <ActivityIndicator size="large" style={{flex: 1}} />;
+    <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+      <ActivityIndicator />
+      <Text style={{marginTop: 10}}>Loading chapter...</Text>
+      <Caption>...</Caption>
+    </View>
   }
 
-  if (error || !data || data.result === 'error') {
+  if (error || data?.result === 'error') {
     return <Text>Something went wrong while fetching chapter</Text>;
   }
 
-  if (mangaError || !mangaData || mangaData.result === 'error') {
+  if (mangaError || mangaData?.result === 'error') {
     return <Text>Something went wrong while fetching the manga.</Text>;
+  }
+
+  if (!data || !mangaData) {
+    return null;
   }
 
   return (

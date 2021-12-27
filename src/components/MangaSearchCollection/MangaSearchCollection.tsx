@@ -102,7 +102,7 @@ export default function MangaSearchCollection({
         case MangaCollectionDisplay.List:
           return <MangaListItem manga={manga} />;
         case MangaCollectionDisplay.Images:
-          return <MangaThumbnail manga={manga} />;
+          return <MangaThumbnail showReadingStatus manga={manga} />;
         default:
           return null;
       }

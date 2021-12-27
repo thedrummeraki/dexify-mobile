@@ -1,39 +1,47 @@
-import React, {useCallback, useEffect, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {Image, View} from 'react-native';
-import {Text} from 'react-native-paper';
+import {ActivityIndicator, Caption, ProgressBar, Text} from 'react-native-paper';
 import {mangaImage, preferredChapterTitle, preferredMangaTitle} from 'src/api';
-import {Chapter, Manga} from 'src/api/mangadex/types';
+import {AtHomeSuccessResponse, Chapter, Manga} from 'src/api/mangadex/types';
 import {useReadingStateContext, useSettings} from 'src/prodivers';
 import {useDimensions} from 'src/utils';
 import ShowChapterReaderPagesList from './components/ShowChapterReaderPagesList';
 import {Page} from './types';
 
 interface Props {
-  baseUrl: string;
+  response: AtHomeSuccessResponse;
   chapter: Chapter;
   manga: Manga;
   jumpToPage?: number;
 }
 
 export default function ShowChapterReader({
-  baseUrl,
+  response,
   chapter,
   manga,
   jumpToPage,
 }: Props) {
   const initialized = useRef(false);
+  const {baseUrl, chapter: {data, dataSaver, hash}} = response;
   const [loading, setLoading] = useState(true);
   const [pages, setPages] = useState<Page[]>([]);
   const {width: deviceWidth, height: deviceHeight} = useDimensions();
-  const {dataSaver} = useSettings();
+  const {dataSaver: isDataSaver} = useSettings();
   const {updateChapter} = useReadingStateContext();
-  const totalPageCount = chapter.attributes.data.length;
+  const totalPageCount = data.length;
   const initialIndex =
     jumpToPage === undefined
       ? 0
       : jumpToPage < 1 || jumpToPage > totalPageCount
       ? 0
       : jumpToPage - 1;
+
+  const progress = useMemo(() => {
+    if (totalPageCount <= 0) {
+      return 0;
+    }
+    return pages.length / totalPageCount;
+  }, [pages, totalPageCount]);
 
   console.log('starting at', {jumpToPage, initialIndex});
 
@@ -56,13 +64,10 @@ export default function ShowChapterReader({
     if (initialized.current) {
       return;
     }
-    const data = dataSaver
-      ? chapter.attributes.dataSaver
-      : chapter.attributes.data;
-    const {hash} = chapter.attributes;
-    const source = dataSaver ? 'data-saver' : 'data';
+    const dataSource = isDataSaver ? dataSaver : data;
+    const source = isDataSaver ? 'data-saver' : 'data';
 
-    data.forEach((filename, index) => {
+    dataSource.forEach((filename, index) => {
       const number = index + 1;
       const uri = [baseUrl, source, hash, filename].join('/');
 
@@ -87,15 +92,19 @@ export default function ShowChapterReader({
   }, [baseUrl]);
 
   useEffect(() => {
-    const loading = pages.length < chapter.attributes.data.length;
+    const loading = pages.length < data.length;
     if (!loading) {
       initialized.current = true;
     }
-    setLoading(pages.length < chapter.attributes.data.length);
+    setLoading(pages.length < data.length);
   }, [pages]);
 
   if (loading) {
-    return <Text>Loading...</Text>;
+    return <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+      <ActivityIndicator />
+      <Text style={{marginTop: 10}}>Opening chapter...</Text>
+      <Caption>{Math.floor(progress * 100)}%</Caption>
+    </View>
   }
 
   const sortedPages = pages.sort((page, other) =>

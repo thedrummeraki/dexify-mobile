@@ -53,10 +53,7 @@ export default function SessionProvider({children}: PropsWithChildren<{}>) {
       value={{
         session,
         loading,
-        setSession: session => {
-          console.log('setting session', session);
-          setSession(session);
-        },
+        setSession,
         setLoading,
       }}>
       <SessionRefresher

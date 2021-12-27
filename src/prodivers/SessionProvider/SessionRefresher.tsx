@@ -89,7 +89,7 @@ export function useUpdatedSession(refreshNow = true) {
 
   const refreshToken = useCallback(
     async (otherToken?: SessionState | null, options?: {force?: boolean}) => {
-      console.log('token', Boolean(token));
+      // console.log('token', Boolean(token));
       let tokenToUpdate = token || otherToken || null;
       if (!tokenToUpdate) {
         tokenToUpdate = await retrieveStoredSession();
@@ -130,8 +130,6 @@ export function useUpdatedSession(refreshNow = true) {
         const {data} = response;
 
         if (data?.result === 'ok') {
-          console.log('setting new session!!!', data.token);
-
           const newSession = {
             ...tokenToUpdate,
             refresh: {
@@ -145,7 +143,6 @@ export function useUpdatedSession(refreshNow = true) {
               validUntil: new Date(new Date().getTime() + 14 * 60 * 1000),
             },
           };
-          console.log('which is', newSession);
           setSession(newSession);
         }
 
