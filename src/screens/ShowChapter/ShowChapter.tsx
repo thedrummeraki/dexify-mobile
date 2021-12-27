@@ -5,7 +5,10 @@ import {findRelationship} from 'src/api';
 import {Chapter, EntityResponse, Manga} from 'src/api/mangadex/types';
 import UrlBuilder from 'src/api/mangadex/types/api/url_builder';
 import {useGetRequest, useLazyGetRequest} from 'src/api/utils';
-import {useDexifyNavigation, useShowChapterRoute} from 'src/foundation/Navigation';
+import {
+  useDexifyNavigation,
+  useShowChapterRoute,
+} from 'src/foundation/Navigation';
 import NewShowChapterDetails from './NewShowChapterDetails';
 import ShowChapterDetails from './ShowChapterDetails';
 
@@ -28,10 +31,13 @@ export default function ShowChapter() {
   }, [data]);
 
   useEffect(() => {
-    const unsubscribe = BackHandler.addEventListener('hardwareBackPress', () => {
-      navigation.pop();
-      return true;
-    });
+    const unsubscribe = BackHandler.addEventListener(
+      'hardwareBackPress',
+      () => {
+        navigation.pop();
+        return true;
+      },
+    );
 
     return () => unsubscribe.remove();
   }, []);
@@ -41,7 +47,7 @@ export default function ShowChapter() {
       <ActivityIndicator />
       <Text style={{marginTop: 10}}>Loading chapter...</Text>
       <Caption>...</Caption>
-    </View>
+    </View>;
   }
 
   if (error || data?.result === 'error') {

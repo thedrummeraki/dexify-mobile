@@ -57,7 +57,7 @@ export default function ShowCustomList() {
     return null;
   }
 
-  if (customList)
+  if (customList) {
     return (
       <ShowCustomListDetails
         customList={customList}
@@ -69,6 +69,7 @@ export default function ShowCustomList() {
         }}
       />
     );
+  }
 
   return null;
 }

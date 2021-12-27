@@ -85,14 +85,18 @@ export default function ShowMangaDetails({manga}: Props) {
   const volumes = aggregateEntries.map(([volume, _]) => volume);
   const covers = coverData?.result === 'ok' ? coverData.data : [];
 
-  const volumeInfos: VolumeInfo[] = aggregateEntries.map(([volume, details]) => {
-    const chapterIds = Object.entries(details.chapters).map(([_, detail]) => detail.id);
+  const volumeInfos: VolumeInfo[] = aggregateEntries.map(
+    ([volume, details]) => {
+      const chapterIds = Object.entries(details.chapters).map(
+        ([_, detail]) => detail.id,
+      );
 
-    return {
-      volume: volume === 'none' ? null : volume,
-      chapterIds,
-    }
-  })
+      return {
+        volume: volume === 'none' ? null : volume,
+        chapterIds,
+      };
+    },
+  );
 
   return (
     <ShowMangaDetailsProvider

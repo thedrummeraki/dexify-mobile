@@ -26,7 +26,7 @@ export default function CloseCurrentScreenHeader({
         {height: 55, zIndex: 100, flexDirection: 'row', alignItems: 'center'},
         style,
       )}>
-      <IconButton icon={icon || "close"} onPress={onClose || defaultOnClose} />
+      <IconButton icon={icon || 'close'} onPress={onClose || defaultOnClose} />
       {title ? (
         <Text numberOfLines={1} style={{marginLeft: 7, fontSize: 16}}>
           {title}

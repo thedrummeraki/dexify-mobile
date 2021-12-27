@@ -23,7 +23,7 @@ export default function ChapterListItem({number, list}: Props) {
         title={title}
         onPress={() => navigation.navigate('ShowChapter', {id: list[0].id})}
         right={() => <List.Icon icon="play" />}>
-        <View></View>
+        <View />
       </List.Accordion>
     );
   }

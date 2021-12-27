@@ -73,7 +73,9 @@ export function useContinueReadingChapter() {
 
 export function useChapterProgress(chapterId: string) {
   const continueReadingChapters = useContinueReadingChaptersList();
-  const info = continueReadingChapters.find(chapter => chapter.id === chapterId)
+  const info = continueReadingChapters.find(
+    chapter => chapter.id === chapterId,
+  );
 
   if (!info) {
     return null;

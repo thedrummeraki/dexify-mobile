@@ -172,4 +172,4 @@ export function ShowChapterReaderPage(props: Props) {
 
 export default React.memo(ShowChapterReaderPage, (prevProps, nextProps) => {
   return prevProps.page.image.uri === nextProps.page.image.uri;
-})
+});

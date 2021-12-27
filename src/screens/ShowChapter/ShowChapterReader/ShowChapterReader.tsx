@@ -1,6 +1,11 @@
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {Image, View} from 'react-native';
-import {ActivityIndicator, Caption, ProgressBar, Text} from 'react-native-paper';
+import {
+  ActivityIndicator,
+  Caption,
+  ProgressBar,
+  Text,
+} from 'react-native-paper';
 import {mangaImage, preferredChapterTitle, preferredMangaTitle} from 'src/api';
 import {AtHomeSuccessResponse, Chapter, Manga} from 'src/api/mangadex/types';
 import {useReadingStateContext, useSettings} from 'src/prodivers';
@@ -22,7 +27,10 @@ export default function ShowChapterReader({
   jumpToPage,
 }: Props) {
   const initialized = useRef(false);
-  const {baseUrl, chapter: {data, dataSaver, hash}} = response;
+  const {
+    baseUrl,
+    chapter: {data, dataSaver, hash},
+  } = response;
   const [loading, setLoading] = useState(true);
   const [pages, setPages] = useState<Page[]>([]);
   const {width: deviceWidth, height: deviceHeight} = useDimensions();
@@ -100,11 +108,13 @@ export default function ShowChapterReader({
   }, [pages]);
 
   if (loading) {
-    return <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-      <ActivityIndicator />
-      <Text style={{marginTop: 10}}>Opening chapter...</Text>
-      <Caption>{Math.floor(progress * 100)}%</Caption>
-    </View>
+    return (
+      <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+        <ActivityIndicator />
+        <Text style={{marginTop: 10}}>Opening chapter...</Text>
+        <Caption>{Math.floor(progress * 100)}%</Caption>
+      </View>
+    );
   }
 
   const sortedPages = pages.sort((page, other) =>

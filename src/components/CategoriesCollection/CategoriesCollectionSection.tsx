@@ -116,13 +116,14 @@ export default function CategoriesCollectionSection<T>({
         ListFooterComponent={<View style={{margin: 10}} />}
         initialScrollIndex={0}
         onScrollToIndexFailed={() => {
-          if (focusedIndex !== undefined)
+          if (focusedIndex !== undefined) {
             wait(500).then(() =>
               flatListRef.current?.scrollToIndex({
                 index: focusedIndex,
                 animated: true,
               }),
             );
+          }
         }}
         renderItem={({item}) => (
           <View style={{marginRight: 10}}>{renderItem(item, dimensions)}</View>

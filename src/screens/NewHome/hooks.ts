@@ -26,7 +26,9 @@ export function useFeed(): FeedPresenter {
   );
 
   useEffect(() => {
-    if (!loading) refresh();
+    if (!loading) {
+      refresh();
+    }
   }, [loading]);
 
   return {...response, refresh};

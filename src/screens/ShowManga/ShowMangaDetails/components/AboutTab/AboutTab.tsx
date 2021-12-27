@@ -72,10 +72,14 @@ export default function AboutTab() {
   const contentRating = contentRatingInfo(manga.attributes.contentRating);
   const contentRatingTextColor = useBackgroundColor(contentRating?.background);
 
-  const existingVolumes = volumeInfos.filter(info => info.chapterIds.length > 0);
+  const existingVolumes = volumeInfos.filter(
+    info => info.chapterIds.length > 0,
+  );
 
   const volumesCountText =
-    existingVolumes.length === 1 ? '1 volume' : `${existingVolumes.length} volumes`;
+    existingVolumes.length === 1
+      ? '1 volume'
+      : `${existingVolumes.length} volumes`;
 
   const basicInfoMarkup = (
     <View style={{flex: 1}}>
@@ -147,7 +151,11 @@ export default function AboutTab() {
       </View>
       <FollowMangaButton
         style={{margin: 15, marginBottom: -10}}
-        buttonContainerStyle={{flex: 1, flexDirection: 'row', justifyContent: "space-evenly"}}
+        buttonContainerStyle={{
+          flex: 1,
+          flexDirection: 'row',
+          justifyContent: 'space-evenly',
+        }}
       />
     </>
   );

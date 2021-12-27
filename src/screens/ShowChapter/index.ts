@@ -1,1 +1,1 @@
-export {default} from './ShowChapter'
+export {default} from './ShowChapter';

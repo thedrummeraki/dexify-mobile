@@ -48,21 +48,21 @@ function AboutSkeleton() {
           style={{width: '100%', aspectRatio: 1.2}}
         />
         <View
-        style={{
-          position: 'absolute',
-          bottom: 30,
-          left: 0,
-          zIndex: 1,
-          marginHorizontal: 15,
-        }}>
-        <Title style={{lineHeight: 22}}>{loadingMessages[index].title}</Title>
-        <Text
+          style={{
+            position: 'absolute',
+            bottom: 30,
+            left: 0,
+            zIndex: 1,
+            marginHorizontal: 15,
+          }}>
+          <Title style={{lineHeight: 22}}>{loadingMessages[index].title}</Title>
+          <Text
             numberOfLines={2}
             ellipsizeMode="tail"
             style={{fontSize: 12, marginTop: 10}}>
             {loadingMessages[index].subtitle}
           </Text>
-      </View>
+        </View>
       </View>
     </ScrollView>
   );

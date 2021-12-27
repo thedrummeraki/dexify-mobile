@@ -39,7 +39,7 @@ export default function ShowChapterReaderPagesList(props: Props) {
       pagingEnabled
       disableIntervalMomentum
       removeClippedSubviews
-      snapToAlignment='center'
+      snapToAlignment="center"
       snapToInterval={height}
       scrollEnabled={scrollEnabled}
       onMomentumScrollEnd={e => {
@@ -53,7 +53,7 @@ export default function ShowChapterReaderPagesList(props: Props) {
         />
       )}
       onLayout={() => {
-        flatListRef.current?.scrollToIndex({index: initialIndex})
+        flatListRef.current?.scrollToIndex({index: initialIndex});
       }}
       onScrollToIndexFailed={() => {
         wait(500).then(() =>

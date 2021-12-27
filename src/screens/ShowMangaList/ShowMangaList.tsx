@@ -27,7 +27,7 @@ export default function ShowMangaList() {
     );
   }
 
-  if (data?.result === 'ok')
+  if (data?.result === 'ok') {
     return (
       <MangaCollection
         showReadingStatus
@@ -36,6 +36,7 @@ export default function ShowMangaList() {
         description={description}
       />
     );
+  }
 
   return null;
 }

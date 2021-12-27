@@ -86,7 +86,11 @@ export default function MangaThumbnail({
       height={height}
       aspectRatio={aspectRatio || 0.8}
       onPress={onPress || clickable ? handlePress : undefined}
-      onSubtitlePress={author ? () => navigation.navigate('ShowArtist', {id: author.id}) : undefined}
+      onSubtitlePress={
+        author
+          ? () => navigation.navigate('ShowArtist', {id: author.id})
+          : undefined
+      }
     />
   );
 }

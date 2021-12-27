@@ -88,18 +88,22 @@ function editDistance(s1: string, s2: string) {
   for (let i = 0; i <= s1.length; i++) {
     let lastValue = i;
     for (let j = 0; j <= s2.length; j++) {
-      if (i == 0) costs[j] = j;
-      else {
+      if (i == 0) {
+        costs[j] = j;
+      } else {
         if (j > 0) {
           let newValue = costs[j - 1];
-          if (s1.charAt(i - 1) != s2.charAt(j - 1))
+          if (s1.charAt(i - 1) != s2.charAt(j - 1)) {
             newValue = Math.min(Math.min(newValue, lastValue), costs[j]) + 1;
+          }
           costs[j - 1] = lastValue;
           lastValue = newValue;
         }
       }
     }
-    if (i > 0) costs[s2.length] = lastValue;
+    if (i > 0) {
+      costs[s2.length] = lastValue;
+    }
   }
   return costs[s2.length];
 }
@@ -176,32 +180,32 @@ export function localizedDateTime(
 
 export const timeAgo = (
   date: string | null | undefined,
-  options?: { showDate?: boolean; capitalize?: boolean }
+  options?: {showDate?: boolean; capitalize?: boolean},
 ) => {
   if (!date) {
     return null;
   }
 
   const units = [
-    "year",
-    "month",
-    "week",
-    "day",
-    "hour",
-    "minute",
-    "second",
+    'year',
+    'month',
+    'week',
+    'day',
+    'hour',
+    'minute',
+    'second',
   ] as Intl.RelativeTimeFormatUnit[];
 
   let dateTime = DateTime.fromISO(date);
   const diff = dateTime.diffNow().shiftTo(...units);
-  const unit = units.find((unit) => diff.get(unit) !== 0) || "second";
+  const unit = units.find(unit => diff.get(unit) !== 0) || 'second';
 
-  const relativeFormatter = new Intl.RelativeTimeFormat("en", {
-    numeric: "auto",
+  const relativeFormatter = new Intl.RelativeTimeFormat('en', {
+    numeric: 'auto',
   });
   let relativeTimeInWords = relativeFormatter.format(
     Math.trunc(diff.as(unit)),
-    unit
+    unit,
   );
 
   if (options?.capitalize) {
@@ -210,7 +214,7 @@ export const timeAgo = (
 
   if (options?.showDate) {
     return `${relativeTimeInWords} (${dateTime.toLocaleString(
-      DateTime.DATE_FULL
+      DateTime.DATE_FULL,
     )})`;
   }
 

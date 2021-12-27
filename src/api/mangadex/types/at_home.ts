@@ -1,4 +1,4 @@
-import { MangadexError } from "src/api/mangadex/types";
+import {MangadexError} from 'src/api/mangadex/types';
 
 export interface AtHomeErrorResponse {
   result: 'error';

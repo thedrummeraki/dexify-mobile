@@ -1,16 +1,16 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Image, ScrollView, View } from 'react-native';
+import React, {useEffect, useRef, useState} from 'react';
+import {Image, ScrollView, View} from 'react-native';
 import {ActivityIndicator, Text} from 'react-native-paper';
 import {coverImage, CoverSize, preferredMangaTitle} from 'src/api';
 import {CoverArt, PagedResultsList} from 'src/api/mangadex/types';
 import {useGetRequest} from 'src/api/utils';
-import { CloseCurrentScreenHeader } from 'src/components';
+import {CloseCurrentScreenHeader} from 'src/components';
 import BasicList from 'src/components/BasicList';
 import {useShowMangaGalleryRoute} from 'src/foundation';
 import Thumbnail from 'src/foundation/Thumbnail';
-import { useDimensions } from 'src/utils';
+import {useDimensions} from 'src/utils';
 import ShowChapterReaderPagesList from '../ShowChapter/ShowChapterReader/components/ShowChapterReaderPagesList';
-import { Page } from '../ShowChapter/ShowChapterReader/types';
+import {Page} from '../ShowChapter/ShowChapterReader/types';
 import FullScreenImageSwiper from './FullScreenImageSwiper';
 
 export default function ShowMangaGallery() {
@@ -23,9 +23,15 @@ export default function ShowMangaGallery() {
   // const coverWidth = deviceWidth / 2 -10;
   // const coverHeight = coverWidth * 160 / 120;
 
-  const {params: {manga}} = route;
+  const {
+    params: {manga},
+  } = route;
 
-  const {data, error, loading: coversLoading} = useGetRequest<PagedResultsList<CoverArt>>(
+  const {
+    data,
+    error,
+    loading: coversLoading,
+  } = useGetRequest<PagedResultsList<CoverArt>>(
     `https://api.mangadex.org/cover?manga[]=${manga.id}&limit=100`,
   );
 
@@ -36,7 +42,9 @@ export default function ShowMangaGallery() {
 
     if (data?.result === 'ok') {
       data.data.forEach((cover, index) => {
-        const number = cover.attributes.volume ? parseInt(cover.attributes.volume) : index + 1;
+        const number = cover.attributes.volume
+          ? parseInt(cover.attributes.volume)
+          : index + 1;
         const uri = coverImage(cover, manga.id, {size: CoverSize.Original});
         Image.getSize(
           uri,
@@ -55,7 +63,7 @@ export default function ShowMangaGallery() {
             setPages(current => [...current, page]);
           },
         );
-      })
+      });
     }
   }, [data]);
 
@@ -64,16 +72,22 @@ export default function ShowMangaGallery() {
     if (!loading) {
       initialized.current = true;
     }
-    setDimensionsLoading(data?.result !== 'ok' || pages.length < data.data.length);
+    setDimensionsLoading(
+      data?.result !== 'ok' || pages.length < data.data.length,
+    );
   }, [pages, data]);
 
   const loading = coversLoading || dimensionsLoading;
 
   if (loading) {
-    return <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-      <ActivityIndicator size="large" />
-      <Text style={{textAlign: 'center'}}>{coversLoading ? 'Loading...' : 'Opening gallery...'}</Text>
-    </View>;
+    return (
+      <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+        <ActivityIndicator size="large" />
+        <Text style={{textAlign: 'center'}}>
+          {coversLoading ? 'Loading...' : 'Opening gallery...'}
+        </Text>
+      </View>
+    );
   }
 
   if (error || data?.result === 'error') {
@@ -100,18 +114,15 @@ export default function ShowMangaGallery() {
     //   onPageSelected={() => {}}
     // />
     <>
-    {/* <CloseCurrentScreenHeader title={preferredMangaTitle(manga)} /> */}
-    {/* <ScrollView>
+      {/* <CloseCurrentScreenHeader title={preferredMangaTitle(manga)} /> */}
+      {/* <ScrollView>
       <BasicList
         data={sortedCovers}
         aspectRatio={0.5}
         itemStyle={{padding: 5}}
         renderItem={cover => <Thumbnail imageUrl={coverImage(cover, manga.id)} width={coverWidth} height={coverHeight} />} />
     </ScrollView> */}
-    <ShowChapterReaderPagesList
-      pages={sortedPages}
-      initialIndex={0}
-    />
+      <ShowChapterReaderPagesList pages={sortedPages} initialIndex={0} />
     </>
   );
 }

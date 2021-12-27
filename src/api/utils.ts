@@ -53,7 +53,10 @@ interface MutatingRequestParams<Body> extends BasicRequestParams {
 }
 
 type RequestParams<Body> = QueryRequestParams | MutatingRequestParams<Body>;
-type SimpleRequestParams<Body> = Omit<RequestParams<Body>, 'method' | 'hookUrl'>
+type SimpleRequestParams<Body> = Omit<
+  RequestParams<Body>,
+  'method' | 'hookUrl'
+>;
 
 export enum AxiosRequestType {
   Get = 'GET',
@@ -67,7 +70,7 @@ export function useAxiosRequestConfig(): AxiosRequestConfig {
   const headers: Record<string, string> = {};
 
   if (session?.session?.value) {
-    headers['Authorization'] = session.session.value;
+    headers.Authorization = session.session.value;
     headers['x-auth-session'] = session.session.value;
   }
 
@@ -78,36 +81,54 @@ export function useAxiosRequestConfig(): AxiosRequestConfig {
   return {headers};
 }
 
-export function usePostRequest<T, Body = any>(hookUrl?: string, params?: SimpleRequestParams<Body>) {
-  const options = Object.assign({
-    hookUrl,
-    method: AxiosRequestType.Post,
-    refreshSession: true,
-    forceRefresh: true,
-    throwIfRefreshFails: true,
-  }, params);
+export function usePostRequest<T, Body = any>(
+  hookUrl?: string,
+  params?: SimpleRequestParams<Body>,
+) {
+  const options = Object.assign(
+    {
+      hookUrl,
+      method: AxiosRequestType.Post,
+      refreshSession: true,
+      forceRefresh: true,
+      throwIfRefreshFails: true,
+    },
+    params,
+  );
 
   return useAxiosRequest<T, Body>(options);
 }
 
-export function usePutRequest<T, Body = any>(hookUrl?: string, params?: SimpleRequestParams<Body>) {
-  const options = Object.assign({
-    method: AxiosRequestType.Put,
-    hookUrl,
-    refreshSession: true,
-    requireSession: true,
-  }, params);
+export function usePutRequest<T, Body = any>(
+  hookUrl?: string,
+  params?: SimpleRequestParams<Body>,
+) {
+  const options = Object.assign(
+    {
+      method: AxiosRequestType.Put,
+      hookUrl,
+      refreshSession: true,
+      requireSession: true,
+    },
+    params,
+  );
 
   return useAxiosRequest<T, Body>(options);
 }
 
-export function useDeleteRequest<T>(hookUrl?: string, params?: SimpleRequestParams<Body>) {
-  const options = Object.assign({
-    method: AxiosRequestType.Delete,
-    hookUrl,
-    refreshSession: true,
-    requireSession: true,
-  }, params);
+export function useDeleteRequest<T>(
+  hookUrl?: string,
+  params?: SimpleRequestParams<Body>,
+) {
+  const options = Object.assign(
+    {
+      method: AxiosRequestType.Delete,
+      hookUrl,
+      refreshSession: true,
+      requireSession: true,
+    },
+    params,
+  );
 
   return useAxiosRequest<T>(options);
 }
@@ -116,16 +137,22 @@ export function useLazyGetRequest<T>(
   hookUrl?: string,
   params?: SimpleRequestParams<Body>,
 ) {
-  const options = Object.assign({
-    hookUrl,
-    method: AxiosRequestType.Get,
-    refreshSession: true,
-  }, params);
+  const options = Object.assign(
+    {
+      hookUrl,
+      method: AxiosRequestType.Get,
+      refreshSession: true,
+    },
+    params,
+  );
 
   return useAxiosRequest<T>(options);
 }
 
-export function useGetRequest<T>(url: string, params?: SimpleRequestParams<never>): RequestResult<T> {
+export function useGetRequest<T>(
+  url: string,
+  params?: SimpleRequestParams<never>,
+): RequestResult<T> {
   const [callback, result] = useLazyGetRequest<T>();
 
   useEffect(() => {
@@ -151,7 +178,14 @@ export function useCategoryRequest<T>(category: UICategory): RequestResult<T> {
 
 export function useAxiosRequest<T, Body = any>(
   params: RequestParams<Body>,
-): [(url?: string, body?: Body, callbackParams?: SimpleRequestParams<Body>) => Promise<T | undefined>, RequestResult<T>] {
+): [
+  (
+    url?: string,
+    body?: Body,
+    callbackParams?: SimpleRequestParams<Body>,
+  ) => Promise<T | undefined>,
+  RequestResult<T>,
+] {
   const {session, refreshToken} = useUpdatedSession(false);
 
   const [data, setData] = useState<T>();
@@ -161,7 +195,11 @@ export function useAxiosRequest<T, Body = any>(
   const [status, setStatus] = useState(ResponseStatus.Pending);
 
   const callback = useCallback(
-    async (callbackUrl?: string, body?: Body, callbackParams?: SimpleRequestParams<Body>) => {
+    async (
+      callbackUrl?: string,
+      body?: Body,
+      callbackParams?: SimpleRequestParams<Body>,
+    ) => {
       const url = params.hookUrl || callbackUrl;
       if (!url) {
         throw new Error(
@@ -187,7 +225,10 @@ export function useAxiosRequest<T, Body = any>(
           refreshResponse?.result === 'error'
         ) {
           throw new Error(`Token refresh failed for url ${url}`);
-        } else if ((params.requireSession || callbackParams?.requireSession) && !session) {
+        } else if (
+          (params.requireSession || callbackParams?.requireSession) &&
+          !session
+        ) {
           console.warn(
             'This request',
             requestMethod,

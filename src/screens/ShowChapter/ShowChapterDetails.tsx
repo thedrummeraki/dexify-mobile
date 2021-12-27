@@ -26,7 +26,7 @@ export default function ShowChapterDetails({
       <ActivityIndicator />
       <Text style={{marginTop: 10}}>Loading pages...</Text>
       <Caption>...</Caption>
-    </View>
+    </View>;
   }
 
   if (data?.result === 'error') {

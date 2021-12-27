@@ -9,7 +9,7 @@ import {
   useBackgroundColor,
   useTextColor,
 } from 'src/components/colors';
-import { useDexifyNavigation } from 'src/foundation';
+import {useDexifyNavigation} from 'src/foundation';
 import {
   useLibraryContext,
   useLibraryStatus,
@@ -20,9 +20,17 @@ import {usePossibleReadingStatuses} from 'src/screens/Home/screens/FollowedManga
 import {useMangaDetails} from '../../ShowMangaDetails';
 
 type ButtonProps = React.ComponentProps<typeof Button>;
-type Props = Omit<ButtonProps, 'children' | 'style'> & {style?: ViewStyle, buttonContainerStyle?: ViewStyle};
+type Props = Omit<ButtonProps, 'children' | 'style'> & {
+  style?: ViewStyle;
+  buttonContainerStyle?: ViewStyle;
+};
 
-export default function FollowMangaButton({style, children, buttonContainerStyle, ...props}: PropsWithChildren<Props>) {
+export default function FollowMangaButton({
+  style,
+  children,
+  buttonContainerStyle,
+  ...props
+}: PropsWithChildren<Props>) {
   const navigation = useDexifyNavigation();
   const {manga} = useMangaDetails();
   const session = useSession();
@@ -35,13 +43,25 @@ export default function FollowMangaButton({style, children, buttonContainerStyle
     return (
       <View style={style}>
         <View style={buttonContainerStyle}>
-          <Button disabled mode='contained' icon="heart" {...props} style={{flex: 1, marginRight: 2}} onPress={undefined}>
+          <Button
+            disabled
+            mode="contained"
+            icon="heart"
+            {...props}
+            style={{flex: 1, marginRight: 2}}
+            onPress={undefined}>
             Mark as...
           </Button>
-          <Button disabled mode='outlined' icon="plus" {...props} style={{flex: 1, marginLeft: 2}} onPress={undefined}>
+          <Button
+            disabled
+            mode="outlined"
+            icon="plus"
+            {...props}
+            style={{flex: 1, marginLeft: 2}}
+            onPress={undefined}>
             Add to list...
           </Button>
-          </View>
+        </View>
       </View>
     );
   }
@@ -53,49 +73,52 @@ export default function FollowMangaButton({style, children, buttonContainerStyle
   const color = useTextColor(background);
 
   return (
-      <View style={style}>
-        <View style={buttonContainerStyle}>
-          <Button
-            icon={icon}
-            {...props}
-            loading={updating}
-            mode={defaultValue ? 'outlined' : 'contained'}
-            style={{backgroundColor: updating ? undefined : backgroundColor, flex: 1, marginRight: 2}}
-            labelStyle={{color}}
-            onPress={() => setShowActions(value => !value)}>
-            {updating ? '' : content}
-          </Button>
-          <Button
-            mode="outlined"
-            icon="plus"
-            style={{flex: 1, marginLeft: 2}}
-            onPress={() => navigation.push('AddToPlaylist', {manga})}
-            >
-            Add to list...
-          </Button>
-        </View>
-        {showActions && (
-          <>
-            <CategoriesCollectionSection
-              data={Object.entries(possibleReadingStatuses)}
-              renderItem={item => {
-                const [value, {title}] = item;
-                const readingStatus = value as ReadingStatus;
-
-                return (
-                  <AddToLibraryChip
-                    readingStatus={readingStatus}
-                    title={title}
-                    updating={updating}
-                    setUpdating={setUpdating}
-                    onComplete={() => setShowActions(false)}
-                  />
-                );
-              }}
-            />
-          </>
-        )}
+    <View style={style}>
+      <View style={buttonContainerStyle}>
+        <Button
+          icon={icon}
+          {...props}
+          loading={updating}
+          mode={defaultValue ? 'outlined' : 'contained'}
+          style={{
+            backgroundColor: updating ? undefined : backgroundColor,
+            flex: 1,
+            marginRight: 2,
+          }}
+          labelStyle={{color}}
+          onPress={() => setShowActions(value => !value)}>
+          {updating ? '' : content}
+        </Button>
+        <Button
+          mode="outlined"
+          icon="plus"
+          style={{flex: 1, marginLeft: 2}}
+          onPress={() => navigation.push('AddToPlaylist', {manga})}>
+          Add to list...
+        </Button>
       </View>
+      {showActions && (
+        <>
+          <CategoriesCollectionSection
+            data={Object.entries(possibleReadingStatuses)}
+            renderItem={item => {
+              const [value, {title}] = item;
+              const readingStatus = value as ReadingStatus;
+
+              return (
+                <AddToLibraryChip
+                  readingStatus={readingStatus}
+                  title={title}
+                  updating={updating}
+                  setUpdating={setUpdating}
+                  onComplete={() => setShowActions(false)}
+                />
+              );
+            }}
+          />
+        </>
+      )}
+    </View>
   );
 }
 
