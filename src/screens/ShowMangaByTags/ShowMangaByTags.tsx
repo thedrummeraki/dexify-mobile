@@ -1,13 +1,6 @@
 import React, {useMemo, useState} from 'react';
 import {SafeAreaView, ScrollView, View} from 'react-native';
-import {
-  ActivityIndicator,
-  Button,
-  Chip,
-  IconButton,
-  Text,
-  TextInput,
-} from 'react-native-paper';
+import {ActivityIndicator, Button, Chip, TextInput} from 'react-native-paper';
 import {preferredTitle} from 'src/api';
 import {Manga, PagedResultsList, TagMode} from 'src/api/mangadex/types';
 import {useGetRequest} from 'src/api/utils';

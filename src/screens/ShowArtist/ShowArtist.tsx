@@ -1,15 +1,7 @@
 import React from 'react';
 import {ActivityIndicator} from 'react-native-paper';
-import {useGetMangaList} from 'src/api/mangadex/hooks';
-import {
-  Artist,
-  Author,
-  ContentRating,
-  EntityResponse,
-  Manga,
-  PagedResultsList,
-} from 'src/api/mangadex/types';
-import {useGetRequest, useLazyGetRequest} from 'src/api/utils';
+import {Artist, Author, EntityResponse} from 'src/api/mangadex/types';
+import {useGetRequest} from 'src/api/utils';
 import {useShowArtistRoute} from 'src/foundation';
 import ShowArtistDetails from './ShowArtistDetails';
 

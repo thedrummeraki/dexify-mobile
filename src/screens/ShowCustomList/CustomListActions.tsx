@@ -33,50 +33,6 @@ export default function CustomListActions({customList, onEditing}: Props) {
   );
 }
 
-function UserInfo({customList}: Pick<Props, 'customList'>) {
-  const id = findRelationship(customList, 'user')?.id;
-  const session = useSession();
-
-  const [get, {data, loading, error}] =
-    useLazyGetRequest<EntityResponse<User>>();
-
-  useEffect(() => {
-    if (id) {
-      get(UrlBuilder.user(id));
-    }
-  }, [id, session]);
-
-  if (!id) {
-    return null;
-  }
-
-  if (loading) {
-    return null;
-  }
-
-  if (error || data?.result === 'error' || !data) {
-    return null;
-  }
-
-  const user = data.data;
-
-  return (
-    <View
-      style={{
-        flex: 1,
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginTop: 3,
-      }}>
-      <Image
-        source={{uri: 'https://mangadex.org/avatar.png'}}
-        style={{width: 20, aspectRatio: 1, borderRadius: 20, marginRight: 5}}
-      />
-      <Text>{user.attributes.username}</Text>
-    </View>
-  );
-}
-
 function CustomListVisiblityBadge({customList}: Pick<Props, 'customList'>) {
   const visibilityInfo =
     customList.attributes.visibility === 'private'
@@ -96,3 +52,47 @@ function CustomListVisiblityBadge({customList}: Pick<Props, 'customList'>) {
     />
   );
 }
+
+// function UserInfo({customList}: Pick<Props, 'customList'>) {
+//   const id = findRelationship(customList, 'user')?.id;
+//   const session = useSession();
+
+//   const [get, {data, loading, error}] =
+//     useLazyGetRequest<EntityResponse<User>>();
+
+//   useEffect(() => {
+//     if (id) {
+//       get(UrlBuilder.user(id));
+//     }
+//   }, [get, id, session]);
+
+//   if (!id) {
+//     return null;
+//   }
+
+//   if (loading) {
+//     return null;
+//   }
+
+//   if (error || data?.result === 'error' || !data) {
+//     return null;
+//   }
+
+//   const user = data.data;
+
+//   return (
+//     <View
+//       style={{
+//         flex: 1,
+//         flexDirection: 'row',
+//         alignItems: 'center',
+//         marginTop: 3,
+//       }}>
+//       <Image
+//         source={{uri: 'https://mangadex.org/avatar.png'}}
+//         style={{width: 20, aspectRatio: 1, borderRadius: 20, marginRight: 5}}
+//       />
+//       <Text>{user.attributes.username}</Text>
+//     </View>
+//   );
+// }

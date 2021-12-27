@@ -1,17 +1,13 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {Image, ScrollView, View} from 'react-native';
+import {Image, View} from 'react-native';
 import {ActivityIndicator, Text} from 'react-native-paper';
-import {coverImage, CoverSize, preferredMangaTitle} from 'src/api';
+import {coverImage, CoverSize} from 'src/api';
 import {CoverArt, PagedResultsList} from 'src/api/mangadex/types';
 import {useGetRequest} from 'src/api/utils';
-import {CloseCurrentScreenHeader} from 'src/components';
-import BasicList from 'src/components/BasicList';
 import {useShowMangaGalleryRoute} from 'src/foundation';
-import Thumbnail from 'src/foundation/Thumbnail';
 import {useDimensions} from 'src/utils';
 import ShowChapterReaderPagesList from '../ShowChapter/ShowChapterReader/components/ShowChapterReaderPagesList';
 import {Page} from '../ShowChapter/ShowChapterReader/types';
-import FullScreenImageSwiper from './FullScreenImageSwiper';
 
 export default function ShowMangaGallery() {
   const initialized = useRef(false);

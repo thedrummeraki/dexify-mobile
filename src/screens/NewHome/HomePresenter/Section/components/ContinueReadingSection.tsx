@@ -5,6 +5,6 @@ interface Props {
   section: Sections.ContinueReading;
 }
 
-export default function ContinueReadingSection({section}: Props) {
-  return null;
+export default function ContinueReadingSection({}: Props) {
+  return <></>;
 }

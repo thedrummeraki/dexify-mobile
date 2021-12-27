@@ -1,5 +1,4 @@
 import React from 'react';
-import {Button} from 'react-native-paper';
 import {chapterImage} from 'src/api';
 import {Chapter} from 'src/api/mangadex/types';
 import BasicList from 'src/components/BasicList';
@@ -12,11 +11,7 @@ interface Props {
   chapters: Chapter[];
 }
 
-export default function ChaptersImagesLayout({
-  loading,
-  count,
-  chapters,
-}: Props) {
+export default function ChaptersImagesLayout({loading, chapters}: Props) {
   const navigation = useDexifyNavigation();
   if (loading) {
     return (

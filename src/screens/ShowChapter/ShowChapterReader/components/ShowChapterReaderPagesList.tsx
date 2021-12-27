@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {FlatList, ScrollView} from 'react-native-gesture-handler';
+import {FlatList} from 'react-native-gesture-handler';
 import {useDimensions, wait} from 'src/utils';
 import {Page, ReaderActionState} from '../types';
 import ShowChapterReaderPage from './ShowChapterReaderPage';
@@ -14,7 +14,6 @@ interface Props {
 // Shows a VERTICAL list of pages
 export default function ShowChapterReaderPagesList(props: Props) {
   const {pages, initialIndex, onPageNumberChange, onActionsStateChange} = props;
-  const scrolled = useRef(false);
   const flatListRef = useRef<FlatList | null>();
 
   const {height} = useDimensions();

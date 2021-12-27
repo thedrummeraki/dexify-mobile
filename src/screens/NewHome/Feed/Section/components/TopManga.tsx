@@ -1,13 +1,10 @@
 import React from 'react';
 import {Dimensions, Image, TouchableNativeFeedback, View} from 'react-native';
-import FastImage from 'react-native-fast-image';
-import {Title, Caption, Text, Button} from 'react-native-paper';
+import {Title, Text, Button} from 'react-native-paper';
 import {
   mangaImage,
   CoverSize,
   preferredMangaTitle,
-  preferredTitle,
-  preferredMangaDescription,
   readingStatusInfo,
 } from 'src/api';
 import {Manga} from 'src/api/mangadex/types';

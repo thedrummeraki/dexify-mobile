@@ -3,7 +3,7 @@ import {Text} from 'react-native';
 import {ScrollView} from 'react-native-gesture-handler';
 import {ActivityIndicator} from 'react-native-paper';
 import {coverImage, CoverSize} from 'src/api';
-import {CoverArt, Manga, PagedResultsList} from 'src/api/mangadex/types';
+import {CoverArt, PagedResultsList} from 'src/api/mangadex/types';
 import {useGetRequest} from 'src/api/utils';
 import BasicList from 'src/components/BasicList';
 import {useDexifyNavigation} from 'src/foundation';

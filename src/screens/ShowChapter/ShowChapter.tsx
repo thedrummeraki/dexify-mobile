@@ -9,7 +9,6 @@ import {
   useDexifyNavigation,
   useShowChapterRoute,
 } from 'src/foundation/Navigation';
-import NewShowChapterDetails from './NewShowChapterDetails';
 import ShowChapterDetails from './ShowChapterDetails';
 
 export default function ShowChapter() {
@@ -28,7 +27,7 @@ export default function ShowChapter() {
     if (data?.result === 'ok') {
       getManga(UrlBuilder.mangaById(findRelationship(data.data, 'manga')!.id));
     }
-  }, [data]);
+  }, [getManga, data]);
 
   useEffect(() => {
     const unsubscribe = BackHandler.addEventListener(
@@ -40,7 +39,7 @@ export default function ShowChapter() {
     );
 
     return () => unsubscribe.remove();
-  }, []);
+  }, [navigation]);
 
   if (loading || mangaLoading) {
     <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>

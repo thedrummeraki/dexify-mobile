@@ -5,6 +5,6 @@ interface Props {
   section: Sections.MangaRecommendation;
 }
 
-export default function MangaRecommendationSection({section}: Props) {
-  return null;
+export default function MangaRecommendationSection({}: Props) {
+  return <></>;
 }

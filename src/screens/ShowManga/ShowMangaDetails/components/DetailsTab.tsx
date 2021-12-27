@@ -9,7 +9,6 @@ import {
 } from 'react-native-paper';
 import {findRelationships} from 'src/api';
 import {Author, Artist, Manga} from 'src/api/mangadex/types';
-import {useGetRequest} from 'src/api/utils';
 import {ChipsContainer} from 'src/components';
 
 interface Props {

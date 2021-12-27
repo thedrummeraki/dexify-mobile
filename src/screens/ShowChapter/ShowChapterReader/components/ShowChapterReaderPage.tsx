@@ -35,7 +35,7 @@ export function ShowChapterReaderPage(props: Props) {
 
   useEffect(() => {
     onZoomStateChanged?.(zooming);
-  }, [zooming]);
+  }, [onZoomStateChanged, zooming]);
 
   const positionX = useSharedValue(0);
   const positionY = useSharedValue(0);

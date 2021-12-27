@@ -1,12 +1,5 @@
-import React, {useEffect, useRef, useState} from 'react';
-import {
-  Animated,
-  Easing,
-  StyleProp,
-  useColorScheme,
-  View,
-  ViewStyle,
-} from 'react-native';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
+import {Animated, StyleProp, View, ViewStyle} from 'react-native';
 import {Caption, IconButton, Subheading} from 'react-native-paper';
 import {useSettings} from 'src/prodivers';
 
@@ -29,21 +22,21 @@ export default function ShowChapterPagesHeader({
   const opacity = useState(new Animated.Value(hidden ? 0 : 1))[0];
   const canPerformAnimation = useRef(false);
 
-  function fadeIn() {
+  const fadeIn = useCallback(() => {
     Animated.timing(opacity, {
       useNativeDriver: true,
       toValue: 1,
       duration: 400,
     }).start();
-  }
+  }, []);
 
-  function fadeOut() {
+  const fadeOut = useCallback(() => {
     Animated.timing(opacity, {
       useNativeDriver: true,
       toValue: 0,
       duration: 400,
     }).start();
-  }
+  }, []);
 
   useEffect(() => {
     if (!canPerformAnimation.current) {
@@ -52,7 +45,7 @@ export default function ShowChapterPagesHeader({
     }
 
     hidden ? fadeOut() : fadeIn();
-  }, [hidden]);
+  }, [fadeOut, fadeIn, hidden]);
 
   return (
     <Animated.View

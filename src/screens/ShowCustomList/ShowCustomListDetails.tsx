@@ -3,7 +3,7 @@ import {BackHandler, RefreshControl, ScrollView, View} from 'react-native';
 import {Text, TextInput} from 'react-native-paper';
 import {findRelationships, mangaImage} from 'src/api';
 import {useGetMangaList} from 'src/api/mangadex/hooks';
-import {ContentRating, CustomList} from 'src/api/mangadex/types';
+import {CustomList} from 'src/api/mangadex/types';
 import {
   Banner,
   CloseCurrentScreenHeader,
@@ -85,7 +85,7 @@ export default function ShowCustomListDetails({
     );
 
     return () => unsubscribe.remove();
-  }, [editing]);
+  }, [editing, onRefresh]);
 
   const bodyMarkup = ids.length ? (
     <BasicList

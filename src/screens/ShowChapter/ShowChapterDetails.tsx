@@ -3,7 +3,6 @@ import {SafeAreaView, StatusBar, View} from 'react-native';
 import {ActivityIndicator, Caption, Text} from 'react-native-paper';
 import {AtHomeResponse, Chapter, Manga} from 'src/api/mangadex/types';
 import {useGetRequest} from 'src/api/utils';
-import NewShowChapterDetails from './NewShowChapterDetails';
 import ShowChapterReader from './ShowChapterReader';
 
 interface Props {

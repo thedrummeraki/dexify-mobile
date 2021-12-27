@@ -1,35 +1,12 @@
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import {useMangaDetails, VolumeInfo} from '../../../ShowMangaDetails';
-import {useFocusEffect} from '@react-navigation/native';
-import {
-  FlatList,
-  Image,
-  Modal,
-  TouchableNativeFeedback,
-  View,
-} from 'react-native';
-import {
-  Button,
-  Caption,
-  Chip,
-  IconButton,
-  ProgressBar,
-  Text,
-  Title,
-} from 'react-native-paper';
+import {Image, TouchableNativeFeedback, View} from 'react-native';
+import {Caption, IconButton, ProgressBar, Text} from 'react-native-paper';
 import {coverImage} from 'src/api';
-import {Chapter, CoverArt, PagedResultsList} from 'src/api/mangadex/types';
-import UrlBuilder from 'src/api/mangadex/types/api/url_builder';
-import {useLazyGetRequest} from 'src/api/utils';
-import {
-  CloseCurrentScreenHeader,
-  FullScreenModal,
-  TextBadge,
-} from 'src/components';
+import {TextBadge} from 'src/components';
 import BasicList from 'src/components/BasicList';
-import Thumbnail, {ThumbnailSkeleton} from 'src/foundation/Thumbnail';
+import {ThumbnailSkeleton} from 'src/foundation/Thumbnail';
 import {pluralize, useDimensions} from 'src/utils';
-import {ChapterItem} from '../ChaptersList';
 import {useDexifyNavigation} from 'src/foundation';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {

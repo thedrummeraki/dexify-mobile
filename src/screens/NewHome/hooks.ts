@@ -6,7 +6,7 @@ import {
   Sections,
 } from './HomePresenter/Section/types';
 import {FeedResponse} from './Feed/types';
-import {useGetRequest, useLazyGetRequest} from 'src/api/utils';
+import {useLazyGetRequest} from 'src/api/utils';
 import UrlBuilder from 'src/api/mangadex/types/api/url_builder';
 import {AxiosError} from 'axios';
 import {useContentRatingFitlers, useSettingsContext} from 'src/prodivers';
@@ -29,7 +29,7 @@ export function useFeed(): FeedPresenter {
     if (!loading) {
       refresh();
     }
-  }, [loading]);
+  }, [refresh, loading]);
 
   return {...response, refresh};
 }

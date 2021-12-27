@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {ActivityIndicator, useTheme} from 'react-native-paper';
+import {ActivityIndicator} from 'react-native-paper';
 import {CustomList, EntityResponse} from 'src/api/mangadex/types';
 import UrlBuilder from 'src/api/mangadex/types/api/url_builder';
 import {useLazyGetRequest} from 'src/api/utils';
@@ -29,7 +29,7 @@ export default function ShowCustomList() {
 
   useEffect(() => {
     get();
-  }, []);
+  }, [get]);
 
   useEffect(() => {
     if (data?.result === 'ok') {
@@ -42,7 +42,7 @@ export default function ShowCustomList() {
     if (refreshing) {
       get();
     }
-  }, [refreshing]);
+  }, [get, refreshing]);
 
   if (loading && !initialized.current) {
     return <ActivityIndicator style={{flex: 1}} />;

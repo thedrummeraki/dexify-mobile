@@ -1,11 +1,8 @@
-import React, {useContext, useEffect, useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {ActivityIndicator, Text} from 'react-native-paper';
-import {preferredMangaTitle} from 'src/api';
 import Feed from './Feed/Feed';
 import {FeedResponse} from './Feed/types';
-import HomePresenter from './HomePresenter';
-import HomeProvider, {HomeContext} from './HomeProvider';
-import {useFeed, useHomePresenter} from './hooks';
+import {useFeed} from './hooks';
 
 export default function HomeScreen() {
   return <Home />;

@@ -1,9 +1,6 @@
 import React, {useCallback} from 'react';
-import {StyleSheet, ViewStyle} from 'react-native';
-import {Button, FAB} from 'react-native-paper';
-import {readingStatusInfo} from 'src/api';
-import {ReadingStatusResponse} from 'src/api/mangadex/types';
-import {useGetRequest} from 'src/api/utils';
+import {StyleSheet} from 'react-native';
+import {FAB} from 'react-native-paper';
 import {useBackgroundColor} from 'src/components/colors';
 import {useDexifyNavigation} from 'src/foundation';
 import {useMangaDetails} from '../../ShowMangaDetails';

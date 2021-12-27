@@ -52,7 +52,7 @@ export default function VolumesContainer() {
       console.log('default image', defaultCoverUrl.current);
       onCoverUrlUpdate(defaultCoverUrl.current);
     }
-  }, [currentVolume, covers, manga.id]);
+  }, [onCoverUrlUpdate, currentVolume, covers, manga.id]);
 
   if (currentVolume === null) {
     return <VolumesList onVolumeSelect={setCurrentVolume} />;

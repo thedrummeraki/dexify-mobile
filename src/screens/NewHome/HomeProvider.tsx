@@ -27,11 +27,8 @@ export default function HomeProvider({children}: PropsWithChildren<{}>) {
   const [state, setState] = useState<InternalState>({});
   const readingNowMangaIds = useLibraryMangaIds(ReadingStatus.Reading);
 
-  const {
-    data: popularMangaData,
-    loading: popularMangaLoading,
-    error: popularMangaError,
-  } = useGetMangaList({order: {followedCount: 'desc'}});
+  const {data: popularMangaData, loading: popularMangaLoading} =
+    useGetMangaList({order: {followedCount: 'desc'}});
 
   const loading = popularMangaLoading;
 
@@ -47,7 +44,7 @@ export default function HomeProvider({children}: PropsWithChildren<{}>) {
         }
       });
     }
-  }, [readingNowMangaIds]);
+  }, [getMangas, readingNowMangaIds]);
 
   useEffect(() => {
     if (

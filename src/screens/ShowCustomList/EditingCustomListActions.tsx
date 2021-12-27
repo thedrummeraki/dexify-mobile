@@ -1,10 +1,9 @@
 import React, {useEffect, useMemo, useState} from 'react';
 import {Switch, Text, View} from 'react-native';
-import {Caption, Button, TextInput, useTheme} from 'react-native-paper';
+import {Caption, Button, TextInput} from 'react-native-paper';
 import {CustomList} from 'src/api/mangadex/types';
 import {useBackgroundColor} from 'src/components/colors';
 import {useLibraryContext} from 'src/prodivers';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 interface Props {
   customList: CustomList;
@@ -17,7 +16,6 @@ export default function EditingCustomListActions({
   onCustomListUpdate,
   onEditingDone,
 }: Props) {
-  const theme = useTheme();
   const [dirty, setDirty] = useState(false);
   const [state, setState] = useState<CustomList.UpdateParams>({});
   const [updating, setUpdating] = useState(false);
@@ -68,8 +66,6 @@ export default function EditingCustomListActions({
   const visibilityStateColor = useBackgroundColor(
     visibility === 'private' ? 'error' : 'accent',
   );
-
-  const cancelColor = useBackgroundColor('error');
 
   useEffect(() => {
     setState(state => ({...state, name: inputName.trim()}));

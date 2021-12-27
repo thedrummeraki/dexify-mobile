@@ -49,11 +49,7 @@ interface ImagePosition {
   y: number;
 }
 
-export default function NewShowChapterDetails({
-  chapter,
-  pages,
-  initialIndex,
-}: Props) {
+export default function NewShowChapterDetails({chapter, pages}: Props) {
   const navigation = useDexifyNavigation();
   const {height} = useDimensions();
   const [scrollEnabled, setScrollEnabled] = useState(true);
@@ -148,7 +144,7 @@ function PageWithDimensions({
 
   useEffect(() => {
     onZoomStateChanged?.(zooming);
-  }, [zooming]);
+  }, [onZoomStateChanged, zooming]);
 
   const positionX = useSharedValue(0);
   const positionY = useSharedValue(0);
@@ -245,7 +241,7 @@ function PageWithDimensions({
                 }
               }
             }}
-            onActivated={e => {
+            onActivated={() => {
               setZooming(zooming => !zooming);
             }}
             numberOfTaps={2}

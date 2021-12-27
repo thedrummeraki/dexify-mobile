@@ -2,10 +2,7 @@ import React from 'react';
 import {View} from 'react-native';
 import {List} from 'react-native-paper';
 import {Chapter} from 'src/api/mangadex/types';
-import {
-  useDexifyNavigation,
-  useShowChapterRoute,
-} from 'src/foundation/Navigation';
+import {useDexifyNavigation} from 'src/foundation/Navigation';
 
 interface Props {
   number: string;

@@ -1,21 +1,12 @@
 import React, {PropsWithChildren, useState} from 'react';
 import {View, ViewStyle} from 'react-native';
-import {Button, Caption, Chip, Text, useTheme} from 'react-native-paper';
+import {Button, Chip, useTheme} from 'react-native-paper';
 import {readingStatusInfo} from 'src/api';
 import {ReadingStatus} from 'src/api/mangadex/types';
 import CategoriesCollectionSection from 'src/components/CategoriesCollection/CategoriesCollectionSection';
-import {
-  PaperProviderForBackground,
-  useBackgroundColor,
-  useTextColor,
-} from 'src/components/colors';
+import {useBackgroundColor, useTextColor} from 'src/components/colors';
 import {useDexifyNavigation} from 'src/foundation';
-import {
-  useLibraryContext,
-  useLibraryStatus,
-  useSession,
-  useUpdatedSession,
-} from 'src/prodivers';
+import {useLibraryContext, useLibraryStatus, useSession} from 'src/prodivers';
 import {usePossibleReadingStatuses} from 'src/screens/Home/screens/FollowedMangaScreen/FollowedMangaScreen';
 import {useMangaDetails} from '../../ShowMangaDetails';
 

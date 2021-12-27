@@ -1,12 +1,7 @@
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {Image, View} from 'react-native';
-import {
-  ActivityIndicator,
-  Caption,
-  ProgressBar,
-  Text,
-} from 'react-native-paper';
-import {mangaImage, preferredChapterTitle, preferredMangaTitle} from 'src/api';
+import {ActivityIndicator, Caption, Text} from 'react-native-paper';
+import {mangaImage, preferredMangaTitle} from 'src/api';
 import {AtHomeSuccessResponse, Chapter, Manga} from 'src/api/mangadex/types';
 import {useReadingStateContext, useSettings} from 'src/prodivers';
 import {useDimensions} from 'src/utils';
@@ -65,7 +60,7 @@ export default function ShowChapterReader({
         totalPageCount,
       });
     },
-    [chapter.id],
+    [chapter, manga, totalPageCount, updateChapter],
   );
 
   useEffect(() => {
@@ -97,7 +92,7 @@ export default function ShowChapterReader({
         },
       );
     });
-  }, [baseUrl]);
+  }, [baseUrl, isDataSaver, dataSaver, data, hash, deviceHeight, deviceWidth]);
 
   useEffect(() => {
     const loading = pages.length < data.length;

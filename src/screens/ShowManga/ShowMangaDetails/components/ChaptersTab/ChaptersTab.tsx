@@ -1,20 +1,10 @@
-import React, {useContext, useEffect, useState} from 'react';
-import {ImageBackground, ScrollView, View} from 'react-native';
-import {
-  ActivityIndicator,
-  Button,
-  Card,
-  Chip,
-  Menu,
-  Subheading,
-  Text,
-  Title,
-} from 'react-native-paper';
+import React, {useEffect, useState} from 'react';
+import {View} from 'react-native';
+import {ActivityIndicator, Subheading, Text} from 'react-native-paper';
 import {coverImage} from 'src/api';
 import {PagedResultsList, Chapter, CoverArt} from 'src/api/mangadex/types';
 import {useLazyGetRequest} from 'src/api/utils';
 import {Banner} from 'src/components';
-import CategoriesCollectionSection from 'src/components/CategoriesCollection/CategoriesCollectionSection';
 import {useBackgroundColor} from 'src/components/colors';
 import {useMangaDetails} from '../../ShowMangaDetails';
 import ChaptersGridLayout from './ChaptersGridLayout';

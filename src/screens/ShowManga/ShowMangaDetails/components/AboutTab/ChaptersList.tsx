@@ -6,31 +6,20 @@ import {
   TouchableNativeFeedback,
   View,
 } from 'react-native';
-import {
-  Caption,
-  Chip,
-  Colors,
-  ProgressBar,
-  Text,
-  Title,
-  useTheme,
-} from 'react-native-paper';
+import {Caption, Chip, ProgressBar, Text, Title} from 'react-native-paper';
 import {coverImage, preferredChapterTitle} from 'src/api';
-import {Chapter, CoverArt, PagedResultsList} from 'src/api/mangadex/types';
+import {Chapter, PagedResultsList} from 'src/api/mangadex/types';
 import UrlBuilder from 'src/api/mangadex/types/api/url_builder';
 import {useLazyGetRequest} from 'src/api/utils';
 import {TextBadge} from 'src/components';
-import BasicList from 'src/components/BasicList';
 import CategoriesCollectionSection from 'src/components/CategoriesCollection/CategoriesCollectionSection';
 import {useBackgroundColor} from 'src/components/colors';
 import {useDexifyNavigation} from 'src/foundation';
-import Thumbnail from 'src/foundation/Thumbnail';
 import {
   useChapterProgress,
-  useContinueReadingChapter,
   useContinueReadingChaptersList,
 } from 'src/prodivers';
-import {isNumber, localizedDateTime, pluralize} from 'src/utils';
+import {isNumber, localizedDateTime} from 'src/utils';
 import {useMangaDetails} from '../../ShowMangaDetails';
 
 type FlatListProps = React.ComponentProps<typeof FlatList>;
@@ -49,13 +38,11 @@ export default function ChaptersList({
     onCoverUrlUpdate,
   } = useMangaDetails();
   const initialized = useRef(false);
-  const [showAllVolumes, setShowAllVolumes] = useState(false);
   const [currentVolume, setCurrentVolume] = useState<string>();
   const [chapterIds, setChapterIds] = useState<string[]>();
   const [chapters, setChapters] = useState<Chapter[]>([]);
   const selectedVolumeBackgroundColor = useBackgroundColor('primary');
 
-  const [getCover] = useLazyGetRequest<PagedResultsList<CoverArt>>();
   const [updateChapters, {data, loading, error}] =
     useLazyGetRequest<PagedResultsList<Chapter>>();
 
@@ -78,7 +65,6 @@ export default function ChaptersList({
               }}
               onPress={() => {
                 setCurrentVolume(item);
-                setShowAllVolumes(false);
               }}>
               {item === 'none' ? 'Last volume' : `Volume ${item}`}
             </Chip>
@@ -108,7 +94,7 @@ export default function ChaptersList({
 
       setCurrentVolume(preferredLastVolume || volumes[0]);
     }
-  }, [volumes]);
+  }, [currentVolume, volumes]);
 
   useEffect(() => {
     if (aggregate && currentVolume) {
@@ -287,7 +273,10 @@ export function ChapterItem({
             }
           />
           {progress ? (
-            <ProgressBar progress={progress} style={{height: 1}} />
+            <ProgressBar
+              progress={progress}
+              style={{height: 1, marginTop: 2}}
+            />
           ) : null}
         </View>
       </TouchableNativeFeedback>

@@ -12,7 +12,7 @@ export default function GeneralHomeSection({
   section,
   hideIfEmpty = true,
 }: Props) {
-  const {title, manga, viewMore: onAction} = section;
+  const {title, manga} = section;
 
   if (manga.length === 0 && hideIfEmpty) {
     return null;

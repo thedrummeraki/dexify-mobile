@@ -1,16 +1,8 @@
 import React, {PropsWithChildren, useContext, useState} from 'react';
-import {ImageBackground, View} from 'react-native';
-import {Text, useTheme} from 'react-native-paper';
-import {CoverSize, findRelationships, mangaImage} from 'src/api';
-import {
-  Artist,
-  Author,
-  CoverArt,
-  Manga,
-  PagedResultsList,
-} from 'src/api/mangadex/types';
+import {View} from 'react-native';
+import {CoverArt, Manga, PagedResultsList} from 'src/api/mangadex/types';
 import {useGetRequest} from 'src/api/utils';
-import {AboutTab, ChaptersTab, AnimeDetailsTab, GalleryTab} from './components';
+import {AboutTab} from './components';
 
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import {useShowMangaRoute} from 'src/foundation';

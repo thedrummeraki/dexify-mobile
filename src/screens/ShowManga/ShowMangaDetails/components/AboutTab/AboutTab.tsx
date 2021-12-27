@@ -1,51 +1,24 @@
 import React, {useRef, useState} from 'react';
 import {ScrollView, View} from 'react-native';
-import FastImage from 'react-native-fast-image';
-import LinearGradient from 'react-native-linear-gradient';
-import {
-  Appbar,
-  Button,
-  Caption,
-  Chip,
-  IconButton,
-  Paragraph,
-  Text,
-  Title,
-  useTheme,
-} from 'react-native-paper';
+import {Caption, Chip, Paragraph, Text} from 'react-native-paper';
 import {
   contentRatingInfo,
-  CoverSize,
   findRelationships,
-  mangaImage,
   preferredMangaDescription,
   preferredMangaTitle,
   preferredTitle,
-  readingStatusInfo,
 } from 'src/api';
 import {Artist, Author, ContentRating} from 'src/api/mangadex/types';
-import {ImageGradient, TextBadge} from 'src/components';
-import {
-  PaperProviderForBackground,
-  useBackgroundColor,
-  useTextColor,
-} from 'src/components/colors';
-import MangaThumbnail from 'src/components/MangaThumbnail';
+import {TextBadge} from 'src/components';
+import {useBackgroundColor} from 'src/components/colors';
 import {useDexifyNavigation} from 'src/foundation';
-import Thumbnail from 'src/foundation/Thumbnail';
-import {useIsLoggedIn, useLibraryStatus, useSession} from 'src/prodivers';
 import TopManga from 'src/screens/NewHome/Feed/Section/components/TopManga';
 import {useMangaDetails} from '../../ShowMangaDetails';
-import ChaptersTab from '../ChaptersTab';
-import ChaptersList from './ChaptersList';
 import FollowMangaButton from './FollowMangaButton';
-import StartReadingButton from './StartReadingButton';
 import VolumesContainer from './VolumesContainer';
-import VolumesList from './VolumesList';
 
 export default function AboutTab() {
   const navigation = useDexifyNavigation();
-  const isLoggedIn = useIsLoggedIn();
   const {manga, volumeInfos, isAiring} = useMangaDetails();
 
   const initialTrim = useRef(false);

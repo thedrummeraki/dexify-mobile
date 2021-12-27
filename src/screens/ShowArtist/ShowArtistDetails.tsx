@@ -4,9 +4,8 @@ import {ScrollView} from 'react-native-gesture-handler';
 import {Button, IconButton, TextInput, Title} from 'react-native-paper';
 import {Artist, Author, ContentRating} from 'src/api/mangadex/types';
 import {CloseCurrentScreenHeader, MangaSearchCollection} from 'src/components';
-import {useDexifyNavigation, useShowArtistRoute} from 'src/foundation';
+import {useShowArtistRoute} from 'src/foundation';
 import {useContentRatingFitlers} from 'src/prodivers';
-import {useDebouncedValue} from 'src/utils';
 
 interface Props {
   author: Author | Artist;
@@ -17,11 +16,10 @@ export default function ShowArtistDetails({author}: Props) {
     params: {allowHentai},
   } = useShowArtistRoute();
   const {
-    attributes: {website, twitter, pixiv, nicoVideo, youtube, tumblr},
+    attributes: {website, twitter, pixiv, nicoVideo, youtube},
   } = author;
 
   const [searchMangaInput, setSearchMangaInput] = useState('');
-  const searchMangaQuery = useDebouncedValue(searchMangaInput, 500);
 
   const contentRating = useContentRatingFitlers();
 
@@ -88,6 +86,7 @@ export default function ShowArtistDetails({author}: Props) {
       <TextInput
         dense
         placeholder="Search for manga..."
+        value={searchMangaInput}
         onChangeText={setSearchMangaInput}
         style={{marginHorizontal: 15, marginBottom: 5, display: 'none'}}
       />

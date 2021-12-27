@@ -1,13 +1,9 @@
-import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import React from 'react';
 import {View} from 'react-native';
 import FastImage from 'react-native-fast-image';
 import {ScrollView} from 'react-native-gesture-handler';
-import LinearGradient from 'react-native-linear-gradient';
-import {Button, Caption, Text, Title} from 'react-native-paper';
-import {ImageGradient, TextBadge} from 'src/components';
-
-const Tab = createMaterialTopTabNavigator();
+import {Text, Title} from 'react-native-paper';
+import {ImageGradient} from 'src/components';
 
 export default function ShowMangaDetailsSkeleton() {
   return (
