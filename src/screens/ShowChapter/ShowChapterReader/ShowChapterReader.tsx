@@ -46,8 +46,6 @@ export default function ShowChapterReader({
     return pages.length / totalPageCount;
   }, [pages, totalPageCount]);
 
-  console.log('starting at', {jumpToPage, initialIndex});
-
   const handleOnPageNumberChange = useCallback(
     (page: number) => {
       updateChapter({

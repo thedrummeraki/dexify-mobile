@@ -27,7 +27,7 @@ export default function ShowChapter() {
     if (data?.result === 'ok') {
       getManga(UrlBuilder.mangaById(findRelationship(data.data, 'manga')!.id));
     }
-  }, [getManga, data]);
+  }, [data]);
 
   useEffect(() => {
     const unsubscribe = BackHandler.addEventListener(

@@ -29,7 +29,7 @@ export function useFeed(): FeedPresenter {
     if (!loading) {
       refresh();
     }
-  }, [refresh, loading]);
+  }, [loading]);
 
   return {...response, refresh};
 }

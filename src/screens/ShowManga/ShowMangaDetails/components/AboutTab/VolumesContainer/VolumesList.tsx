@@ -81,15 +81,13 @@ export default function VolumesList({defaultCoverUrl, onVolumeSelect}: Props) {
             flexDirection: 'row',
             alignItems: 'center',
           }}>
+          <IconButton
+            icon={
+              sortRule === SortRule.Desc ? 'sort-descending' : 'sort-ascending'
+            }
+            onPress={() => setSortOrder(current => current * -1)}
+          />
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
-            <IconButton
-              icon={
-                sortRule === SortRule.Desc
-                  ? 'sort-descending'
-                  : 'sort-ascending'
-              }
-              onPress={() => setSortOrder(current => current * -1)}
-            />
             {hasLinks ? (
               <TextBadge
                 content="External links"
@@ -99,11 +97,11 @@ export default function VolumesList({defaultCoverUrl, onVolumeSelect}: Props) {
                 onPress={() => {}}
               />
             ) : null}
+            <IconButton
+              icon="palette"
+              onPress={() => navigation.push('ShowMangaGallery', {manga})}
+            />
           </View>
-          <IconButton
-            icon="palette"
-            onPress={() => navigation.push('ShowMangaGallery', {manga})}
-          />
           {/* <Button
             disabled={covers.length === 0}
             mode="outlined"
