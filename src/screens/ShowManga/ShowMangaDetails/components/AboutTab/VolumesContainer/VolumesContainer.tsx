@@ -15,7 +15,6 @@ export default function VolumesContainer() {
     const unsubscribe = BackHandler.addEventListener(
       'hardwareBackPress',
       () => {
-        console.log('back press', currentVolume);
         if (currentVolume) {
           setCurrentVolume(null);
           return true;
@@ -46,10 +45,8 @@ export default function VolumesContainer() {
       cover => cover.attributes.volume === currentVolume?.volume,
     );
     if (cover) {
-      console.log('iamge', coverImage(cover, manga.id));
       onCoverUrlUpdate(coverImage(cover, manga.id));
     } else if (defaultCoverUrl.current) {
-      console.log('default image', defaultCoverUrl.current);
       onCoverUrlUpdate(defaultCoverUrl.current);
     }
   }, [onCoverUrlUpdate, currentVolume, covers, manga.id]);

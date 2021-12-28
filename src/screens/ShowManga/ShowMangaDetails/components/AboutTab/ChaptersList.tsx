@@ -6,7 +6,16 @@ import {
   TouchableNativeFeedback,
   View,
 } from 'react-native';
-import {Caption, Chip, ProgressBar, Text, Title} from 'react-native-paper';
+import {
+  Caption,
+  Chip,
+  IconButton,
+  ProgressBar,
+  Text,
+  Title,
+  useTheme,
+} from 'react-native-paper';
+import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import {coverImage, preferredChapterTitle} from 'src/api';
 import {Chapter, PagedResultsList} from 'src/api/mangadex/types';
 import UrlBuilder from 'src/api/mangadex/types/api/url_builder';
@@ -225,10 +234,14 @@ export default function ChaptersList({
 
 export function ChapterItem({
   chapter,
+  markedAsRead,
   onPress,
+  onLongPress,
 }: {
   chapter: Chapter;
+  markedAsRead?: boolean;
   onPress?(): void;
+  onLongPress?(): void;
 }) {
   const width = Dimensions.get('window').width - 30;
   const navigation = useDexifyNavigation();
@@ -254,27 +267,39 @@ export function ChapterItem({
             jumpToPage: info?.currentPage,
           });
         }}
+        onLongPress={() => {
+          onLongPress?.();
+          ReactNativeHapticFeedback.trigger('soft');
+        }}
         style={{width: '100%'}}>
         <View style={{paddingVertical: 5, paddingHorizontal: 15}}>
-          <Text numberOfLines={1} style={{width}}>
-            {preferredChapterTitle(chapter)}
-          </Text>
-          <TextBadge
-            icon="clock-outline"
-            style={{marginLeft: -5}}
-            content={
-              <Caption>
-                Published on{' '}
-                {localizedDateTime(
-                  chapter.attributes.publishAt,
-                  DateTime.DATE_MED,
-                )}
-              </Caption>
-            }
-          />
-          {progress ? (
+          <View style={{width, flexDirection: 'row', alignItems: 'center'}}>
+            <View style={{flexGrow: 1}}>
+              <Text numberOfLines={1} style={{width: width - 32}}>
+                {preferredChapterTitle(chapter)}
+              </Text>
+              <TextBadge
+                icon="clock-outline"
+                style={{marginLeft: -5}}
+                content={
+                  <Caption>
+                    Published on{' '}
+                    {localizedDateTime(
+                      chapter.attributes.publishAt,
+                      DateTime.DATE_MED,
+                    )}
+                  </Caption>
+                }
+              />
+            </View>
+            <IconButton
+              icon="check"
+              style={{display: markedAsRead ? 'flex' : 'none'}}
+            />
+          </View>
+          {progress || markedAsRead ? (
             <ProgressBar
-              progress={progress}
+              progress={progress || 0}
               style={{height: 1, marginTop: 2}}
             />
           ) : null}

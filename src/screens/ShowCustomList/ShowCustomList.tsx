@@ -29,7 +29,7 @@ export default function ShowCustomList() {
 
   useEffect(() => {
     get();
-  }, [get]);
+  }, []);
 
   useEffect(() => {
     if (data?.result === 'ok') {
@@ -42,7 +42,7 @@ export default function ShowCustomList() {
     if (refreshing) {
       get();
     }
-  }, [get, refreshing]);
+  }, [refreshing]);
 
   if (loading && !initialized.current) {
     return <ActivityIndicator style={{flex: 1}} />;

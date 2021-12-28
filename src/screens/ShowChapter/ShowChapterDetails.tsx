@@ -1,8 +1,14 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {SafeAreaView, StatusBar, View} from 'react-native';
 import {ActivityIndicator, Caption, Text} from 'react-native-paper';
-import {AtHomeResponse, Chapter, Manga} from 'src/api/mangadex/types';
-import {useGetRequest} from 'src/api/utils';
+import {
+  AtHomeResponse,
+  BasicResultsResponse,
+  Chapter,
+  Manga,
+} from 'src/api/mangadex/types';
+import UrlBuilder from 'src/api/mangadex/types/api/url_builder';
+import {useGetRequest, usePostRequest} from 'src/api/utils';
 import ShowChapterReader from './ShowChapterReader';
 
 interface Props {
@@ -19,6 +25,14 @@ export default function ShowChapterDetails({
   const {data, loading} = useGetRequest<AtHomeResponse>(
     `https://api.mangadex.org/at-home/server/${chapter.id}`,
   );
+
+  const [markRead] = usePostRequest<BasicResultsResponse>(
+    UrlBuilder.markChapterAsRead(chapter),
+  );
+
+  useEffect(() => {
+    markRead();
+  }, []);
 
   if (loading) {
     <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>

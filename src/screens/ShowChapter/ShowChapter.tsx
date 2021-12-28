@@ -4,7 +4,7 @@ import {ActivityIndicator, Caption, Text} from 'react-native-paper';
 import {findRelationship} from 'src/api';
 import {Chapter, EntityResponse, Manga} from 'src/api/mangadex/types';
 import UrlBuilder from 'src/api/mangadex/types/api/url_builder';
-import {useGetRequest, useLazyGetRequest} from 'src/api/utils';
+import {useGetRequest, useLazyGetRequest, usePostRequest} from 'src/api/utils';
 import {
   useDexifyNavigation,
   useShowChapterRoute,

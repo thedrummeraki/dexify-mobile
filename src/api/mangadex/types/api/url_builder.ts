@@ -85,6 +85,25 @@ export default class UrlBuilder {
     return this.buildUrl('/chapter', Object.assign(defaultValues, params));
   }
 
+  public static mangaReadMarkers(id: string) {
+    return this.buildUrl(`/manga/${id}/read`);
+  }
+
+  public static multipleMangaReadMarkers(id: string[], grouped = false) {
+    return this.buildUrl('/manga/read', {
+      ids: id,
+      grouped: grouped ? 'true' : 'false',
+    });
+  }
+
+  public static markChapterAsRead(chapter: {id: string}) {
+    return this.buildUrl(`/chapter/${chapter.id}/read`);
+  }
+
+  public static unmarkChapterAsRead(chapter: {id: string}) {
+    return this.buildUrl(`/chapter/${chapter.id}/read`);
+  }
+
   public static currentUserCustomLists(
     params?: Partial<CustomListRequestParams>,
   ) {

@@ -66,9 +66,6 @@ interface GenericAttributes {
   [key: string]: string;
 }
 
-type B = string | number;
-type C = Exclude<B, string>;
-
 export type PossibleRelationship =
   | Manga
   | Author

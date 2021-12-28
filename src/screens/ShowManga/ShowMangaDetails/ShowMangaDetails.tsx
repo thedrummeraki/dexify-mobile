@@ -1,11 +1,15 @@
 import React, {PropsWithChildren, useContext, useState} from 'react';
 import {View} from 'react-native';
-import {CoverArt, Manga, PagedResultsList} from 'src/api/mangadex/types';
+import {
+  BasicResultsResponse,
+  CoverArt,
+  Manga,
+  PagedResultsList,
+} from 'src/api/mangadex/types';
 import {useGetRequest} from 'src/api/utils';
 import {AboutTab} from './components';
 
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
-import {useShowMangaRoute} from 'src/foundation';
 import UrlBuilder from 'src/api/mangadex/types/api/url_builder';
 
 const Tab = createMaterialTopTabNavigator();
@@ -65,10 +69,6 @@ export default function ShowMangaDetails({manga}: Props) {
   >(
     UrlBuilder.covers({manga: [manga.id], limit: 100, order: {volume: 'desc'}}),
   );
-
-  const {
-    params: {isAiring},
-  } = useShowMangaRoute();
   const [coverUrl, setCoverUrl] = useState<string>();
 
   const aggregate = data?.result === 'ok' ? data.volumes : undefined;
