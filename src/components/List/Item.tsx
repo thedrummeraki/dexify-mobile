@@ -22,7 +22,6 @@ interface Props {
 export function Item({image, selected, title, subtitle, onPress}: Props) {
   const imageWidth = image?.width || 0;
   const width = Dimensions.get('window').width - 15 * 2 - imageWidth - 5 * 3;
-  const navigation = useDexifyNavigation();
 
   const theme = useTheme();
 
@@ -32,7 +31,7 @@ export function Item({image, selected, title, subtitle, onPress}: Props) {
         flex: 1,
         flexDirection: 'row',
         alignItems: 'center',
-        marginBottom: 5,
+        marginVertical: 1,
       }}>
       <TouchableNativeFeedback
         useForeground

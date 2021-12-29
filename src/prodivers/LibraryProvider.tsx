@@ -75,10 +75,9 @@ export function useMangaIs(manga: string | Manga, status: ReadingStatus) {
 }
 
 export function useLibraryMangaIds(readingStatus?: ReadingStatus) {
-  const {loading, readingStatus: data} = useLibraryContext();
-  const ids: string[] = [];
+  const {readingStatus: data} = useLibraryContext();
 
-  if (loading || !data?.statuses) {
+  if (!data?.statuses) {
     return null;
   }
 

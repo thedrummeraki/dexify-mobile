@@ -114,6 +114,14 @@ export default class UrlBuilder {
     return this.buildUrl(`/list/${id}`);
   }
 
+  public static addMangaToCustomList(id: string, listId: string) {
+    return this.buildUrl(`/manga/${id}/list/${listId}`);
+  }
+
+  public static removeMangaFromCustomList(id: string, listId: string) {
+    return this.buildUrl(`/manga/${id}/list/${listId}`);
+  }
+
   public static user(id: string) {
     return this.buildUrl(`/user/${id}`);
   }

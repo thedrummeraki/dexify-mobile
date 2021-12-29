@@ -1,58 +1,83 @@
-import React, {useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {ScrollView, View} from 'react-native';
-import {Caption, Chip, Paragraph, Text} from 'react-native-paper';
+import {
+  Button,
+  Caption,
+  Chip,
+  IconButton,
+  Paragraph,
+  Text,
+} from 'react-native-paper';
 import {
   contentRatingInfo,
+  findRelationship,
   findRelationships,
   preferredMangaDescription,
   preferredMangaTitle,
   preferredTitle,
 } from 'src/api';
-import {Artist, Author, ContentRating} from 'src/api/mangadex/types';
+import {
+  AllReadingStatusResponse,
+  Artist,
+  Author,
+  ContentRating,
+  ReadingStatus,
+} from 'src/api/mangadex/types';
 import {TextBadge} from 'src/components';
-import {useBackgroundColor} from 'src/components/colors';
+import {
+  PaperProviderForBackground,
+  useBackgroundColor,
+} from 'src/components/colors';
 import {useDexifyNavigation} from 'src/foundation';
 import TopManga from 'src/screens/NewHome/Feed/Section/components/TopManga';
 import {useMangaDetails} from '../../ShowMangaDetails';
+import CheckOutAlso from './CheckOutAlso';
 import FollowMangaButton from './FollowMangaButton';
 import VolumesContainer from './VolumesContainer';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import {useLibraryContext, useLibraryMangaIds} from 'src/prodivers';
+import {
+  AddToLibraryModal,
+  AddToMDListModal,
+  ShowMangaDetailsModal,
+} from './modals';
+import {FollowMangaAction, LibraryAction} from './actions';
+import {useGetRequest} from 'src/api/utils';
+import UrlBuilder from 'src/api/mangadex/types/api/url_builder';
+import {wait} from 'src/utils';
 
 export default function AboutTab() {
-  const navigation = useDexifyNavigation();
-  const {manga, volumeInfos, isAiring} = useMangaDetails();
+  const {manga, isAiring} = useMangaDetails();
 
-  const initialTrim = useRef(false);
+  const {refreshReadingStatuses} = useLibraryContext();
 
-  const authors = findRelationships<Author>(manga, 'author');
-  const artists = findRelationships<Artist>(manga, 'artist');
+  const [modalsState, setSetModalsState] = useState({
+    addToMDList: false,
+    addToLibrary: false,
+    showDetails: false,
+  });
 
-  const authorsAndArtistsObjects: Array<Author | Artist> = [];
-  authors.forEach(author => authorsAndArtistsObjects.push(author));
-  artists.forEach(artist => authorsAndArtistsObjects.push(artist));
-
-  const authorsAndArtists = authorsAndArtistsObjects.filter(
-    (value, index, self) => self.findIndex(v => v.id === value.id) === index,
+  const {data, loading} = useGetRequest<AllReadingStatusResponse>(
+    UrlBuilder.buildUrl('/manga/status'),
   );
 
-  const [showingFullDescripiton, setShowingFullDescripiton] = useState(true);
-  const [descriptionTrimmable, setDescriptionTrimmable] = useState(false);
+  const [readingStatus, setReadingStatus] = useState<ReadingStatus | null>();
+  const [readingStatusChanged, setReadingStatusChanged] = useState(false);
 
-  const altTitle = manga.attributes.altTitles.find(
-    title => title.jp || title.en || title[manga.attributes.originalLanguage],
-  );
+  useEffect(() => {
+    if (data?.statuses && Object.keys(data.statuses).includes(manga.id)) {
+      setReadingStatus(data.statuses[manga.id]);
+    }
+  }, [data]);
+
+  const author =
+    findRelationship<Author>(manga, 'author') ||
+    findRelationship<Artist>(manga, 'artist');
+
   const description = preferredMangaDescription(manga)?.trim();
 
   const contentRating = contentRatingInfo(manga.attributes.contentRating);
   const contentRatingTextColor = useBackgroundColor(contentRating?.background);
-
-  const existingVolumes = volumeInfos.filter(
-    info => info.chapterIds.length > 0,
-  );
-
-  const volumesCountText =
-    existingVolumes.length === 1
-      ? '1 volume'
-      : `${existingVolumes.length} volumes`;
 
   const basicInfoMarkup = (
     <View style={{flex: 1}}>
@@ -69,145 +94,12 @@ export default function AboutTab() {
           icon={contentRating.icon}
           textStyle={{color: contentRatingTextColor}}
         />
-        {manga.attributes.publicationDemographic && (
-          <TextBadge
-            content={manga.attributes.publicationDemographic}
-            background="disabled"
-          />
-        )}
-        {existingVolumes.length > 0 && (
-          <TextBadge content={volumesCountText} background="notification" />
-        )}
         {isAiring && (
           <TextBadge content="Anime airing" icon="video" background="primary" />
         )}
         {manga.attributes.year && <TextBadge content={manga.attributes.year} />}
       </View>
     </View>
-  );
-
-  const chaptersListHeaderMarkup = (
-    <>
-      <TopManga
-        allowCloseScreen
-        description={altTitle ? preferredTitle(altTitle) : undefined}
-        manga={manga}
-        aspectRatio={1.2}
-        FooterComponent={basicInfoMarkup}
-      />
-      <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'flex-start',
-          flexWrap: 'wrap',
-          // marginTop: 10,
-          marginTop: -15,
-          paddingHorizontal: 15,
-        }}>
-        <Text style={{marginRight: 6}}>Made by:</Text>
-        {authorsAndArtists.map(artist => (
-          <TextBadge
-            key={artist.id}
-            icon={artist.type === 'artist' ? 'palette' : 'account'}
-            content={artist.attributes.name}
-            background="surface"
-            onPress={() =>
-              navigation.push('ShowArtist', {
-                id: artist.id,
-                allowHentai:
-                  manga.attributes.contentRating === ContentRating.pornographic,
-              })
-            }
-          />
-        ))}
-      </View>
-      <FollowMangaButton
-        style={{margin: 15, marginBottom: -10}}
-        buttonContainerStyle={{
-          flex: 1,
-          flexDirection: 'row',
-          justifyContent: 'space-evenly',
-        }}
-      />
-    </>
-  );
-
-  const chaptersListFooterMarkup = (
-    <>
-      <View style={{padding: 15}}>
-        <View style={{marginTop: 10}}>
-          <Paragraph
-            numberOfLines={showingFullDescripiton ? undefined : 4}
-            onTextLayout={({nativeEvent}) => {
-              if (!initialTrim.current) {
-                setShowingFullDescripiton(nativeEvent.lines.length <= 4);
-                setDescriptionTrimmable(nativeEvent.lines.length > 4);
-                initialTrim.current = true;
-              }
-            }}>
-            {description || (
-              <Caption style={{fontStyle: 'italic'}}>
-                No description was added for {preferredMangaTitle(manga)}
-              </Caption>
-            )}
-          </Paragraph>
-          {descriptionTrimmable ? (
-            <View
-              style={{
-                justifyContent: 'flex-start',
-                alignItems: 'center',
-              }}>
-              <Chip
-                style={{
-                  padding: -10,
-                  backgroundColor: 'rgba(0,0,0,0)', // fully transparent
-                }}
-                onPress={() =>
-                  setShowingFullDescripiton(!showingFullDescripiton)
-                }>
-                <Text style={{fontWeight: '900'}}>
-                  {showingFullDescripiton ? '- View less' : '+ View more'}
-                </Text>
-              </Chip>
-            </View>
-          ) : null}
-        </View>
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'flex-start',
-            flexWrap: 'wrap',
-            marginTop: 10,
-            marginBottom: 30,
-          }}>
-          <Text style={{marginRight: 6}}>Genres:</Text>
-          {manga.attributes.tags.map(tag => (
-            <TextBadge
-              key={tag.id}
-              background="disabled"
-              content={tag.attributes.name.en}
-              onPress={() => navigation.push('ShowMangaByTags', {tags: [tag]})}
-            />
-          ))}
-        </View>
-        {/* <View
-            style={{
-              display: 'none',
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'flex-start',
-              flexWrap: 'wrap',
-              marginVertical: 10,
-            }}>
-            <Text style={{marginRight: 6}}>Also known as:</Text>
-            {altTitles.map(title => (
-              <TextBadge key={title} content={title} background="surface" />
-            ))}
-          </View> */}
-      </View>
-    </>
   );
 
   return (
@@ -221,10 +113,89 @@ export default function AboutTab() {
         ListFooterComponent={chaptersListFooterMarkup}
       /> */}
       <ScrollView>
-        {chaptersListHeaderMarkup}
+        <TopManga
+          allowCloseScreen
+          description={author?.attributes.name}
+          manga={manga}
+          aspectRatio={1.2}
+          FooterComponent={basicInfoMarkup}
+        />
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            marginTop: -15,
+          }}>
+          <LibraryAction
+            readingStatus={readingStatus}
+            loading={loading}
+            onPress={() =>
+              setSetModalsState(current => ({
+                ...current,
+                addToLibrary: true,
+              }))
+            }
+          />
+          <FollowMangaAction />
+          <Button
+            icon="plus"
+            uppercase={false}
+            onPress={() =>
+              setSetModalsState(current => ({
+                ...current,
+                addToMDList: true,
+              }))
+            }>
+            ADD TO MDList
+          </Button>
+        </View>
+        <View style={{marginHorizontal: 15}}>
+          <Paragraph numberOfLines={2}>{description}</Paragraph>
+          <View style={{flexDirection: 'row', justifyContent: 'center'}}>
+            <TextBadge
+              content="Learn more"
+              background="background"
+              style={{borderRadius: 10, marginTop: 5, paddingHorizontal: 5}}
+              onPress={() =>
+                setSetModalsState(current => ({
+                  ...current,
+                  showDetails: true,
+                }))
+              }
+            />
+          </View>
+        </View>
         <VolumesContainer />
-        {chaptersListFooterMarkup}
       </ScrollView>
+      <AddToLibraryModal
+        readingStatus={readingStatus}
+        loading={loading}
+        visible={modalsState.addToLibrary}
+        onReadingStatusUpdate={newReadingStatus => {
+          setReadingStatus(newReadingStatus);
+          setReadingStatusChanged(readingStatus !== newReadingStatus);
+        }}
+        onDismiss={() => {
+          setSetModalsState(current => ({...current, addToLibrary: false}));
+          if (readingStatusChanged) {
+            wait(500)
+              .then(refreshReadingStatuses)
+              .finally(() => setReadingStatusChanged(false));
+          }
+        }}
+      />
+      <AddToMDListModal
+        visible={modalsState.addToMDList}
+        onDismiss={() =>
+          setSetModalsState(current => ({...current, addToMDList: false}))
+        }
+      />
+      <ShowMangaDetailsModal
+        visible={modalsState.showDetails}
+        onDismiss={() =>
+          setSetModalsState(current => ({...current, showDetails: false}))
+        }
+      />
     </>
   );
 }

@@ -29,6 +29,7 @@ type Props<T extends BasicResource> = {
   itemStyle?: StyleProp<ViewStyle>;
   skeletonLength?: number;
   loading?: boolean;
+  selected?: string[];
 } & OtherFlatListProps;
 
 export function List<T extends BasicResource>(props: Props<T>) {
@@ -37,6 +38,7 @@ export function List<T extends BasicResource>(props: Props<T>) {
     loading,
     itemStyle,
     skeletonLength = 6,
+    selected,
     ListEmptyComponent,
     ...rest
   } = props;
@@ -58,7 +60,15 @@ export function List<T extends BasicResource>(props: Props<T>) {
   return (
     <FlatList
       data={data || []}
-      renderItem={({item}) => <List.Item {...item} />}
+      renderItem={({item}) => (
+        <List.Item
+          selected={
+            selected?.includes(item.id) ||
+            (item.slug && selected?.includes(item.slug))
+          }
+          {...item}
+        />
+      )}
       ListEmptyComponent={ListEmptyComponent}
       contentContainerStyle={itemStyle}
       {...rest}

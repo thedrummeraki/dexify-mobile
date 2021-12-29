@@ -107,8 +107,8 @@ export function ShowChapterReaderPage(props: Props) {
         height: deviceHeight,
         alignContent: 'center',
         justifyContent: 'center',
-        borderColor: 'red',
-        borderWidth: 1,
+        // borderColor: 'red',
+        // borderWidth: 1,
       }}>
       <TapGestureHandler
         waitFor={doubleTapRef}

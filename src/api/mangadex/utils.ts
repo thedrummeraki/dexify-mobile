@@ -170,6 +170,7 @@ export function contentRatingInfo(contentRating: ContentRating): {
 
 export function readingStatusInfo(readingStatus?: ReadingStatus | null): {
   content: string;
+  value?: ReadingStatus | null;
   phrase: string;
   background?: BackgroundColor;
   icon?: string;
@@ -179,44 +180,51 @@ export function readingStatusInfo(readingStatus?: ReadingStatus | null): {
     case ReadingStatus.Completed:
       return {
         content: 'Completed',
-        phrase: 'Done reading',
+        phrase: "You've finished reading this manga. What a ride! (or was it?)",
         background: 'notification',
         icon: 'check',
+        value: readingStatus,
       };
     case ReadingStatus.Dropped:
       return {
         content: 'Dropped',
-        phrase: 'Not reading anymore',
+        phrase:
+          "You're not reading this manga anymore, probably because it's not your cup of tea.",
         background: 'error',
         icon: 'close',
+        value: readingStatus,
       };
     case ReadingStatus.OnHold:
       return {
         content: 'On Hold',
-        phrase: 'Put on hold',
+        phrase: "Put on hold for now. You'll be back for more.",
         background: 'placeholder',
         icon: 'pause',
+        value: readingStatus,
       };
     case ReadingStatus.PlanToRead:
       return {
         content: 'Planning to read',
-        phrase: 'Planning to read',
+        phrase: 'Planning to read, just in case.',
         background: 'accent',
         icon: 'heart-outline',
+        value: readingStatus,
       };
     case ReadingStatus.ReReading:
       return {
         content: 'Re-reading',
-        phrase: 'Reading again',
+        phrase: "You're re-living the experience by reading this manga again.",
         background: 'primary',
         icon: 'play',
+        value: readingStatus,
       };
     case ReadingStatus.Reading:
       return {
         content: 'Reading',
-        phrase: 'Currently reading',
+        phrase: "This manga caught your eye and you're reading it now.",
         background: 'primary',
         icon: 'play',
+        value: readingStatus,
       };
     default:
       return {
@@ -224,6 +232,7 @@ export function readingStatusInfo(readingStatus?: ReadingStatus | null): {
         phrase: 'Follow...',
         defaultValue: true,
         icon: 'heart',
+        value: readingStatus,
       };
   }
 }

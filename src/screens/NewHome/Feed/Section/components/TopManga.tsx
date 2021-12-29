@@ -103,7 +103,7 @@ export default function TopManga({
           <Text
             numberOfLines={descriptionNumberOfLines}
             ellipsizeMode="tail"
-            style={{fontSize: 12, marginTop: 10}}>
+            style={{fontSize: 12, marginTop: 5}}>
             {description}
           </Text>
         ) : null}

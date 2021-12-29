@@ -74,7 +74,7 @@ export default function VolumesList({defaultCoverUrl, onVolumeSelect}: Props) {
 
   return (
     <View>
-      <View style={{marginTop: 20, marginBottom: -10}}>
+      <View style={{marginBottom: -10}}>
         <View
           style={{
             justifyContent: 'space-between',
@@ -88,7 +88,7 @@ export default function VolumesList({defaultCoverUrl, onVolumeSelect}: Props) {
             onPress={() => setSortOrder(current => current * -1)}
           />
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
-            {hasLinks ? (
+            {/* {hasLinks ? (
               <TextBadge
                 content="External links"
                 icon="hand-peace"
@@ -96,7 +96,7 @@ export default function VolumesList({defaultCoverUrl, onVolumeSelect}: Props) {
                 style={{borderRadius: 7}}
                 onPress={() => {}}
               />
-            ) : null}
+            ) : null} */}
             <IconButton
               icon="palette"
               onPress={() => navigation.push('ShowMangaGallery', {manga})}

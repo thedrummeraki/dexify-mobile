@@ -1,6 +1,6 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useEffect, useMemo, useRef, useState} from 'react';
 import {Image, View} from 'react-native';
-import {ActivityIndicator, Text} from 'react-native-paper';
+import {ActivityIndicator, Caption, Text} from 'react-native-paper';
 import {coverImage, CoverSize} from 'src/api';
 import {CoverArt, PagedResultsList} from 'src/api/mangadex/types';
 import {useGetRequest} from 'src/api/utils';
@@ -30,6 +30,15 @@ export default function ShowMangaGallery() {
   } = useGetRequest<PagedResultsList<CoverArt>>(
     `https://api.mangadex.org/cover?manga[]=${manga.id}&limit=100`,
   );
+
+  const totalPageCount = data?.result === 'ok' ? data.data.length : 0;
+
+  const progress = useMemo(() => {
+    if (totalPageCount <= 0) {
+      return 0;
+    }
+    return pages.length / totalPageCount;
+  }, [pages, totalPageCount]);
 
   useEffect(() => {
     if (initialized.current) {
@@ -78,10 +87,11 @@ export default function ShowMangaGallery() {
   if (loading) {
     return (
       <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-        <ActivityIndicator size="large" />
-        <Text style={{textAlign: 'center'}}>
+        <ActivityIndicator />
+        <Text style={{marginTop: 10}}>
           {coversLoading ? 'Loading...' : 'Opening gallery...'}
         </Text>
+        <Caption>{Math.floor(progress * 100)}%</Caption>
       </View>
     );
   }

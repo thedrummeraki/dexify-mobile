@@ -1,17 +1,23 @@
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {View} from 'react-native';
-import {ActivityIndicator, IconButton, Text} from 'react-native-paper';
+import {ActivityIndicator, Button, IconButton, Text} from 'react-native-paper';
 import {
   BasicResultsResponse,
   Chapter,
   PagedResultsList,
 } from 'src/api/mangadex/types';
 import UrlBuilder from 'src/api/mangadex/types/api/url_builder';
-import {useDeleteRequest, useGetRequest, usePostRequest} from 'src/api/utils';
+import {
+  useDeleteRequest,
+  useGetRequest,
+  useLazyGetRequest,
+  usePostRequest,
+} from 'src/api/utils';
 import {CloseCurrentScreenHeader} from 'src/components';
 import BasicList from 'src/components/BasicList';
 import {List} from 'src/components/List/List';
 import {useContentRatingFitlers} from 'src/prodivers';
+import {isNumber} from 'src/utils';
 import {useMangaDetails, VolumeInfo} from '../../../ShowMangaDetails';
 import {ChapterItem} from '../ChaptersList';
 
@@ -28,17 +34,37 @@ export default function VolumeDetails({volumeInfo, onCancel}: Props) {
   const readChaptersInitialized = useRef(false);
   const [readChapters, setReadChapters] = useState<string[]>([]);
 
+  const [page, setPage] = useState(1);
+
   const contentRating = useContentRatingFitlers();
-  const {data, loading, error} = useGetRequest<PagedResultsList<Chapter>>(
-    UrlBuilder.chaptersList({
-      ids,
-      contentRating,
-    }),
-    {
-      refreshSession: false,
-      forceRefresh: false,
-    },
-  );
+  const [fetchChapters, {data, loading, error}] =
+    useLazyGetRequest<PagedResultsList<Chapter>>();
+  const hasNextPage =
+    data?.result === 'ok' && ids.length > data.offset + data.data.length;
+  const hasPrevPage = data?.result === 'ok' && data.offset > 0;
+
+  useEffect(() => {
+    const limit = 100;
+    const offset = (page - 1) * 100;
+    const paginatedIds = ids.slice(offset, page * 100);
+
+    fetchChapters(
+      UrlBuilder.chaptersList({
+        ids: paginatedIds,
+        contentRating,
+        order: {
+          chapter: 'asc',
+          publishAt: 'asc',
+        },
+        limit,
+        offset,
+      }),
+      {
+        refreshSession: false,
+        forceRefresh: false,
+      },
+    );
+  }, [page]);
 
   const {data: readMarkersData, loading: readMarkersLoading} = useGetRequest<{
     result: 'ok';
@@ -147,6 +173,20 @@ export default function VolumeDetails({volumeInfo, onCancel}: Props) {
           }}
           itemStyle={{padding: 0}}
         />
+        <View style={{flexDirection: 'row', display: 'none'}}>
+          <Button
+            disabled={!hasPrevPage}
+            style={{flex: 1, margin: 5}}
+            onPress={() => setPage(page => page - 1)}>
+            Previous
+          </Button>
+          <Button
+            disabled={!hasNextPage}
+            style={{flex: 1, margin: 5}}
+            onPress={() => setPage(page => page + 1)}>
+            Next
+          </Button>
+        </View>
       </View>
     );
   }

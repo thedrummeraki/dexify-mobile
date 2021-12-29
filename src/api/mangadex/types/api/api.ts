@@ -85,7 +85,7 @@ export type Relationship<T = PossibleRelationship> =
       related: string;
       attributes?: GenericAttributes;
     }
-  | T;
+  | (T & {related?: string});
 
 export type Order<K extends keyof any> = {
   [P in K]?: 'asc' | 'desc';
