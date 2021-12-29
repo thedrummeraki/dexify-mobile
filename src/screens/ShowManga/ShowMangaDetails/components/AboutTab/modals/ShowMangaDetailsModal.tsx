@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {Linking, ScrollView, View} from 'react-native';
-import {Chip, Text} from 'react-native-paper';
+import {Card, Chip, Text} from 'react-native-paper';
 import {
   contentRatingInfo,
   findRelationships,
@@ -158,7 +158,9 @@ function ModalChildren({onDismiss}: Pick<Props, 'onDismiss'>) {
             content={manga.attributes.originalLanguage.toLocaleUpperCase()}
           />
         </View>
-        <Markdown>{preferredMangaDescription(manga)}</Markdown>
+        <Card style={{padding: 5, margin: -5}}>
+          <Markdown>{preferredMangaDescription(manga)}</Markdown>
+        </Card>
         <View
           style={{
             flexDirection: 'row',

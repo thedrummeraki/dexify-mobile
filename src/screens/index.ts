@@ -5,6 +5,5 @@ export {default as ShowMangaGallery} from './ShowMangaGallery';
 export {default as ShowChapter} from './ShowChapter';
 export {default as ShowArtist} from './ShowArtist';
 export {default as ShowMangaList} from './ShowMangaList';
-export {default as AddToPlaylist} from './AddToPlaylist';
 export {default as ShowCustomList} from './ShowCustomList';
 export {default as ShowMangaByTags} from './ShowMangaByTags';

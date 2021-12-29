@@ -1,5 +1,7 @@
 import {BackgroundColor} from 'src/components/colors';
 import {
+  Artist,
+  Author,
   Chapter,
   ContentRating,
   CoverArt,
@@ -21,6 +23,13 @@ export function preferredMangaTitle(manga: Manga) {
   return (
     manga.attributes.title[manga.attributes.originalLanguage] ||
     preferredTitle(manga.attributes.title)
+  );
+}
+
+export function preferredMangaAuthor(manga: Manga) {
+  return (
+    findRelationship<Author>(manga, 'author') ||
+    findRelationship<Artist>(manga, 'artist')
   );
 }
 

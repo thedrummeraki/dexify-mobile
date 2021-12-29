@@ -44,6 +44,8 @@ export default function BrowseAuthorsGroupResults({query}: Props) {
     <List
       style={{padding: 5, paddingTop: 0}}
       loading={loading}
+      skeletonBorderRadius={1000}
+      w
       ListEmptyComponent={
         <BrowseEmptyResults resourceType="author" query={query} />
       }
@@ -62,7 +64,7 @@ export default function BrowseAuthorsGroupResults({query}: Props) {
           image: {
             url:
               author.attributes.imageUrl || 'https://mangadex.org/avatar.png',
-            width: 60,
+            width: 70,
             rounded: true,
           },
           onPress: () => navigation.push('ShowArtist', {id: author.id}),

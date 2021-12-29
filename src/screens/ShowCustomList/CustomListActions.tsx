@@ -1,13 +1,12 @@
 import React, {useEffect} from 'react';
 import {View, Image, Text} from 'react-native';
-import {Title, Button} from 'react-native-paper';
+import {Title, Button, IconButton, Caption} from 'react-native-paper';
 import {findRelationship} from 'src/api';
 import {CustomList, EntityResponse, User} from 'src/api/mangadex/types';
 import UrlBuilder from 'src/api/mangadex/types/api/url_builder';
 import {useLazyGetRequest} from 'src/api/utils';
 import {TextBadge} from 'src/components';
 import {BackgroundColor} from 'src/components/colors';
-import {useSession} from 'src/prodivers';
 
 interface Props {
   customList: CustomList;
@@ -16,25 +15,25 @@ interface Props {
 
 export default function CustomListActions({customList, onEditing}: Props) {
   return (
-    <View style={{marginHorizontal: 15, marginBottom: 20}}>
-      <Title style={{marginTop: 15}}>{customList.attributes.name}</Title>
-      <View style={{flexDirection: 'row', marginTop: 5}}>
+    <View style={{marginBottom: 20}}>
+      <View style={{flexDirection: 'row', marginTop: 5, alignItems: 'center'}}>
+        <Text style={{marginRight: 5}}>This list is</Text>
         <CustomListVisiblityBadge customList={customList} />
       </View>
-      <View style={{flexDirection: 'row', marginTop: 10}}>
-        <Button compact icon="pencil-outline" onPress={() => onEditing(true)}>
-          Edit
-        </Button>
-        <Button disabled icon="plus" style={{marginLeft: 10}}>
-          Add manga
-        </Button>
+      <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+        <View
+          style={{flexDirection: 'row', marginTop: 10, alignItems: 'center'}}>
+          <IconButton icon="pencil-outline" onPress={() => onEditing(true)} />
+          <IconButton disabled icon="book-plus" />
+        </View>
+        <IconButton icon="delete-forever" />
       </View>
     </View>
   );
 }
 
 function CustomListVisiblityBadge({customList}: Pick<Props, 'customList'>) {
-  const visibilityInfo =
+  const visibilityInfo: {name: string; background: BackgroundColor} =
     customList.attributes.visibility === 'private'
       ? {
           name: 'Private',
@@ -48,7 +47,7 @@ function CustomListVisiblityBadge({customList}: Pick<Props, 'customList'>) {
   return (
     <TextBadge
       content={visibilityInfo.name}
-      background={visibilityInfo.background as BackgroundColor}
+      background={visibilityInfo.background}
     />
   );
 }

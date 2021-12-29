@@ -103,6 +103,7 @@ function CustomListsListModalChildren() {
     <FlatList
       keyExtractor={item => item.id}
       data={data.data}
+      contentContainerStyle={{marginHorizontal: 10}}
       renderItem={({item: customList}) => {
         const title = customList.attributes.name;
         const subtitle = [

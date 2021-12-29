@@ -1,41 +1,23 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {ScrollView, View} from 'react-native';
-import {
-  Button,
-  Caption,
-  Chip,
-  IconButton,
-  Paragraph,
-  Text,
-} from 'react-native-paper';
+import {Button, Paragraph} from 'react-native-paper';
 import {
   contentRatingInfo,
   findRelationship,
-  findRelationships,
   preferredMangaDescription,
-  preferredMangaTitle,
-  preferredTitle,
 } from 'src/api';
 import {
   AllReadingStatusResponse,
   Artist,
   Author,
-  ContentRating,
   ReadingStatus,
 } from 'src/api/mangadex/types';
 import {TextBadge} from 'src/components';
-import {
-  PaperProviderForBackground,
-  useBackgroundColor,
-} from 'src/components/colors';
-import {useDexifyNavigation} from 'src/foundation';
+import {useBackgroundColor} from 'src/components/colors';
 import TopManga from 'src/screens/NewHome/Feed/Section/components/TopManga';
 import {useMangaDetails} from '../../ShowMangaDetails';
-import CheckOutAlso from './CheckOutAlso';
-import FollowMangaButton from './FollowMangaButton';
 import VolumesContainer from './VolumesContainer';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import {useLibraryContext, useLibraryMangaIds} from 'src/prodivers';
+import {useIsLoggedIn, useLibraryContext} from 'src/prodivers';
 import {
   AddToLibraryModal,
   AddToMDListModal,
@@ -48,6 +30,7 @@ import {wait} from 'src/utils';
 
 export default function AboutTab() {
   const {manga, isAiring} = useMangaDetails();
+  const loggedIn = useIsLoggedIn();
 
   const {refreshReadingStatuses} = useLibraryContext();
 
@@ -138,6 +121,7 @@ export default function AboutTab() {
           />
           <FollowMangaAction />
           <Button
+            disabled={!loggedIn}
             icon="plus"
             uppercase={false}
             onPress={() =>

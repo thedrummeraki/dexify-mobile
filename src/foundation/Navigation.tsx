@@ -10,7 +10,6 @@ import {
   ShowManga,
   ShowMangaGallery,
   ShowMangaList,
-  AddToPlaylist,
   ShowCustomList,
   ShowMangaByTags,
 } from 'src/screens';
@@ -24,7 +23,6 @@ type MangaParams = Partial<Omit<Manga, 'type' | 'id'>> & {id: string};
 type RootStackParamList = {
   Home: undefined;
   ShowManga: MangaParams & {isAiring?: boolean};
-  AddToPlaylist: {manga: Manga};
   ShowMangaGallery: {manga: Manga; number?: number};
   ShowChapter: {id: string; jumpToPage?: number};
   ShowArtist: {id: string; allowHentai?: boolean};
@@ -71,11 +69,6 @@ export default function Navigation() {
         options={{headerShown: false}}
       />
       <Stack.Screen
-        name="AddToPlaylist"
-        component={AddToPlaylist}
-        options={{headerShown: false}}
-      />
-      <Stack.Screen
         name="ShowMangaGallery"
         component={ShowMangaGallery}
         options={{headerShown: false}}
@@ -111,10 +104,6 @@ export function useDexifyNavigation() {
 
 export function useShowMangaRoute() {
   return useRoute<RouteProp<RootStackParamList, 'ShowManga'>>();
-}
-
-export function useAddToPlaylistRoute() {
-  return useRoute<RouteProp<RootStackParamList, 'AddToPlaylist'>>();
 }
 
 export function useShowMangaGalleryRoute() {

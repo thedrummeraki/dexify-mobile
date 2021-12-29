@@ -21,6 +21,7 @@ type OtherFlatListProps = Pick<
   | 'ListFooterComponentStyle'
   | 'ListEmptyComponent'
   | 'contentContainerStyle'
+  | 'refreshControl'
 >;
 
 type Props<T extends BasicResource> = {
@@ -28,8 +29,10 @@ type Props<T extends BasicResource> = {
   style?: StyleProp<ViewStyle>;
   itemStyle?: StyleProp<ViewStyle>;
   skeletonLength?: number;
+  skeletonBorderRadius?: number;
   loading?: boolean;
   selected?: string[];
+  onItemPress?(item: T): void;
 } & OtherFlatListProps;
 
 export function List<T extends BasicResource>(props: Props<T>) {
@@ -38,8 +41,10 @@ export function List<T extends BasicResource>(props: Props<T>) {
     loading,
     itemStyle,
     skeletonLength = 6,
+    skeletonBorderRadius,
     selected,
     ListEmptyComponent,
+    onItemPress,
     ...rest
   } = props;
 
@@ -47,7 +52,13 @@ export function List<T extends BasicResource>(props: Props<T>) {
     return (
       <FlatList
         data={Array.from({length: skeletonLength})}
-        renderItem={() => <List.Item.Skeleton imageWidth={70} />}
+        renderItem={() => (
+          <List.Item.Skeleton
+            imageWidth={70}
+            borderRadius={skeletonBorderRadius}
+          />
+        )}
+        contentContainerStyle={itemStyle}
         {...rest}
       />
     );
@@ -66,6 +77,7 @@ export function List<T extends BasicResource>(props: Props<T>) {
             selected?.includes(item.id) ||
             (item.slug && selected?.includes(item.slug))
           }
+          onPress={() => onItemPress?.(item)}
           {...item}
         />
       )}

@@ -2,6 +2,7 @@ import React from 'react';
 import {SafeAreaView, View} from 'react-native';
 import {Title, IconButton, ActivityIndicator} from 'react-native-paper';
 import BasicList from 'src/components/BasicList';
+import {List} from 'src/components/List/List';
 import {ThumbnailSkeleton} from 'src/foundation/Thumbnail';
 
 export default function LibraryDetailsLoading() {
@@ -22,7 +23,7 @@ export default function LibraryDetailsLoading() {
   return (
     <SafeAreaView style={{flex: 1}}>
       {headerMarkup}
-      <ActivityIndicator style={{flex: 1}} />
+      <List loading />
     </SafeAreaView>
   );
 }

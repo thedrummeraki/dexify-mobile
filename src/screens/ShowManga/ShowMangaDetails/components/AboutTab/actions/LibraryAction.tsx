@@ -3,6 +3,7 @@ import {IconButton} from 'react-native-paper';
 import {readingStatusInfo} from 'src/api';
 import {AllReadingStatusResponse, ReadingStatus} from 'src/api/mangadex/types';
 import {useBackgroundColor} from 'src/components/colors';
+import {useIsLoggedIn} from 'src/prodivers';
 
 interface Props {
   loading: boolean;
@@ -15,11 +16,12 @@ export default function LibraryAction({
   readingStatus,
   onPress,
 }: Props) {
+  const loggedIn = useIsLoggedIn();
   const readingStatusBackgroundColor = useBackgroundColor(
     readingStatusInfo(readingStatus).background,
   );
 
-  if (loading) {
+  if (loading || !loggedIn) {
     return <IconButton disabled icon="bookmark" />;
   }
 

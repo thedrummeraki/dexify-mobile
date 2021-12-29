@@ -1,16 +1,25 @@
 import React, {useEffect, useMemo, useRef, useState} from 'react';
 import {BackHandler, RefreshControl, ScrollView, View} from 'react-native';
 import {Text, TextInput} from 'react-native-paper';
-import {findRelationships, mangaImage} from 'src/api';
+import {
+  CoverSize,
+  findRelationship,
+  findRelationships,
+  mangaImage,
+  preferredMangaAuthor,
+  preferredMangaTitle,
+} from 'src/api';
 import {useGetMangaList} from 'src/api/mangadex/hooks';
-import {CustomList} from 'src/api/mangadex/types';
+import {Artist, Author, CustomList} from 'src/api/mangadex/types';
 import {
   Banner,
   CloseCurrentScreenHeader,
   HiddenMangaBanner,
 } from 'src/components';
 import BasicList from 'src/components/BasicList';
+import {List} from 'src/components/List/List';
 import {MangaListItem} from 'src/components/MangaSearchCollection/MangaListItem';
+import {useDexifyNavigation} from 'src/foundation';
 import Thumbnail, {ThumbnailSkeleton} from 'src/foundation/Thumbnail';
 import CustomListActions from './CustomListActions';
 import EditingCustomListActions from './EditingCustomListActions';
@@ -28,8 +37,8 @@ export default function ShowCustomListDetails({
   onRefresh,
   onCustomListUpdate,
 }: Props) {
+  const navigation = useDexifyNavigation();
   const initialized = useRef(false);
-  const scrollViewRef = useRef<ScrollView | null>();
   const [editing, setEditing] = useState(false);
 
   const ids = useMemo(
@@ -87,69 +96,60 @@ export default function ShowCustomListDetails({
     return () => unsubscribe.remove();
   }, [editing, onRefresh]);
 
-  const bodyMarkup = ids.length ? (
-    <BasicList
-      loading={loading}
-      aspectRatio={1}
-      data={manga}
-      style={{marginHorizontal: 10}}
-      itemStyle={{padding: 5}}
-      renderItem={item => <MangaListItem manga={item} />}
-      skeletonLength={ids.length}
-      skeletonItem={<MangaListItem.Skeleton />}
-      HeaderComponentStyle={{margin: 5, marginTop: 0}}
-      ListEmptyComponent={<Text>Empty!</Text>}
-    />
-  ) : (
-    <Banner
-      title="No manga added"
-      primaryAction={{content: 'Browse manga', onAction: () => {}}}>
-      Looks like this list doesn't any manga yet. You can added add manga to
-      this list at any time.
-    </Banner>
-  );
+  const mangaAsResourceList = manga.map(manga => ({
+    id: manga.id,
+    title: preferredMangaTitle(manga),
+    subtitle: preferredMangaAuthor(manga)?.attributes.name,
+    image: {
+      url: mangaImage(manga, {size: CoverSize.Small}),
+      width: 70,
+    },
+  }));
+
+  const bodyMarkup =
+    ids.length || loading ? (
+      <List
+        loading={loading}
+        data={mangaAsResourceList}
+        onItemPress={item => {
+          const resource = manga.find(manga => manga.id === item.id)!;
+          navigation.push('ShowManga', resource);
+        }}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+        ListHeaderComponent={
+          <>
+            {editing ? (
+              <EditingCustomListActions
+                customList={customList}
+                onCustomListUpdate={onCustomListUpdate}
+                onEditingDone={() => setEditing(false)}
+              />
+            ) : (
+              <CustomListActions
+                customList={customList}
+                onEditing={setEditing}
+              />
+            )}
+          </>
+        }
+        itemStyle={{marginHorizontal: 10}}
+      />
+    ) : !loading ? (
+      <Banner
+        title="No manga added"
+        primaryAction={{content: 'Browse manga', onAction: () => {}}}>
+        Looks like this list doesn't any manga yet. You can added add manga to
+        this list at any time.
+      </Banner>
+    ) : null;
 
   return (
     <>
-      {/* <Header
-        customList={customList}
-        editing={editing}
-        onEditing={setEditing}
-        onCustomListUpdate={onCustomListUpdate}
-      /> */}
       <TextInput dense style={{margin: 15, display: 'none'}} />
-      <ScrollView
-        ref={ref => (scrollViewRef.current = ref)}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }>
-        <CloseCurrentScreenHeader />
-        <View
-          style={{
-            flex: 1,
-            alignItems: 'center',
-          }}>
-          {thumbnailMarkup}
-        </View>
-        {editing ? (
-          <EditingCustomListActions
-            customList={customList}
-            onCustomListUpdate={onCustomListUpdate}
-            onEditingDone={() => setEditing(false)}
-          />
-        ) : (
-          <CustomListActions customList={customList} onEditing={setEditing} />
-        )}
-        <View
-          style={{
-            opacity: editing ? 0.4 : 1,
-          }}>
-          {!loading && ids.length && ids.length > manga.length ? (
-            <HiddenMangaBanner />
-          ) : null}
-          {bodyMarkup}
-        </View>
-      </ScrollView>
+      <CloseCurrentScreenHeader title={customList.attributes.name} />
+      {bodyMarkup}
     </>
   );
 }

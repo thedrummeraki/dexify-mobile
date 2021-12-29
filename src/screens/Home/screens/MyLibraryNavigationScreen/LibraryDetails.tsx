@@ -15,10 +15,11 @@ import {
   TextInput,
   Title,
 } from 'react-native-paper';
-import {mangaImage} from 'src/api';
+import {findRelationships, mangaImage} from 'src/api';
 import {ContentRating, CustomList, Manga} from 'src/api/mangadex/types';
 import BasicList from 'src/components/BasicList';
 import {useBackgroundColor} from 'src/components/colors';
+import {List} from 'src/components/List/List';
 import {useDexifyNavigation} from 'src/foundation';
 import Thumbnail, {
   ThumbnailBadge,
@@ -37,13 +38,13 @@ interface MangaInList {
 }
 
 interface Props {
-  mangaInList: MangaInList[];
+  customLists: CustomList[];
   refreshing: boolean;
   onRefresh(): void;
 }
 
 export default function LibraryDetails({
-  mangaInList,
+  customLists,
   refreshing,
   onRefresh,
 }: Props) {
@@ -51,8 +52,6 @@ export default function LibraryDetails({
   const [newListNameInput, setNewListName] = useState('');
   const [showAddNewListForm, setShowAddNewListForm] = useState(false);
   const [addingNewList, setAddingNewList] = useState(false);
-  const [selectedIds, setSelectedIds] = useState<string[]>([]);
-  const [newCustomList, setNewCustomList] = useState<CustomList>();
   const {createCustomList} = useLibraryContext();
 
   const newListName = newListNameInput.trim();
@@ -66,7 +65,6 @@ export default function LibraryDetails({
     createCustomList!({name: newListName})
       .then(result => {
         if (result?.result === 'ok') {
-          setNewCustomList(result.data);
           navigation.push('ShowCustomList', {id: result.data.id});
         }
         setAddingNewList(false);
@@ -96,7 +94,7 @@ export default function LibraryDetails({
   const addNewListMarkup = (
     <View
       style={{
-        marginHorizontal: 15,
+        marginLeft: 15,
         paddingTop: 10,
       }}>
       <View
@@ -131,13 +129,13 @@ export default function LibraryDetails({
   const normalHeaderHeader = (
     <View
       style={{
-        marginHorizontal: 15,
+        marginLeft: 15,
         paddingTop: 10,
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
       }}>
-      <Title>{refreshing ? 'Refreshing...' : 'Your library'}</Title>
+      <Title>{refreshing ? 'Refreshing...' : 'Your MDLists'}</Title>
       <IconButton
         disabled={refreshing}
         onPress={() => setShowAddNewListForm(true)}
@@ -152,103 +150,27 @@ export default function LibraryDetails({
   return (
     <SafeAreaView style={{flex: 1}}>
       {headerMarkup}
-      <ScrollView
-        style={{
-          flex: 1,
-          margin: 10,
-          marginBottom: 0,
-          opacity: showAddNewListForm ? 0.4 : 1,
-        }}
+      <List
+        loading={refreshing}
+        data={customLists.map(customList => ({
+          id: customList.id,
+          title: customList.attributes.name,
+          subtitle: pluralize(
+            findRelationships(customList, 'manga').length,
+            'title',
+          ),
+          image: {url: 'https://mangadex.org/avatar.png', width: 70},
+        }))}
+        onItemPress={item => navigation.push('ShowCustomList', {id: item.id})}
         refreshControl={
           <RefreshControl
             enabled
             refreshing={refreshing}
             onRefresh={onRefresh}
           />
-        }>
-        <BasicList
-          data={mangaInList}
-          aspectRatio={1 / 2}
-          itemStyle={{padding: 5, marginBottom: 5}}
-          renderItem={item => (
-            <SelectableThumbnail
-              item={item}
-              selected={selectedIds.includes(item.id)}
-              selectOnPress={selectedIds.length > 0}
-              onItemSelected={id => {
-                setSelectedIds([id]);
-              }}
-              onItemUnselected={() => setSelectedIds([])}
-            />
-          )}
-        />
-      </ScrollView>
-    </SafeAreaView>
-  );
-}
-
-function SelectableThumbnail({
-  item,
-  selected,
-  selectOnPress,
-  onItemUnselected,
-  onItemSelected,
-}: {
-  item: MangaInList;
-  selected: boolean;
-  selectOnPress: boolean;
-  onItemUnselected?(id: string): void;
-  onItemSelected(id: string): void;
-}) {
-  const navigation = useDexifyNavigation();
-  const imageUrl =
-    item.manga.length < 1
-      ? 'https://mangadex.org/avatar.png'
-      : item.manga.map(manga => mangaImage(manga));
-
-  useEffect(() => {
-    if (selected) {
-      onItemSelected(item.id);
-    }
-  }, [selected]);
-
-  const backgroundColor = useBackgroundColor('error');
-
-  const visibilityBadge =
-    item.visibility === 'private' ? (
-      <ThumbnailBadge badgeStyle={{backgroundColor}}>Private</ThumbnailBadge>
-    ) : undefined;
-
-  return (
-    <Thumbnail
-      TopComponent={visibilityBadge}
-      imageUrl={imageUrl}
-      width="100%"
-      aspectRatio={1}
-      title={item.title}
-      subtitle={pluralize(item.mangaCount, 'entry', {
-        plural: 'entries',
-      })}
-      border={selected ? {} : undefined}
-      onPress={() => {
-        if (selected) {
-          onItemUnselected?.(item.id);
-        } else if (selectOnPress) {
-          onItemSelected(item.id);
-        } else {
-          console.log('HA nope', selected, selectOnPress);
-          // navigation.push('ShowMangaList', {
-          //   params: {
-          //     ids: item.manga.map(m => m.id),
-          //     contentRating: Object.values(ContentRating),
-          //   },
-          // });
-          navigation.push('ShowCustomList', {id: item.id});
         }
-      }}
-      onLongPress={() =>
-        selected ? onItemUnselected?.(item.id) : onItemSelected(item.id)
-      }
-    />
+        contentContainerStyle={{marginHorizontal: 10}}
+      />
+    </SafeAreaView>
   );
 }

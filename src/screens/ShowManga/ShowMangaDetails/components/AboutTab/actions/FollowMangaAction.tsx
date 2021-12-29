@@ -3,16 +3,18 @@ import {IconButton, useTheme} from 'react-native-paper';
 import {BasicResultsResponse} from 'src/api/mangadex/types';
 import UrlBuilder from 'src/api/mangadex/types/api/url_builder';
 import {useDeleteRequest, useGetRequest, usePostRequest} from 'src/api/utils';
+import {useIsLoggedIn} from 'src/prodivers';
 import {useMangaDetails} from '../../../ShowMangaDetails';
 
 export default function FollowMangaAction() {
   const {
     colors: {primary},
   } = useTheme();
+  const loggedIn = useIsLoggedIn();
   const [following, setFollowing] = useState(false);
 
   const {manga} = useMangaDetails();
-  const {data, loading, error} = useGetRequest<BasicResultsResponse>(
+  const {data, loading} = useGetRequest<BasicResultsResponse>(
     UrlBuilder.buildUrl(`/user/follows/manga/${manga.id}`),
   );
 
@@ -27,7 +29,7 @@ export default function FollowMangaAction() {
     setFollowing(data?.result === 'ok');
   }, [data]);
 
-  if (loading) {
+  if (loading || !loggedIn) {
     return <IconButton disabled icon="rss" />;
   }
 

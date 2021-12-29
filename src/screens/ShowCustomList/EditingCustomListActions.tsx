@@ -83,7 +83,7 @@ export default function EditingCustomListActions({
   }, [state, originalState]);
 
   return (
-    <View style={{marginHorizontal: 15, marginBottom: 20}}>
+    <View style={{marginBottom: 20}}>
       <TextInput
         dense
         disabled={updating}

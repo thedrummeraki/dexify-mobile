@@ -47,10 +47,10 @@ export default function FullScreenModal({
             width: width,
             height: height,
             backgroundColor: theme.colors.background,
-            marginTop: 5,
+            marginTop: 15,
           }}>
           <CloseCurrentScreenHeader title={title} onClose={onDismiss} />
-          <View style={{marginBottom: 104}}>
+          <View style={{marginBottom: 114}}>
             {visible ? children : undefined}
           </View>
         </View>
