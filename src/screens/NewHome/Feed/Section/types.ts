@@ -3,12 +3,24 @@ import {ReadingState} from 'src/prodivers';
 
 export namespace Sections {
   interface BasicHome {
-    type: 'general' | 'continue-reading' | 'manga-recommendation';
+    type:
+      | 'general'
+      | 'continue-reading'
+      | 'manga-recommendation'
+      | 'chapters-list';
     slug?: string;
   }
   export interface GeneralHome extends BasicHome {
     type: 'general';
     title: string;
+    manga: Manga[];
+    viewMore?(): void;
+  }
+
+  export interface Chapters extends BasicHome {
+    type: 'chapters-list';
+    title: string;
+    chapters: Chapter[];
     manga: Manga[];
     viewMore?(): void;
   }
@@ -23,5 +35,9 @@ export namespace Sections {
     manga: Manga;
   }
 
-  export type HomeSection = GeneralHome | ContinueReading | MangaRecommendation;
+  export type HomeSection =
+    | GeneralHome
+    | ContinueReading
+    | MangaRecommendation
+    | Chapters;
 }

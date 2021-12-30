@@ -83,7 +83,13 @@ function CustomListsListModalChildren() {
   }, [data]);
 
   if (loading) {
-    return <List loading skeletonLength={15} />;
+    return (
+      <List
+        loading
+        skeletonLength={15}
+        contentContainerStyle={{marginHorizontal: 10}}
+      />
+    );
   }
 
   if (error || data?.result === 'error') {

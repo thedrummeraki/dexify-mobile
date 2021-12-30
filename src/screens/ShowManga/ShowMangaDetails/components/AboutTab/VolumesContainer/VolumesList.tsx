@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo, useState} from 'react';
+import React, {useEffect, useMemo, useRef, useState} from 'react';
 import {useMangaDetails, VolumeInfo} from '../../../ShowMangaDetails';
 import {Image, TouchableNativeFeedback, View} from 'react-native';
 import {Caption, IconButton, ProgressBar, Text} from 'react-native-paper';
@@ -21,10 +21,16 @@ enum SortRule {
 
 interface Props {
   defaultCoverUrl?: string;
+  jumpToVolume?: string | null;
   onVolumeSelect(volumeInfo: VolumeInfo | null): void;
 }
 
-export default function VolumesList({defaultCoverUrl, onVolumeSelect}: Props) {
+export default function VolumesList({
+  defaultCoverUrl,
+  jumpToVolume,
+  onVolumeSelect,
+}: Props) {
+  const successfulJumpToVolume = useRef(false);
   const navigation = useDexifyNavigation();
   const {settings, updateSetting} = useSettingsContext();
   const [sortRule, setSortOrder] = useState<SortRule>(
@@ -35,7 +41,6 @@ export default function VolumesList({defaultCoverUrl, onVolumeSelect}: Props) {
   const itemWidth = useDimensions().width / 3 - 5 * 3;
 
   const continueReadingChapters = useContinueReadingChaptersList();
-  const hasLinks = Object.keys(manga.attributes.links || {}).length > 0;
 
   const sortedVolumeInfos = useMemo(() => {
     return volumeInfos.sort((left, right) => {
@@ -71,6 +76,18 @@ export default function VolumesList({defaultCoverUrl, onVolumeSelect}: Props) {
       sortRule === SortRule.Asc ? 'asc' : 'desc',
     );
   }, [sortRule]);
+
+  useEffect(() => {
+    if (jumpToVolume !== undefined && !successfulJumpToVolume.current) {
+      const foundVolumeInfo = volumeInfos.find(
+        volumeInfo => volumeInfo.volume === jumpToVolume,
+      );
+      if (foundVolumeInfo) {
+        onVolumeSelect(foundVolumeInfo);
+        successfulJumpToVolume.current = true;
+      }
+    }
+  }, [jumpToVolume, onVolumeSelect, volumeInfos]);
 
   return (
     <View>

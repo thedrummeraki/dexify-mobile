@@ -1,6 +1,6 @@
 export interface ScanlationGroup {
   id: string;
-  type: 'group';
+  type: 'scanlation_group';
   attributes: ScanlationGroupAttributes;
 }
 

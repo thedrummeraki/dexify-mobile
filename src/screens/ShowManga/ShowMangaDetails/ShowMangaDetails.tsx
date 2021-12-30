@@ -1,4 +1,4 @@
-import React, {PropsWithChildren, useContext, useState} from 'react';
+import React, {PropsWithChildren, useContext, useEffect, useState} from 'react';
 import {View} from 'react-native';
 import {
   BasicResultsResponse,
@@ -6,11 +6,12 @@ import {
   Manga,
   PagedResultsList,
 } from 'src/api/mangadex/types';
-import {useGetRequest} from 'src/api/utils';
+import {useLazyGetRequest} from 'src/api/utils';
 import {AboutTab} from './components';
 
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import UrlBuilder from 'src/api/mangadex/types/api/url_builder';
+import {wait} from 'src/utils';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -56,19 +57,23 @@ export function useMangaDetails() {
 }
 
 export default function ShowMangaDetails({manga}: Props) {
-  const {data, loading, error} = useGetRequest<Manga.Aggregate>(
-    `https://api.mangadex.org/manga/${manga.id}/aggregate?translatedLanguage[]=en`,
-  );
+  const [getAggregate, {data, loading, error}] =
+    useLazyGetRequest<Manga.Aggregate>(
+      `https://api.mangadex.org/manga/${manga.id}/aggregate?translatedLanguage[]=en`,
+    );
 
-  const {data: airingNow} = useGetRequest<{
+  const [getAiringInfo, {data: airingNow}] = useLazyGetRequest<{
     airing: boolean;
   }>(UrlBuilder.animeAiringInfo(manga.id));
 
-  const {data: coverData, loading: coversLoading} = useGetRequest<
-    PagedResultsList<CoverArt>
-  >(
-    UrlBuilder.covers({manga: [manga.id], limit: 100, order: {volume: 'desc'}}),
-  );
+  const [getMangaCovers, {data: coverData, loading: coversLoading}] =
+    useLazyGetRequest<PagedResultsList<CoverArt>>(
+      UrlBuilder.covers({
+        manga: [manga.id],
+        limit: 100,
+        order: {volume: 'desc'},
+      }),
+    );
   const [coverUrl, setCoverUrl] = useState<string>();
 
   const aggregate = data?.result === 'ok' ? data.volumes : undefined;
@@ -89,6 +94,12 @@ export default function ShowMangaDetails({manga}: Props) {
       };
     },
   );
+
+  useEffect(() => {
+    wait(1).then(() => getAggregate());
+    wait(1).then(() => getMangaCovers());
+    wait(1).then(() => getAiringInfo());
+  }, []);
 
   return (
     <ShowMangaDetailsProvider

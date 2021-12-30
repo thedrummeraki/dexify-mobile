@@ -24,13 +24,17 @@ import {
   ShowMangaDetailsModal,
 } from './modals';
 import {FollowMangaAction, LibraryAction} from './actions';
-import {useGetRequest} from 'src/api/utils';
+import {useLazyGetRequest} from 'src/api/utils';
 import UrlBuilder from 'src/api/mangadex/types/api/url_builder';
 import {wait} from 'src/utils';
+import {useShowMangaRoute} from 'src/foundation';
 
 export default function AboutTab() {
   const {manga, isAiring} = useMangaDetails();
   const loggedIn = useIsLoggedIn();
+  const {
+    params: {jumpToVolume},
+  } = useShowMangaRoute();
 
   const {refreshReadingStatuses} = useLibraryContext();
 
@@ -40,9 +44,10 @@ export default function AboutTab() {
     showDetails: false,
   });
 
-  const {data, loading} = useGetRequest<AllReadingStatusResponse>(
-    UrlBuilder.buildUrl('/manga/status'),
-  );
+  const [getReadingStatus, {data, loading}] =
+    useLazyGetRequest<AllReadingStatusResponse>(
+      UrlBuilder.buildUrl('/manga/status'),
+    );
 
   const [readingStatus, setReadingStatus] = useState<ReadingStatus | null>();
   const [readingStatusChanged, setReadingStatusChanged] = useState(false);
@@ -52,6 +57,10 @@ export default function AboutTab() {
       setReadingStatus(data.statuses[manga.id]);
     }
   }, [data]);
+
+  useEffect(() => {
+    wait(1).then(() => getReadingStatus());
+  }, []);
 
   const author =
     findRelationship<Author>(manga, 'author') ||
@@ -149,7 +158,7 @@ export default function AboutTab() {
             />
           </View>
         </View>
-        <VolumesContainer />
+        <VolumesContainer jumpToVolume={jumpToVolume} />
       </ScrollView>
       <AddToLibraryModal
         readingStatus={readingStatus}

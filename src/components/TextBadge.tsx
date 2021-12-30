@@ -12,6 +12,7 @@ import {
 
 interface Props {
   content: React.ReactNode;
+  numberOfLines?: number;
   background?: BackgroundColor;
   icon?: string;
   onPress?: () => void;
@@ -21,6 +22,7 @@ interface Props {
 
 export default function TextBadge({
   content,
+  numberOfLines,
   background,
   icon,
   style,
@@ -46,6 +48,7 @@ export default function TextBadge({
         onPress={onPress}
         backgroundColor={backgroundColor || theme.dark ? '#fff' : '#000'}>
         <Text
+          numberOfLines={numberOfLines}
           style={Object.assign(
             {
               color,

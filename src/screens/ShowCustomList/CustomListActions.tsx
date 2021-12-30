@@ -1,10 +1,7 @@
-import React, {useEffect} from 'react';
-import {View, Image, Text} from 'react-native';
-import {Title, Button, IconButton, Caption} from 'react-native-paper';
-import {findRelationship} from 'src/api';
-import {CustomList, EntityResponse, User} from 'src/api/mangadex/types';
-import UrlBuilder from 'src/api/mangadex/types/api/url_builder';
-import {useLazyGetRequest} from 'src/api/utils';
+import React from 'react';
+import {View} from 'react-native';
+import {Text, IconButton} from 'react-native-paper';
+import {CustomList} from 'src/api/mangadex/types';
 import {TextBadge} from 'src/components';
 import {BackgroundColor} from 'src/components/colors';
 

@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
-import {Linking, ScrollView, View} from 'react-native';
-import {Card, Chip, Text} from 'react-native-paper';
+import {Image, Linking, ScrollView, StyleSheet, View} from 'react-native';
+import {Card, Chip, Text, useTheme} from 'react-native-paper';
 import {
   contentRatingInfo,
   findRelationships,
@@ -16,11 +16,16 @@ import {
   MangaLinks,
 } from 'src/api/mangadex/types';
 import {Banner, FullScreenModal, TextBadge} from 'src/components';
-import Markdown from 'react-native-markdown-display';
+import Markdown, {
+  AstRenderer,
+  MarkdownIt,
+  RenderRules,
+  renderRules,
+} from 'react-native-markdown-display';
 import {useMangaDetails} from '../../../ShowMangaDetails';
 import {useBackgroundColor} from 'src/components/colors';
 import {useDexifyNavigation} from 'src/foundation';
-import {capitalize, onlyUnique} from 'src/utils';
+import {capitalize, onlyUnique, useDimensions} from 'src/utils';
 import CategoriesCollectionSection from 'src/components/CategoriesCollection/CategoriesCollectionSection';
 
 interface Props {
@@ -58,7 +63,9 @@ export default function ShowMangaDetailsModal({visible, onDismiss}: Props) {
 }
 
 function ModalChildren({onDismiss}: Pick<Props, 'onDismiss'>) {
+  const theme = useTheme();
   const navigation = useDexifyNavigation();
+  const {width} = useDimensions();
   const {manga, isAiring} = useMangaDetails();
   const [bannerVisible, setBannerVisible] = useState(true);
 
@@ -73,6 +80,27 @@ function ModalChildren({onDismiss}: Pick<Props, 'onDismiss'>) {
   const authorsAndArtists = authorsAndArtistsObjects.filter(
     (value, index, self) => self.findIndex(v => v.id === value.id) === index,
   );
+
+  const rules: RenderRules = {
+    text: node => {
+      return <Text key={node.key}>{node.content}</Text>;
+    },
+    link: node => (
+      <TextBadge
+        key={node.key}
+        content={node.content}
+        background="background"
+        onPress={() => {}}
+      />
+    ),
+    hr: (node, children, parent, styles) => (
+      <View
+        key={node.key}
+        style={{...styles._VIEW_SAFE_hr, backgroundColor: theme.colors.text}}
+      />
+    ),
+    image: () => null, // disable images for now
+  };
 
   return (
     <ScrollView>
@@ -158,9 +186,17 @@ function ModalChildren({onDismiss}: Pick<Props, 'onDismiss'>) {
             content={manga.attributes.originalLanguage.toLocaleUpperCase()}
           />
         </View>
-        <Card style={{padding: 5, margin: -5}}>
-          <Markdown>{preferredMangaDescription(manga)}</Markdown>
-        </Card>
+        <Markdown
+          // markdownit={MarkdownIt({typographer: true}).disable(['image'])}
+          rules={rules}
+          mergeStyle
+          style={StyleSheet.create({
+            image: {
+              width,
+            },
+          })}>
+          {preferredMangaDescription(manga)}
+        </Markdown>
         <View
           style={{
             flexDirection: 'row',

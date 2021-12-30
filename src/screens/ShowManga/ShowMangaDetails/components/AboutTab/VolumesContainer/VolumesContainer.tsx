@@ -5,7 +5,11 @@ import {useMangaDetails, VolumeInfo} from '../../../ShowMangaDetails';
 import VolumeDetails from './VolumeDetails';
 import VolumesList from './VolumesList';
 
-export default function VolumesContainer() {
+interface Props {
+  jumpToVolume?: string | null;
+}
+
+export default function VolumesContainer({jumpToVolume}: Props) {
   const {coverUrl, onCoverUrlUpdate, covers, manga} = useMangaDetails();
   const defaultCoverUrl = useRef(coverUrl);
 
@@ -52,7 +56,12 @@ export default function VolumesContainer() {
   }, [onCoverUrlUpdate, currentVolume, covers, manga.id]);
 
   if (currentVolume === null) {
-    return <VolumesList onVolumeSelect={setCurrentVolume} />;
+    return (
+      <VolumesList
+        jumpToVolume={jumpToVolume}
+        onVolumeSelect={setCurrentVolume}
+      />
+    );
   }
 
   return (

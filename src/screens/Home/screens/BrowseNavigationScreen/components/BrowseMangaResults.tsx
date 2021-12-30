@@ -1,20 +1,10 @@
-import React, {useEffect, useMemo} from 'react';
-import {View} from 'react-native';
-import {Chip, Paragraph, Title} from 'react-native-paper';
-import {
-  findRelationship,
-  findRelationships,
-  mangaImage,
-  preferredMangaTitle,
-} from 'src/api';
-import {useGetMangaList, useLazyGetMangaList} from 'src/api/mangadex/hooks';
+import React, {useEffect} from 'react';
+import {findRelationship, mangaImage, preferredMangaTitle} from 'src/api';
+import {useLazyGetMangaList} from 'src/api/mangadex/hooks';
 import {Artist, Author} from 'src/api/mangadex/types';
 import {ResponseStatus} from 'src/api/utils';
-import {MangaSearchCollection} from 'src/components';
-import CategoriesCollectionSection from 'src/components/CategoriesCollection/CategoriesCollectionSection';
 import {List} from 'src/components/List/List';
 import {useDexifyNavigation} from 'src/foundation';
-import {occurences} from 'src/utils';
 import BrowseEmptyResults from './BrowseEmptyResults';
 
 interface Props {
@@ -39,6 +29,7 @@ export default function BrowseMangaResults({query}: Props) {
       loading={
         status === ResponseStatus.Initiated || status === ResponseStatus.Pending
       }
+      skeletonLength={15}
       ListEmptyComponent={
         <BrowseEmptyResults
           resourceType="manga"

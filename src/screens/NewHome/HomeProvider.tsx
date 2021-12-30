@@ -1,6 +1,6 @@
 import React, {PropsWithChildren, useEffect, useRef, useState} from 'react';
 import {useGetMangaList, useLazyGetMangaList} from 'src/api/mangadex/hooks';
-import {Manga, ReadingStatus} from 'src/api/mangadex/types';
+import {Chapter, Manga, ReadingStatus} from 'src/api/mangadex/types';
 import {useLibraryMangaIds} from 'src/prodivers';
 
 interface ProviderState {
@@ -9,6 +9,7 @@ interface ProviderState {
   airingNow: Manga[]; // max 10
   readingNow: Manga[]; // max 20
   randomManga: Manga;
+  updates: Chapter[];
 }
 
 type InternalState = Partial<ProviderState>;

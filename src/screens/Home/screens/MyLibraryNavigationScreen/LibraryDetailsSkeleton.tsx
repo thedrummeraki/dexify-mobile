@@ -23,7 +23,7 @@ export default function LibraryDetailsLoading() {
   return (
     <SafeAreaView style={{flex: 1}}>
       {headerMarkup}
-      <List loading />
+      <List loading contentContainerStyle={{marginHorizontal: 10}} />
     </SafeAreaView>
   );
 }

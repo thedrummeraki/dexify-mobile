@@ -1,4 +1,4 @@
-import {Manga} from 'src/api/mangadex/types';
+import {Chapter, Manga} from 'src/api/mangadex/types';
 
 export type FeedResponse = SuccessFeedResponse | ErrorFeedResponse;
 
@@ -17,6 +17,7 @@ interface ErrorFeedResponse extends BasicFeedResponse {
 }
 
 export interface FeedData {
+  updates?: {data: Chapter[]; manga: Manga[]};
   topManga?: Manga | null;
   randomManga?: Manga | null;
   popularManga?: Manga[];

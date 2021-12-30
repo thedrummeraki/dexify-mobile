@@ -1,29 +1,8 @@
-import React, {useEffect, useMemo} from 'react';
-import {Chip} from 'react-native-paper';
-import {
-  chapterImage,
-  findRelationship,
-  findRelationships,
-  mangaImage,
-  preferredChapterTitle,
-  preferredMangaTitle,
-} from 'src/api';
-import {useGetMangaList, useLazyGetMangaList} from 'src/api/mangadex/hooks';
-import {
-  Artist,
-  Author,
-  Chapter,
-  Manga,
-  PagedResultsList,
-  ScanlationGroup,
-} from 'src/api/mangadex/types';
+import React, {useEffect} from 'react';
+import {PagedResultsList, ScanlationGroup} from 'src/api/mangadex/types';
 import UrlBuilder from 'src/api/mangadex/types/api/url_builder';
 import {useLazyGetRequest} from 'src/api/utils';
-import {MangaSearchCollection} from 'src/components';
-import CategoriesCollectionSection from 'src/components/CategoriesCollection/CategoriesCollectionSection';
 import {List} from 'src/components/List/List';
-import {useDexifyNavigation} from 'src/foundation';
-import {occurences} from 'src/utils';
 import BrowseEmptyResults from './BrowseEmptyResults';
 
 interface Props {
@@ -43,6 +22,7 @@ export default function BrowseScanlationGroupResults({query}: Props) {
     <List
       style={{padding: 5, paddingTop: 0}}
       loading={loading}
+      skeletonLength={15}
       ListEmptyComponent={
         <BrowseEmptyResults resourceType="scanlation group" query={query} />
       }

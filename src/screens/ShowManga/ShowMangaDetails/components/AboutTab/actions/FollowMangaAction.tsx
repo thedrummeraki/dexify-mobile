@@ -2,8 +2,13 @@ import React, {useEffect, useState} from 'react';
 import {IconButton, useTheme} from 'react-native-paper';
 import {BasicResultsResponse} from 'src/api/mangadex/types';
 import UrlBuilder from 'src/api/mangadex/types/api/url_builder';
-import {useDeleteRequest, useGetRequest, usePostRequest} from 'src/api/utils';
+import {
+  useDeleteRequest,
+  useLazyGetRequest,
+  usePostRequest,
+} from 'src/api/utils';
 import {useIsLoggedIn} from 'src/prodivers';
+import {wait} from 'src/utils';
 import {useMangaDetails} from '../../../ShowMangaDetails';
 
 export default function FollowMangaAction() {
@@ -14,9 +19,10 @@ export default function FollowMangaAction() {
   const [following, setFollowing] = useState(false);
 
   const {manga} = useMangaDetails();
-  const {data, loading} = useGetRequest<BasicResultsResponse>(
-    UrlBuilder.buildUrl(`/user/follows/manga/${manga.id}`),
-  );
+  const [getFollowingInfo, {data, loading}] =
+    useLazyGetRequest<BasicResultsResponse>(
+      UrlBuilder.buildUrl(`/user/follows/manga/${manga.id}`),
+    );
 
   const [followManga] = usePostRequest<BasicResultsResponse>(
     UrlBuilder.buildUrl(`/manga/${manga.id}/follow`),
@@ -28,6 +34,10 @@ export default function FollowMangaAction() {
   useEffect(() => {
     setFollowing(data?.result === 'ok');
   }, [data]);
+
+  useEffect(() => {
+    wait(1).then(() => getFollowingInfo());
+  }, []);
 
   if (loading || !loggedIn) {
     return <IconButton disabled icon="rss" />;

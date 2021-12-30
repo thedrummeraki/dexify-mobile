@@ -4,6 +4,7 @@ import {
   GeneralHomeSection,
   MangaRecommendationSection,
 } from './components';
+import ChaptersSection from './components/ChaptersSection';
 import {Sections} from './types';
 
 interface Props {
@@ -21,6 +22,10 @@ export default function Section({section}: Props) {
 
   if (section.type === 'manga-recommendation') {
     return <MangaRecommendationSection section={section} />;
+  }
+
+  if (section.type === 'chapters-list') {
+    return <ChaptersSection section={section} />;
   }
 
   return null;

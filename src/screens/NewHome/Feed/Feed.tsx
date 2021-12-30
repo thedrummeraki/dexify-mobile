@@ -7,6 +7,7 @@ import {preferredMangaDescription} from 'src/api';
 import {useDexifyNavigation} from 'src/foundation';
 import {
   useContinueReadingChaptersList,
+  useIsLoggedIn,
   useReadingStateContext,
 } from 'src/prodivers';
 
@@ -24,8 +25,10 @@ export default function Feed({data, refreshing, onRefresh}: Props) {
     randomManga,
     readingNow,
     recentlyAdded,
+    updates,
   } = data;
 
+  const isLoggedIn = useIsLoggedIn();
   const navigation = useDexifyNavigation();
 
   const continueReadingChapters = useContinueReadingChaptersList();
@@ -50,6 +53,18 @@ export default function Feed({data, refreshing, onRefresh}: Props) {
           type: 'continue-reading',
           chapters: continueReadingChapters,
           slug: 'continue-reading',
+        }}
+      />
+    ) : null;
+
+  const updatesMarkup =
+    updates && updates.data?.length > 0 ? (
+      <Section
+        section={{
+          type: 'chapters-list',
+          chapters: updates.data,
+          manga: updates.manga,
+          title: 'Latest chapters for you',
         }}
       />
     ) : null;
@@ -103,6 +118,24 @@ export default function Feed({data, refreshing, onRefresh}: Props) {
     />
   ) : null;
 
+  if (isLoggedIn) {
+    return (
+      <ScrollView
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }>
+        {topMangaMarkup}
+        {continueReadingMarkup}
+        {readingNowMarkup}
+        {updatesMarkup}
+        {randomMangaMarkup}
+        {airingNowMarkup}
+        {recentlyAddedMarkup}
+        {popularMangaMarkup}
+      </ScrollView>
+    );
+  }
+
   return (
     <ScrollView
       refreshControl={
@@ -110,11 +143,10 @@ export default function Feed({data, refreshing, onRefresh}: Props) {
       }>
       {topMangaMarkup}
       {continueReadingMarkup}
-      {readingNowMarkup}
-      {popularMangaMarkup}
-      {randomMangaMarkup}
       {airingNowMarkup}
+      {randomMangaMarkup}
       {recentlyAddedMarkup}
+      {popularMangaMarkup}
     </ScrollView>
   );
 }

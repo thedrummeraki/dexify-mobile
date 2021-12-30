@@ -1,5 +1,6 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {ActivityIndicator, Text} from 'react-native-paper';
+import {View} from 'react-native';
+import {ActivityIndicator, Button, Text, Title} from 'react-native-paper';
 import Feed from './Feed/Feed';
 import {FeedResponse} from './Feed/types';
 import {useFeed} from './hooks';
@@ -39,8 +40,23 @@ function Home() {
   }
 
   if (error || data?.result === 'error') {
-    console.error(error || data?.result === 'error' ? data : 'wth is going on');
-    return <Text>Uh-oh, this didn't work. Please try again.</Text>;
+    return (
+      <View
+        style={{
+          flex: 1,
+          justifyContent: 'center',
+          alignItems: 'center',
+          margin: 30,
+        }}>
+        <Title>{'°(\u0060ฅωฅ`)°'}</Title>
+        <Text style={{textAlign: 'center'}}>
+          Something went wrong went fetching the feed data. Please try again.
+        </Text>
+        <Button mode="contained" onPress={refresh} style={{marginTop: 15}}>
+          Let's go
+        </Button>
+      </View>
+    );
   }
 
   if (!data) {

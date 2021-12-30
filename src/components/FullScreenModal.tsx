@@ -54,27 +54,25 @@ export default function FullScreenModal({
             {visible ? children : undefined}
           </View>
         </View>
-        <View
-          style={{
-            position: 'absolute',
-            bottom: 0,
-            left: 0,
-            right: 0,
-            flexDirection: 'row-reverse',
-          }}>
-          {primaryAction ? (
-            <>
-              <Button onPress={primaryAction.onAction}>
-                {primaryAction.content}
+        {primaryAction ? (
+          <View
+            style={{
+              position: 'absolute',
+              bottom: 0,
+              left: 0,
+              right: 0,
+              flexDirection: 'row-reverse',
+            }}>
+            <Button onPress={primaryAction.onAction}>
+              {primaryAction.content}
+            </Button>
+            {primaryAction.showCancel ? (
+              <Button color="white" onPress={onDismiss}>
+                Cancel
               </Button>
-              {primaryAction.showCancel ? (
-                <Button color="white" onPress={onDismiss}>
-                  Cancel
-                </Button>
-              ) : null}
-            </>
-          ) : null}
-        </View>
+            ) : null}
+          </View>
+        ) : null}
       </View>
     </Modal>
   );
