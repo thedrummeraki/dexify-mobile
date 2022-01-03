@@ -5,11 +5,10 @@ import TopManga from './Section/components/TopManga';
 import {FeedData} from './types';
 import {preferredMangaDescription} from 'src/api';
 import {useDexifyNavigation} from 'src/foundation';
-import {
-  useContinueReadingChaptersList,
-  useIsLoggedIn,
-  useReadingStateContext,
-} from 'src/prodivers';
+import {useContinueReadingChaptersList, useIsLoggedIn} from 'src/prodivers';
+import {EmptySectionState} from './Section/components';
+import {Banner} from 'src/components';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 interface Props {
   data: FeedData;
@@ -67,6 +66,17 @@ export default function Feed({data, refreshing, onRefresh}: Props) {
           title: 'Latest chapters for you',
         }}
       />
+    ) : isLoggedIn ? (
+      <EmptySectionState title="Latest chapters for you">
+        <Banner
+          background="surface"
+          title="Follow some manga titles!"
+          primaryAction={{content: 'Refresh', onAction: onRefresh}}>
+          Follw any manga by pressing on "<Icon name="rss" />" when viewing a
+          title. Stay tuned and view the latest chapters for the titles you're
+          currently following.
+        </Banner>
+      </EmptySectionState>
     ) : null;
 
   const readingNowMarkup = readingNow ? (

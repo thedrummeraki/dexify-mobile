@@ -13,6 +13,7 @@ export interface ChapterAttributes {
   chapter: string | null;
   translatedLanguage: string;
   uploader: string;
+  pages: number;
   version: number;
   createdAt: string;
   updatedAt: string;

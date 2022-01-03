@@ -28,7 +28,7 @@ import {
   useChapterProgress,
   useContinueReadingChaptersList,
 } from 'src/prodivers';
-import {isNumber, localizedDateTime} from 'src/utils';
+import {isNumber, localizedDateTime, pluralize} from 'src/utils';
 import {useMangaDetails} from '../../ShowMangaDetails';
 
 type FlatListProps = React.ComponentProps<typeof FlatList>;
@@ -280,7 +280,7 @@ export function ChapterItem({
               </Text>
               <TextBadge
                 icon="clock-outline"
-                style={{marginLeft: -5}}
+                style={{marginLeft: -5, marginTop: 0}}
                 content={
                   <Caption>
                     Published on{' '}
@@ -291,6 +291,11 @@ export function ChapterItem({
                   </Caption>
                 }
               />
+              {chapter.attributes.pages && (
+                <Caption style={{marginTop: -5}}>
+                  {pluralize(chapter.attributes.pages, 'page')}
+                </Caption>
+              )}
             </View>
             <IconButton
               icon="check"

@@ -64,6 +64,7 @@ export default function Banner({
             flex: 1,
             flexDirection: 'row',
             justifyContent: 'space-between',
+            alignItems: 'center',
           }}>
           {title && (
             <Subheading

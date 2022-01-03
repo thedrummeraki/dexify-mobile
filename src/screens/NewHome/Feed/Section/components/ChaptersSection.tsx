@@ -2,19 +2,19 @@ import React from 'react';
 import {View, TouchableNativeFeedback, Image} from 'react-native';
 import {Caption, Text, useTheme} from 'react-native-paper';
 import {
-  CoverSize,
   findRelationship,
-  mangaImage,
   preferredChapterTitle,
   preferredMangaTitle,
 } from 'src/api';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
-import {Manga, ScanlationGroup} from 'src/api/mangadex/types';
+import {ScanlationGroup} from 'src/api/mangadex/types';
 import {TextBadge} from 'src/components';
 import CategoriesCollectionSection from 'src/components/CategoriesCollection/CategoriesCollectionSection';
 import MangaThumbnail from 'src/components/MangaThumbnail';
 import {useDexifyNavigation} from 'src/foundation';
 import {Sections} from '../types';
+import {localizedDateTime} from 'src/utils';
+import {DateTime} from 'luxon';
 
 interface Props {
   section: Sections.Chapters;
@@ -33,19 +33,11 @@ export default function ChaptersSection({section, hideIfEmpty = true}: Props) {
   }
 
   return (
-    // <CategoriesCollectionSection
-    //   data={manga}
-    //   title={title}
-    //   viewMore={onAction ? {onAction} : undefined}
-    //   renderItem={manga => <MangaThumbnail manga={manga} />}
-    // />
-
     <CategoriesCollectionSection
       title={title}
       data={chapters}
       viewMore={onAction ? {onAction} : undefined}
       dimensions={{width: 120, height: 160}}
-      // viewMore={category.viewMore}
       renderItem={(item, {width, height}) => {
         const relatedManga = manga.find(
           manga => manga.id === findRelationship(item, 'manga')!.id,
@@ -59,7 +51,7 @@ export default function ChaptersSection({section, hideIfEmpty = true}: Props) {
               ReactNativeHapticFeedback.trigger('soft');
               navigation.push('ShowManga', {
                 ...relatedManga,
-                jumpToVolume: item.attributes.volume,
+                // jumpToVolume: item.attributes.volume,
               });
             }}>
             <View
@@ -102,6 +94,12 @@ export default function ChaptersSection({section, hideIfEmpty = true}: Props) {
               </View>
               <View
                 style={{position: 'absolute', bottom: 0, left: 0, right: 0}}>
+                <TextBadge
+                  content={localizedDateTime(
+                    item.attributes.publishAt,
+                    DateTime.DATE_MED,
+                  )}
+                />
                 <TextBadge
                   icon="book"
                   content={preferredMangaTitle(relatedManga)}
