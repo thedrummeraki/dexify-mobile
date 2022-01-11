@@ -95,17 +95,21 @@ export default function ChaptersSection({section, hideIfEmpty = true}: Props) {
               <View
                 style={{position: 'absolute', bottom: 0, left: 0, right: 0}}>
                 <TextBadge
+                  background="none"
+                  icon="clock-outline"
                   content={localizedDateTime(
                     item.attributes.publishAt,
                     DateTime.DATE_MED,
                   )}
                 />
                 <TextBadge
+                  background="none"
                   icon="book"
                   content={preferredMangaTitle(relatedManga)}
                   numberOfLines={1}
                 />
                 <TextBadge
+                  background="none"
                   icon="account"
                   content={
                     findRelationship<ScanlationGroup>(item, 'scanlation_group')

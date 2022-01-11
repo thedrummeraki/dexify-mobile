@@ -13,7 +13,7 @@ import {useBackgroundColor} from 'src/components/colors';
 import {useDexifyNavigation} from 'src/foundation';
 import {Linking} from 'react-native';
 
-const MANGA_URL_REGEX = /https:\/\/mangadex.org\/title\/([\w-]+)(\/\s.)?/;
+const MANGA_URL_REGEX = /https:\/\/mangadex.org\/title\/([a-zA-Z-]+)(\/\s.)?/;
 
 export default function Home() {
   const navigation = useDexifyNavigation();
@@ -22,6 +22,7 @@ export default function Home() {
     const event = Linking.addEventListener('url', ({url}) => {
       const match = url.match(MANGA_URL_REGEX);
       if (match && match.length > 1) {
+        console.log('found a match!', match);
         navigation.push('ShowManga', {id: match[1]});
       } else {
         console.log("Didn't know how to open mangadex URL", url);

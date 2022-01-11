@@ -10,3 +10,4 @@ export {default as CloseCurrentScreenHeader} from './CloseCurrentScreenHeader';
 export {default as SimpleInputDropdown} from './SimpleInputDropdown';
 export {default as HiddenMangaBanner} from './HiddenMangaBanner';
 export {default as FullScreenModal} from './FullScreenModal';
+export {default as BasicModal} from './BasicModal';

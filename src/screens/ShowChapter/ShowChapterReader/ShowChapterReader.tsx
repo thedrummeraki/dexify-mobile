@@ -1,10 +1,11 @@
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {Image, View} from 'react-native';
 import {ActivityIndicator, Caption, Text} from 'react-native-paper';
-import {mangaImage, preferredMangaTitle} from 'src/api';
+import {mangaImage, preferredChapterTitle, preferredMangaTitle} from 'src/api';
 import {AtHomeSuccessResponse, Chapter, Manga} from 'src/api/mangadex/types';
 import {useReadingStateContext, useSettings} from 'src/prodivers';
 import {useDimensions} from 'src/utils';
+import ReaderProvider from './components/ReaderProvider';
 import ShowChapterReaderPagesList from './components/ShowChapterReaderPagesList';
 import {Page} from './types';
 
@@ -116,11 +117,20 @@ export default function ShowChapterReader({
 
   return (
     <View style={{flex: 1}}>
-      <ShowChapterReaderPagesList
+      <ReaderProvider
+        manga={manga}
+        title={preferredChapterTitle(chapter)}
+        subtitle={preferredMangaTitle(manga)}
         pages={sortedPages}
-        initialIndex={initialIndex}
-        onPageNumberChange={handleOnPageNumberChange}
-      />
+        group={chapter.attributes.volume}
+        locale={chapter.attributes.translatedLanguage}
+        initialPage={initialIndex + 1}>
+        <ShowChapterReaderPagesList
+          pages={sortedPages}
+          initialIndex={initialIndex}
+          onPageNumberChange={handleOnPageNumberChange}
+        />
+      </ReaderProvider>
     </View>
   );
 }

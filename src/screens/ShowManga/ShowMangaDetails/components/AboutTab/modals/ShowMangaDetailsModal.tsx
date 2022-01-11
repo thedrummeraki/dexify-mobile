@@ -85,14 +85,32 @@ function ModalChildren({onDismiss}: Pick<Props, 'onDismiss'>) {
     text: node => {
       return <Text key={node.key}>{node.content}</Text>;
     },
-    link: node => (
-      <TextBadge
-        key={node.key}
-        content={node.content}
-        background="background"
-        onPress={() => {}}
-      />
-    ),
+    link: node => {
+      if (node.children.length <= 0) {
+        return null;
+      }
+
+      return (
+        <View>
+          {node.children.map(child => {
+            return (
+              <TextBadge
+                key={node.key}
+                style={{marginVertical: -3, marginRight: 0}}
+                textStyle={{textDecorationLine: 'underline'}}
+                content={child.content}
+                background="background"
+                onPress={() => {
+                  if (node.attributes.href) {
+                    Linking.openURL(node.attributes.href);
+                  }
+                }}
+              />
+            );
+          })}
+        </View>
+      );
+    },
     hr: (node, children, parent, styles) => (
       <View
         key={node.key}

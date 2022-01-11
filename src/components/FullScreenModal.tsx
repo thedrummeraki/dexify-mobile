@@ -1,4 +1,4 @@
-import React, {PropsWithChildren} from 'react';
+import React, {ComponentProps} from 'react';
 import {View, Modal} from 'react-native';
 import {Button, useTheme} from 'react-native-paper';
 import {useDimensions} from 'src/utils';
@@ -11,29 +11,32 @@ interface ModalAction {
   onAction(): void;
 }
 
-interface Props {
+interface BasicProps {
   title?: string;
   visible?: boolean;
   primaryAction?: ModalAction;
   onDismiss(): void;
 }
 
+type ModalProps = ComponentProps<typeof Modal>;
+type Props = BasicProps & ModalProps;
+
 export default function FullScreenModal({
   children,
   title,
   visible,
   primaryAction,
-  onDismiss,
-}: PropsWithChildren<Props>) {
+  ...modalProps
+}: Props) {
   const {width, height} = useDimensions();
   const theme = useTheme();
 
   return (
     <Modal
-      animationType={'slide'}
+      animationType="slide"
       visible={visible}
       transparent
-      onRequestClose={onDismiss}>
+      onRequestClose={modalProps.onDismiss}>
       <View
         style={{
           flex: 1,
@@ -47,9 +50,12 @@ export default function FullScreenModal({
             width: width,
             height: height,
             backgroundColor: theme.colors.background,
-            marginTop: 15,
+            paddingTop: 10,
           }}>
-          <CloseCurrentScreenHeader title={title} onClose={onDismiss} />
+          <CloseCurrentScreenHeader
+            title={title}
+            onClose={modalProps.onDismiss}
+          />
           <View style={{marginBottom: 114}}>
             {visible ? children : undefined}
           </View>
@@ -67,7 +73,7 @@ export default function FullScreenModal({
               {primaryAction.content}
             </Button>
             {primaryAction.showCancel ? (
-              <Button color="white" onPress={onDismiss}>
+              <Button color="white" onPress={modalProps.onDismiss}>
                 Cancel
               </Button>
             ) : null}

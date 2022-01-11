@@ -280,6 +280,7 @@ export function ChapterItem({
               </Text>
               <TextBadge
                 icon="clock-outline"
+                background="none"
                 style={{marginLeft: -5, marginTop: 0}}
                 content={
                   <Caption>

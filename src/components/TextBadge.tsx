@@ -13,7 +13,7 @@ import {
 interface Props {
   content: React.ReactNode;
   numberOfLines?: number;
-  background?: BackgroundColor;
+  background?: BackgroundColor | 'none';
   icon?: string;
   onPress?: () => void;
   style?: StyleProp<ViewStyle>;
@@ -23,15 +23,16 @@ interface Props {
 export default function TextBadge({
   content,
   numberOfLines,
-  background,
+  background = 'background',
   icon,
   style,
   textStyle,
   onPress,
 }: Props) {
   const theme = useTheme();
-  const color = useTextColor(background);
-  const backgroundColor = background && theme.colors[background];
+  const color = useTextColor(background !== 'none' ? background : undefined);
+  const backgroundColor =
+    background !== 'none' ? theme.colors[background] : undefined;
 
   return (
     <View

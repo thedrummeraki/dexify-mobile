@@ -2,8 +2,11 @@ import React, {useEffect, useRef, useState} from 'react';
 import {View} from 'react-native';
 import {FlatList} from 'react-native-gesture-handler';
 import {ProgressBar} from 'react-native-paper';
+import Animated from 'react-native-reanimated';
 import {useDimensions, wait} from 'src/utils';
 import {Page, ReaderActionState} from '../types';
+import {useReaderContext} from './ReaderProvider';
+import ShowChapterReaderActions from './ShowChapterReaderActions';
 import ShowChapterReaderPage from './ShowChapterReaderPage';
 
 interface Props {
@@ -18,9 +21,10 @@ export default function ShowChapterReaderPagesList(props: Props) {
   const {pages, initialIndex, onPageNumberChange, onActionsStateChange} = props;
   const flatListRef = useRef<FlatList | null>();
 
+  const {currentPage, onPageChange} = useReaderContext();
+
   const {height} = useDimensions();
   const [scrollEnabled, setScrollEnabled] = useState(true);
-  const [currentPage, setCurrentPage] = useState(1);
   const [progress, setProgress] = useState(currentPage / pages.length);
 
   useEffect(() => {
@@ -53,9 +57,7 @@ export default function ShowChapterReaderPagesList(props: Props) {
           );
         }}
         onMomentumScrollEnd={e => {
-          setCurrentPage(
-            Math.round(e.nativeEvent.contentOffset.y / height) + 1,
-          );
+          onPageChange(Math.round(e.nativeEvent.contentOffset.y / height) + 1);
         }}
         renderItem={({item: page}) => (
           <ShowChapterReaderPage
@@ -76,9 +78,10 @@ export default function ShowChapterReaderPagesList(props: Props) {
           );
         }}
       />
-      <View style={{position: 'absolute', top: 0, left: 0, right: 0, flex: 1}}>
+      <View style={{position: 'absolute', top: 60, left: 0, right: 0, flex: 1}}>
         <ProgressBar progress={progress} style={{height: 1}} />
       </View>
+      <ShowChapterReaderActions />
     </>
   );
 }
