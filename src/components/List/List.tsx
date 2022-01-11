@@ -1,5 +1,6 @@
-import React, {ComponentProps} from 'react';
+import React, {ComponentProps, useRef} from 'react';
 import {FlatList, StyleProp, ViewStyle} from 'react-native';
+import {wait} from 'src/utils';
 import {Item} from './Item';
 
 interface BasicResourceWithId {
@@ -48,6 +49,16 @@ export function List<T extends BasicResource>(props: Props<T>) {
     ...rest
   } = props;
 
+  const flatListRef = useRef<FlatList | null>();
+  const focusedIndex =
+    selected && selected.length > 0 && data
+      ? data.findIndex(
+          item =>
+            selected.includes(item.id) ||
+            (item.slug && selected.includes(item.slug)),
+        )
+      : 0;
+
   if (loading) {
     return (
       <FlatList
@@ -70,6 +81,7 @@ export function List<T extends BasicResource>(props: Props<T>) {
 
   return (
     <FlatList
+      ref={ref => (flatListRef.current = ref)}
       data={data || []}
       renderItem={({item}) => (
         <List.Item
@@ -83,6 +95,21 @@ export function List<T extends BasicResource>(props: Props<T>) {
       )}
       ListEmptyComponent={ListEmptyComponent}
       contentContainerStyle={itemStyle}
+      onLayout={() => {
+        if (focusedIndex) {
+          flatListRef.current?.scrollToIndex({index: focusedIndex});
+        }
+      }}
+      onScrollToIndexFailed={() => {
+        if (focusedIndex !== undefined) {
+          wait(500).then(() =>
+            flatListRef.current?.scrollToIndex({
+              index: focusedIndex,
+              animated: true,
+            }),
+          );
+        }
+      }}
       {...rest}
     />
   );

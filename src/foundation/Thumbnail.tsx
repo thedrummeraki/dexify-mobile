@@ -75,24 +75,22 @@ export default function Thumbnail({
         borderColor: border.color || theme.colors.primary,
         borderStyle: border.style || 'solid',
         borderWidth: border.width || 2,
-        padding: 5,
       }
     : undefined;
   return (
     <View
-      style={Object.assign(
-        {
-          width,
-          flex: 1,
-          flexDirection: 'column',
-        },
-        borderStyle,
-      )}>
-      {Array.isArray(imageUrl) ? (
-        <MultipleImageView imageUrl={imageUrl} {...rest} />
-      ) : (
-        <SingleImageView imageUrl={imageUrl} {...rest} />
-      )}
+      style={Object.assign({
+        width,
+        flex: 1,
+        flexDirection: 'column',
+      })}>
+      <View style={borderStyle}>
+        {Array.isArray(imageUrl) ? (
+          <MultipleImageView imageUrl={imageUrl} {...rest} />
+        ) : (
+          <SingleImageView imageUrl={imageUrl} {...rest} />
+        )}
+      </View>
       <ThumbnailCaption title={title} hideTitle={hideTitle} {...rest} />
     </View>
   );

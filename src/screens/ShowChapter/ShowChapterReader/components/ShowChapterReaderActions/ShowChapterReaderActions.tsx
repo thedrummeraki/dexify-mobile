@@ -2,11 +2,19 @@ import React from 'react';
 import ShowChapterReaderFooter from './ShowChapterReaderFooter';
 import ShowChapterReaderHeader from './ShowChapterReaderHeader';
 
-export default function ShowChapterReaderActions() {
+interface Props {
+  visible: boolean;
+  onPageSelect(page: number): void;
+}
+
+export default function ShowChapterReaderActions({
+  visible,
+  onPageSelect,
+}: Props) {
   return (
     <>
-      <ShowChapterReaderHeader />
-      <ShowChapterReaderFooter />
+      <ShowChapterReaderHeader visible={visible} />
+      <ShowChapterReaderFooter visible={visible} onPageSelect={onPageSelect} />
     </>
   );
 }

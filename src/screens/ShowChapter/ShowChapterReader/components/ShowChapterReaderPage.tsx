@@ -18,10 +18,11 @@ import {Page} from '../types';
 interface Props {
   page: Page;
   onZoomStateChanged?(zooming: boolean): void;
+  onActionsVisibilityChange?(): void;
 }
 
 export function ShowChapterReaderPage(props: Props) {
-  const {page, onZoomStateChanged} = props;
+  const {page, onZoomStateChanged, onActionsVisibilityChange} = props;
 
   const {
     image: {width: imageWidth, height: imageHeight, uri},
@@ -117,7 +118,10 @@ export function ShowChapterReaderPage(props: Props) {
             console.log(e.nativeEvent.absoluteX, e.nativeEvent.absoluteY);
           }
         }}
-        onActivated={() => console.log('single tap')}>
+        onActivated={() => {
+          console.log('single tap');
+          onActionsVisibilityChange?.();
+        }}>
         <Animated.View
           style={{
             width: deviceWidth,

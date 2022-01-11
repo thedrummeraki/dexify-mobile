@@ -9,13 +9,21 @@ import {
   Text,
   useTheme,
 } from 'react-native-paper';
-import Animated from 'react-native-reanimated';
+import Animated, {useAnimatedStyle, withTiming} from 'react-native-reanimated';
 import {TextBadge} from 'src/components';
 import {Page} from '../../types';
 import {useReaderContext} from '../ReaderProvider';
 import {ShowChapterReaderPageSwitcherModal} from './modals';
 
-export default function ShowChapterReaderFooter() {
+interface Props {
+  visible: boolean;
+  onPageSelect(page: number): void;
+}
+
+export default function ShowChapterReaderFooter({
+  visible,
+  onPageSelect,
+}: Props) {
   const {currentPage, group, locale, pages} = useReaderContext();
   const totalPagesCount = pages.length;
 
@@ -26,6 +34,13 @@ export default function ShowChapterReaderFooter() {
   const {
     colors: {surface},
   } = useTheme();
+
+  const animatedStyle = useAnimatedStyle(
+    () => ({
+      opacity: withTiming(visible ? 1 : 0, {duration: 500}),
+    }),
+    [visible],
+  );
 
   return (
     <Animated.View
@@ -38,6 +53,7 @@ export default function ShowChapterReaderFooter() {
           right: 0,
           left: 0,
         },
+        animatedStyle,
       ]}>
       <View
         style={{
@@ -46,8 +62,12 @@ export default function ShowChapterReaderFooter() {
           flexDirection: 'row',
           alignItems: 'center',
         }}>
-        <View>
-          <IconButton icon="skip-previous" onPress={() => {}} />
+        <View style={{display: 'none'}}>
+          <IconButton
+            disabled={!visible}
+            icon="skip-previous"
+            onPress={() => {}}
+          />
         </View>
         <View
           style={{
@@ -57,6 +77,7 @@ export default function ShowChapterReaderFooter() {
             alignItems: 'center',
           }}>
           <TextBadge
+            disablePress={!visible}
             onPress={() =>
               setModalState(current => ({...current, pagePicker: true}))
             }
@@ -64,25 +85,26 @@ export default function ShowChapterReaderFooter() {
           />
           {group !== undefined ? (
             <TextBadge
+              disablePress={!visible}
               style={{marginLeft: 5}}
-              onPress={() => {}}
               content={group ? `Volume ${group}` : 'No volume'}
             />
           ) : null}
           {locale ? (
             <TextBadge
+              disablePress={!visible}
               style={{marginLeft: 5}}
-              onPress={() => {}}
               content={locale.toLocaleUpperCase()}
             />
           ) : null}
         </View>
-        <View>
-          <IconButton icon="skip-next" onPress={() => {}} />
+        <View style={{display: 'none'}}>
+          <IconButton disabled={!visible} icon="skip-next" onPress={() => {}} />
         </View>
       </View>
       <ShowChapterReaderPageSwitcherModal
         visible={modalState.pagePicker}
+        onPageChange={onPageSelect}
         onDismiss={() =>
           setModalState(current => ({...current, pagePicker: false}))
         }

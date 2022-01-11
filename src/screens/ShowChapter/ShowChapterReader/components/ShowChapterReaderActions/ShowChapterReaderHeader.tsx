@@ -7,11 +7,15 @@ import {
   Subheading,
   useTheme,
 } from 'react-native-paper';
-import Animated from 'react-native-reanimated';
+import Animated, {useAnimatedStyle, withTiming} from 'react-native-reanimated';
 import {useDexifyNavigation} from 'src/foundation';
 import {useReaderContext} from '../ReaderProvider';
 
-export default function ShowChapterReaderHeader() {
+interface Props {
+  visible: boolean;
+}
+
+export default function ShowChapterReaderHeader({visible}: Props) {
   const navigation = useDexifyNavigation();
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -19,6 +23,13 @@ export default function ShowChapterReaderHeader() {
   const {
     colors: {surface},
   } = useTheme();
+
+  const animatedStyle = useAnimatedStyle(
+    () => ({
+      opacity: withTiming(visible ? 1 : 0, {duration: 500}),
+    }),
+    [visible],
+  );
 
   const menuOptions: {title: string; icon?: string; onAction(): void}[] = [
     {
@@ -51,6 +62,7 @@ export default function ShowChapterReaderHeader() {
           right: 0,
           left: 0,
         },
+        animatedStyle,
       ]}>
       <View style={{flexDirection: 'row', alignItems: 'center', marginTop: 5}}>
         <View
@@ -61,6 +73,7 @@ export default function ShowChapterReaderHeader() {
             alignItems: 'center',
           }}>
           <IconButton
+            disabled={!visible}
             icon="arrow-left"
             size={20}
             style={{marginHorizontal: 10}}
@@ -83,6 +96,7 @@ export default function ShowChapterReaderHeader() {
             onDismiss={() => setMenuOpen(false)}
             anchor={
               <IconButton
+                disabled={!visible}
                 icon="dots-vertical"
                 size={20}
                 style={{marginHorizontal: 10}}

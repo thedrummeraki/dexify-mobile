@@ -2,7 +2,7 @@ import React, {useEffect, useRef, useState} from 'react';
 import {View} from 'react-native';
 import {FlatList} from 'react-native-gesture-handler';
 import {ProgressBar} from 'react-native-paper';
-import Animated from 'react-native-reanimated';
+import Animated, {useAnimatedStyle, withTiming} from 'react-native-reanimated';
 import {useDimensions, wait} from 'src/utils';
 import {Page, ReaderActionState} from '../types';
 import {useReaderContext} from './ReaderProvider';
@@ -25,6 +25,7 @@ export default function ShowChapterReaderPagesList(props: Props) {
 
   const {height} = useDimensions();
   const [scrollEnabled, setScrollEnabled] = useState(true);
+  const [showActions, setShowActions] = useState(true);
   const [progress, setProgress] = useState(currentPage / pages.length);
 
   useEffect(() => {
@@ -33,7 +34,17 @@ export default function ShowChapterReaderPagesList(props: Props) {
 
   useEffect(() => {
     onActionsStateChange?.(ReaderActionState.Initial);
+    wait(3500).then(() => {
+      setShowActions(false);
+    });
   }, []);
+
+  const progressBarAnimatedStyle = useAnimatedStyle(
+    () => ({
+      top: withTiming(showActions ? 60 : 0, {duration: 100}),
+    }),
+    [showActions],
+  );
 
   return (
     <>
@@ -51,7 +62,6 @@ export default function ShowChapterReaderPagesList(props: Props) {
         scrollEnabled={scrollEnabled}
         showsVerticalScrollIndicator={false}
         onScroll={e => {
-          // console.log(e.nativeEvent.contentOffset.y / (height * pages.length));
           setProgress(
             (e.nativeEvent.contentOffset.y + height) / (height * pages.length),
           );
@@ -64,6 +74,9 @@ export default function ShowChapterReaderPagesList(props: Props) {
             key={page.number}
             page={page}
             onZoomStateChanged={zooming => setScrollEnabled(!zooming)}
+            onActionsVisibilityChange={() =>
+              setShowActions(current => !current)
+            }
           />
         )}
         onLayout={() => {
@@ -78,10 +91,33 @@ export default function ShowChapterReaderPagesList(props: Props) {
           );
         }}
       />
-      <View style={{position: 'absolute', top: 60, left: 0, right: 0, flex: 1}}>
+      <Animated.View
+        style={[
+          {
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            flex: 1,
+          },
+          progressBarAnimatedStyle,
+        ]}>
         <ProgressBar progress={progress} style={{height: 1}} />
-      </View>
-      <ShowChapterReaderActions />
+      </Animated.View>
+      <ShowChapterReaderActions
+        visible={showActions}
+        onPageSelect={page => {
+          wait(500)
+            .then(() => {
+              flatListRef.current?.scrollToIndex({
+                index: page - 1,
+                animated: true,
+              });
+            })
+            .finally(() => {
+              onPageChange(page);
+            });
+        }}
+      />
     </>
   );
 }

@@ -260,6 +260,7 @@ export function ChapterItem({
         marginBottom: 5,
       }}>
       <TouchableNativeFeedback
+        disabled={chapter.attributes.pages === 0}
         onPress={() => {
           onPress?.();
           navigation.push('ShowChapter', {
@@ -292,11 +293,11 @@ export function ChapterItem({
                   </Caption>
                 }
               />
-              {chapter.attributes.pages && (
+              {chapter.attributes.pages !== undefined ? (
                 <Caption style={{marginTop: -5}}>
                   {pluralize(chapter.attributes.pages, 'page')}
                 </Caption>
-              )}
+              ) : null}
             </View>
             <IconButton
               icon="check"

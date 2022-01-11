@@ -15,6 +15,7 @@ interface Props {
   numberOfLines?: number;
   background?: BackgroundColor | 'none';
   icon?: string;
+  disablePress?: boolean;
   onPress?: () => void;
   style?: StyleProp<ViewStyle>;
   textStyle?: StyleProp<TextStyle>;
@@ -27,6 +28,7 @@ export default function TextBadge({
   icon,
   style,
   textStyle,
+  disablePress,
   onPress,
 }: Props) {
   const theme = useTheme();
@@ -46,7 +48,7 @@ export default function TextBadge({
         style,
       )}>
       <MaybeTouchable
-        onPress={onPress}
+        onPress={disablePress ? undefined : onPress}
         backgroundColor={backgroundColor || theme.dark ? '#fff' : '#000'}>
         <Text
           numberOfLines={numberOfLines}

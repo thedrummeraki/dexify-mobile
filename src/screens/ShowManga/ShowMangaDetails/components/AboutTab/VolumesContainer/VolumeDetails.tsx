@@ -13,10 +13,10 @@ import {
   useLazyGetRequest,
   usePostRequest,
 } from 'src/api/utils';
-import {CloseCurrentScreenHeader} from 'src/components';
+import {Banner, CloseCurrentScreenHeader} from 'src/components';
 import BasicList from 'src/components/BasicList';
 import {List} from 'src/components/List/List';
-import {useContentRatingFitlers} from 'src/prodivers';
+import {useContentRatingFitlers, useIsLoggedIn} from 'src/prodivers';
 import {isNumber} from 'src/utils';
 import {useMangaDetails, VolumeInfo} from '../../../ShowMangaDetails';
 import {ChapterItem} from '../ChaptersList';
@@ -29,6 +29,7 @@ interface Props {
 }
 
 export default function VolumeDetails({volumeInfo, onCancel}: Props) {
+  const isLoggedIn = useIsLoggedIn();
   const {volume, chapterIds: ids} = volumeInfo;
   const {manga} = useMangaDetails();
   const readChaptersInitialized = useRef(false);
@@ -64,12 +65,16 @@ export default function VolumeDetails({volumeInfo, onCancel}: Props) {
         forceRefresh: false,
       },
     );
-  }, [page]);
+    if (isLoggedIn) {
+      getReadMarkers();
+    }
+  }, [page, isLoggedIn]);
 
-  const {data: readMarkersData, loading: readMarkersLoading} = useGetRequest<{
-    result: 'ok';
-    data: string[];
-  }>(UrlBuilder.mangaReadMarkers(manga.id));
+  const [getReadMarkers, {data: readMarkersData, loading: readMarkersLoading}] =
+    useLazyGetRequest<{
+      result: 'ok';
+      data: string[];
+    }>(UrlBuilder.mangaReadMarkers(manga.id));
 
   const [markRead] = usePostRequest<BasicResultsResponse>();
   const [markUnread] = useDeleteRequest<BasicResultsResponse>();
@@ -123,7 +128,13 @@ export default function VolumeDetails({volumeInfo, onCancel}: Props) {
     console.error(
       error || (data?.result === 'error' && data.errors) || 'unknown error',
     );
-    return <Text>Uh oh that didn't work!</Text>;
+    return (
+      <Banner
+        background="error"
+        title="Woops!"
+        body="Something went wrong when fetch the chapters."
+      />
+    );
   }
 
   if (data) {

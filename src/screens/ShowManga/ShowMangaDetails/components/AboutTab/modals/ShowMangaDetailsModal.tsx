@@ -91,11 +91,11 @@ function ModalChildren({onDismiss}: Pick<Props, 'onDismiss'>) {
       }
 
       return (
-        <View>
+        <View key={node.key}>
           {node.children.map(child => {
             return (
               <TextBadge
-                key={node.key}
+                key={child.key}
                 style={{marginVertical: -3, marginRight: 0}}
                 textStyle={{textDecorationLine: 'underline'}}
                 content={child.content}
