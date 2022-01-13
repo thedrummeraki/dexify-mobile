@@ -79,6 +79,7 @@ export default function ShowChapterReader({
           const page: Page = {
             number,
             image: {uri, width, height},
+            position: number,
           };
           setPages(current => [...current, page]);
         },
@@ -86,6 +87,7 @@ export default function ShowChapterReader({
           const page: Page = {
             number,
             image: {uri, width: deviceWidth, height: deviceHeight},
+            position: number,
           };
           setPages(current => [...current, page]);
         },

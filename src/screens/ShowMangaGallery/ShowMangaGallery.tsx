@@ -58,6 +58,7 @@ export default function ShowMangaGallery() {
             const page: Page = {
               number,
               image: {uri, width, height},
+              position: index + 1,
             };
             setPages(current => [...current, page]);
           },
@@ -65,6 +66,7 @@ export default function ShowMangaGallery() {
             const page: Page = {
               number,
               image: {uri, width: deviceWidth, height: deviceHeight},
+              position: index + 1,
             };
             setPages(current => [...current, page]);
           },

@@ -31,7 +31,7 @@ export default function ShowChapterReaderPageSwitcherModal({
     }
   }, [visible, currentPage]);
 
-  const focusedIndex = pages.findIndex(page => page.number === selectedPage);
+  const focusedIndex = pages.findIndex(page => page.position === selectedPage);
 
   return (
     <FullScreenModal
@@ -70,11 +70,11 @@ export default function ShowChapterReaderPageSwitcherModal({
               aspectRatio={1}
               title={`Page ${item.number}`}
               border={
-                item.number === selectedPage
+                item.position === selectedPage
                   ? {color: 'red', width: 2}
                   : undefined
               }
-              onPress={() => setSelectedPage(item.number)}
+              onPress={() => setSelectedPage(item.position)}
             />
           );
         }}

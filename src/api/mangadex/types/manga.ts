@@ -102,7 +102,7 @@ export namespace Manga {
   export type Aggregate = SuccessAggregate | ErrorAggregate;
 
   export interface StatisticRating {
-    average: number;
+    average: number | null;
     distribution: {[rating: string]: string};
   }
 

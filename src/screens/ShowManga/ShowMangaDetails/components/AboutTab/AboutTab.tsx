@@ -87,7 +87,7 @@ export default function AboutTab() {
           textStyle={{color: contentRatingTextColor}}
           background="none"
         />
-        {statistics && (
+        {statistics?.rating.average && (
           <TextBadge
             icon="star"
             content={statistics.rating.average.toFixed(2)}

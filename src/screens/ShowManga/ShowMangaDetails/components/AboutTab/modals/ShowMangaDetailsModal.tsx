@@ -25,7 +25,7 @@ import Markdown, {
 import {useMangaDetails} from '../../../ShowMangaDetails';
 import {useBackgroundColor} from 'src/components/colors';
 import {useDexifyNavigation} from 'src/foundation';
-import {capitalize, onlyUnique, useDimensions} from 'src/utils';
+import {capitalize, onlyUnique, pluralize, useDimensions} from 'src/utils';
 import CategoriesCollectionSection from 'src/components/CategoriesCollection/CategoriesCollectionSection';
 
 interface Props {
@@ -143,7 +143,7 @@ function ModalChildren({onDismiss}: Pick<Props, 'onDismiss'>) {
             justifyContent: 'flex-start',
             flexWrap: 'wrap',
           }}>
-          <TextBadge content={manga.attributes.status} />
+          <TextBadge content={capitalize(manga.attributes.status)} />
           <TextBadge
             content={contentRating.content}
             icon={contentRating.icon}
@@ -154,17 +154,17 @@ function ModalChildren({onDismiss}: Pick<Props, 'onDismiss'>) {
               content={capitalize(manga.attributes.publicationDemographic)}
             />
           ) : null}
-          {statistics && (
-            <>
-              <TextBadge
-                icon="star"
-                content={statistics.rating.average.toFixed(2)}
-              />
-              <TextBadge
-                icon="bookmark-check"
-                content={statistics.follows || 'N/A'}
-              />
-            </>
+          <TextBadge
+            icon="star"
+            content={statistics?.rating.average?.toFixed(2) || 'N/A'}
+            onPress={() => {}}
+          />
+          {statistics?.follows && (
+            <TextBadge
+              icon="bookmark-check"
+              content={pluralize(statistics.follows, 'follow')}
+              onPress={() => {}}
+            />
           )}
           {isAiring && (
             <TextBadge
