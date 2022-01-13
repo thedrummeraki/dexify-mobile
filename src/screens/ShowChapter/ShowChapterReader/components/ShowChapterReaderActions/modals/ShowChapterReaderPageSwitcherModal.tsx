@@ -1,10 +1,8 @@
 import React, {useCallback, useEffect, useRef, useState} from 'react';
-import {FlatList, ScrollView, View} from 'react-native';
+import {FlatList} from 'react-native';
 import {FullScreenModal} from 'src/components';
-import BasicList from 'src/components/BasicList';
-import {List} from 'src/components/List/List';
 import Thumbnail from 'src/foundation/Thumbnail';
-import {useDimensions, wait} from 'src/utils';
+import {wait} from 'src/utils';
 import {useReaderContext} from '../../ReaderProvider';
 
 interface Props {

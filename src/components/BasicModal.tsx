@@ -55,10 +55,11 @@ export default function BasicModal({
           style={{
             width: modalWidth,
             height: modalHeight,
-            backgroundColor: theme.colors.background,
+            backgroundColor: theme.colors.surface,
             paddingTop: 10,
             marginHorizontal: 15,
             overflow: 'hidden',
+            borderRadius: 15,
           }}>
           <CloseCurrentScreenHeader
             title={title}

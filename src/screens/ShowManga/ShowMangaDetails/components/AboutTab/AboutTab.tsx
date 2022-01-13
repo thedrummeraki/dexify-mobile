@@ -30,7 +30,7 @@ import {wait} from 'src/utils';
 import {useShowMangaRoute} from 'src/foundation';
 
 export default function AboutTab() {
-  const {manga, isAiring} = useMangaDetails();
+  const {manga, isAiring, statistics} = useMangaDetails();
   const loggedIn = useIsLoggedIn();
   const {
     params: {jumpToVolume},
@@ -85,11 +85,21 @@ export default function AboutTab() {
           content={contentRating.content}
           icon={contentRating.icon}
           textStyle={{color: contentRatingTextColor}}
+          background="none"
         />
+        {statistics && (
+          <TextBadge
+            icon="star"
+            content={statistics.rating.average.toFixed(2)}
+            onPress={() => {}}
+          />
+        )}
         {isAiring && (
           <TextBadge content="Anime airing" icon="video" background="primary" />
         )}
-        {manga.attributes.year && <TextBadge content={manga.attributes.year} />}
+        {manga.attributes.year && (
+          <TextBadge content={manga.attributes.year} background="none" />
+        )}
       </View>
     </View>
   );

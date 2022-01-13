@@ -66,8 +66,7 @@ function ModalChildren({onDismiss}: Pick<Props, 'onDismiss'>) {
   const theme = useTheme();
   const navigation = useDexifyNavigation();
   const {width} = useDimensions();
-  const {manga, isAiring} = useMangaDetails();
-  const [bannerVisible, setBannerVisible] = useState(true);
+  const {manga, isAiring, statistics} = useMangaDetails();
 
   const contentRating = contentRatingInfo(manga.attributes.contentRating);
   const contentRatingTextColor = useBackgroundColor(contentRating?.background);
@@ -111,7 +110,7 @@ function ModalChildren({onDismiss}: Pick<Props, 'onDismiss'>) {
         </View>
       );
     },
-    hr: (node, children, parent, styles) => (
+    hr: (node, _children, _parent, styles) => (
       <View
         key={node.key}
         style={{...styles._VIEW_SAFE_hr, backgroundColor: theme.colors.text}}
@@ -119,6 +118,8 @@ function ModalChildren({onDismiss}: Pick<Props, 'onDismiss'>) {
     ),
     image: () => null, // disable images for now
   };
+
+  console.log(statistics);
 
   return (
     <ScrollView>
@@ -142,6 +143,7 @@ function ModalChildren({onDismiss}: Pick<Props, 'onDismiss'>) {
             justifyContent: 'flex-start',
             flexWrap: 'wrap',
           }}>
+          <TextBadge content={manga.attributes.status} />
           <TextBadge
             content={contentRating.content}
             icon={contentRating.icon}
@@ -152,6 +154,18 @@ function ModalChildren({onDismiss}: Pick<Props, 'onDismiss'>) {
               content={capitalize(manga.attributes.publicationDemographic)}
             />
           ) : null}
+          {statistics && (
+            <>
+              <TextBadge
+                icon="star"
+                content={statistics.rating.average.toFixed(2)}
+              />
+              <TextBadge
+                icon="bookmark-check"
+                content={statistics.follows || 'N/A'}
+              />
+            </>
+          )}
           {isAiring && (
             <TextBadge
               content="Anime airing"
@@ -205,7 +219,6 @@ function ModalChildren({onDismiss}: Pick<Props, 'onDismiss'>) {
           />
         </View>
         <Markdown
-          // markdownit={MarkdownIt({typographer: true}).disable(['image'])}
           rules={rules}
           mergeStyle
           style={StyleSheet.create({

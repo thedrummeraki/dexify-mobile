@@ -47,7 +47,7 @@ export default function FollowMangaAction() {
     return (
       <IconButton
         color={primary}
-        icon="rss-box"
+        icon="rss"
         onPress={() => {
           setFollowing(false);
           unfollowManga();

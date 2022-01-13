@@ -1,5 +1,5 @@
 import {CoverArt, ScanlationGroup} from '.';
-import {MangadexError, Order, Relationship} from './api';
+import {BasicResultsResponse, MangadexError, Order, Relationship} from './api';
 import {Author} from './author';
 import {Maybe} from './utils';
 
@@ -39,7 +39,7 @@ export interface MangaAttributes {
   links?: Maybe<MangaLinks>;
   lastChapter?: Maybe<string>;
   publicationDemographic?: Maybe<PublicationDemographic>;
-  status?: Maybe<MangaStatus>;
+  status: MangaStatus;
   year?: Maybe<number>;
   contentRating: ContentRating;
   tags: Array<Manga.Tag>;
@@ -90,20 +90,43 @@ export namespace Manga {
     [key: string]: VolumeAggregateDetails;
   }
 
-  interface BasicAggregate {
-    result: 'ok' | 'error';
-  }
-
-  interface SuccessAggregate extends BasicAggregate {
+  interface SuccessAggregate extends BasicResultsResponse {
     result: 'ok';
     volumes: VolumeAggregateInfo;
   }
 
-  interface ErrorAggregate extends BasicAggregate {
+  interface ErrorAggregate extends BasicResultsResponse {
     result: 'error';
   }
 
   export type Aggregate = SuccessAggregate | ErrorAggregate;
+
+  export interface StatisticRating {
+    average: number;
+    distribution: {[rating: string]: string};
+  }
+
+  export interface Statistic {
+    rating: StatisticRating;
+    follows: number;
+  }
+
+  export interface Statistics {
+    [mangaId: string]: Statistic;
+  }
+
+  interface SuccessStatisticsResponse extends BasicResultsResponse {
+    result: 'ok';
+    statistics: Statistics;
+  }
+
+  interface ErrorStatisticsResponse extends BasicResultsResponse {
+    result: 'error';
+  }
+
+  export type StatisticsResponse =
+    | SuccessStatisticsResponse
+    | ErrorStatisticsResponse;
 }
 
 export type MangaLinks = {

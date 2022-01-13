@@ -126,7 +126,7 @@ export function MyProfileNavigationScreen() {
           onSelect={newValue => updateSetting('contentRatings', newValue)}
           title="Content rating filters"
           description={
-            'Please note that the ages are for guidance only. "For 18+" is not enabled by default.'
+            'Please note that the ages are for guidance only. Sexual content is not visible through this app.'
           }
         />
         {/* <OptionsSettingsItem

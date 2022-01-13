@@ -32,11 +32,11 @@ export default function ShowChapterReaderHeader({visible}: Props) {
   );
 
   const menuOptions: {title: string; icon?: string; onAction(): void}[] = [
-    {
-      title: 'Reader options...',
-      icon: 'cog',
-      onAction: () => {},
-    },
+    // {
+    //   title: 'Reader options...',
+    //   icon: 'cog',
+    //   onAction: () => {},
+    // },
   ];
 
   if (manga) {

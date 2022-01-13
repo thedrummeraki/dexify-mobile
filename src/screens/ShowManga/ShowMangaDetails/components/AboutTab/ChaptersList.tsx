@@ -1,5 +1,5 @@
 import {DateTime} from 'luxon';
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {
   Dimensions,
   FlatList,
@@ -243,6 +243,7 @@ export function ChapterItem({
   onPress?(): void;
   onLongPress?(): void;
 }) {
+  const theme = useTheme();
   const width = Dimensions.get('window').width - 30;
   const navigation = useDexifyNavigation();
 
@@ -250,6 +251,15 @@ export function ChapterItem({
     info => info.id === chapter.id,
   );
   const progress = useChapterProgress(chapter.id);
+  const disabled = chapter.attributes.pages === 0;
+
+  const handleOnPress = useCallback(() => {
+    onPress?.();
+    navigation.push('ShowChapter', {
+      id: chapter.id,
+      jumpToPage: info?.currentPage,
+    });
+  }, [navigation, chapter.id, info, onPress]);
 
   return (
     <View
@@ -260,14 +270,8 @@ export function ChapterItem({
         marginBottom: 5,
       }}>
       <TouchableNativeFeedback
-        disabled={chapter.attributes.pages === 0}
-        onPress={() => {
-          onPress?.();
-          navigation.push('ShowChapter', {
-            id: chapter.id,
-            jumpToPage: info?.currentPage,
-          });
-        }}
+        disabled={disabled}
+        onPress={disabled ? undefined : handleOnPress}
         onLongPress={() => {
           onLongPress?.();
           ReactNativeHapticFeedback.trigger('soft');
@@ -276,7 +280,12 @@ export function ChapterItem({
         <View style={{paddingVertical: 5, paddingHorizontal: 15}}>
           <View style={{width, flexDirection: 'row', alignItems: 'center'}}>
             <View style={{flexGrow: 1}}>
-              <Text numberOfLines={1} style={{width: width - 32}}>
+              <Text
+                numberOfLines={1}
+                style={{
+                  width: width - 32,
+                  color: disabled ? theme.colors.disabled : theme.colors.text,
+                }}>
                 {preferredChapterTitle(chapter)}
               </Text>
               <TextBadge

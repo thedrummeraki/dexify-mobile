@@ -65,6 +65,7 @@ export default function ChaptersSection({section, hideIfEmpty = true}: Props) {
                 <MangaThumbnail
                   hideAuthor
                   hideTitle
+                  clickable={false}
                   manga={relatedManga}
                   width={width}
                   aspectRatio={0.8}

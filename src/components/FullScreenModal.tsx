@@ -49,7 +49,7 @@ export default function FullScreenModal({
           style={{
             width: width,
             height: height,
-            backgroundColor: theme.colors.background,
+            backgroundColor: theme.colors.surface,
             paddingTop: 10,
           }}>
           <CloseCurrentScreenHeader

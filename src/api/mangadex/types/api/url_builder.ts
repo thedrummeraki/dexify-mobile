@@ -68,6 +68,10 @@ export default class UrlBuilder {
     return this.buildUrl(`/manga/${id}`, Object.assign(defaultValues, params));
   }
 
+  public static mangaStatistics(mangaId: string) {
+    return this.buildUrl(`/statistics/manga/${mangaId}`);
+  }
+
   public static covers(params?: Partial<CoverRequestParams>) {
     return this.buildUrl('/cover', params);
   }
