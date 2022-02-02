@@ -9,7 +9,7 @@ import {
   SingleMangaRequestParams,
 } from 'src/api/mangadex/types/api';
 import {UIMangaCategory} from 'src/categories';
-import {ContentRating, ScanlationGroup} from '..';
+import {ContentRating, ReadingStatus, ScanlationGroup} from '..';
 
 interface FeedOptions {
   only?:
@@ -55,6 +55,10 @@ export default class UrlBuilder {
     };
 
     return this.mangaList(Object.assign(defaultParams, category.params));
+  }
+
+  public static readingStatusMangaIds(status?: ReadingStatus | null) {
+    return this.buildUrl('/manga/status', {status: status ? status : ''});
   }
 
   public static mangaById(

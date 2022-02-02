@@ -7,6 +7,7 @@ import {
   MyLibraryNavigationScreen,
   MyProfileNavigationScreen,
   FollowedMangaScreen,
+  YourLibraryScreen,
 } from './screens';
 import {NewHome} from '..';
 import {useBackgroundColor} from 'src/components/colors';
@@ -50,9 +51,9 @@ function AuthenticatedBottomNavigation() {
 
   const [routes, setRoutes] = useState([
     {key: 'main', title: 'Home', icon: 'home', color},
-    {key: 'library', title: 'Library', icon: 'library-shelves', color},
+    // {key: 'library', title: 'Library', icon: 'library-shelves', color},
     {key: 'browse', title: 'Browse...', icon: 'magnify', color},
-    {key: 'followed', title: 'Followed', icon: 'heart', color},
+    // {key: 'followed', title: 'Followed', icon: 'heart', color},
     {key: 'profile', title: 'My profile', icon: 'account', color},
   ]);
 
@@ -63,9 +64,9 @@ function AuthenticatedBottomNavigation() {
   const renderScene = BottomNavigation.SceneMap({
     main: NewHome,
     browse: BrowseNavigationScreen,
-    library: MyLibraryNavigationScreen,
-    followed: FollowedMangaScreen,
-    profile: MyProfileNavigationScreen,
+    // library: MyLibraryNavigationScreen,
+    // followed: FollowedMangaScreen,
+    profile: YourLibraryScreen,
   });
 
   return (

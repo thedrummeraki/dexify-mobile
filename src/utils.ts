@@ -153,8 +153,8 @@ export function capitalize(word: string) {
   return word.charAt(0).toUpperCase() + word.slice(1);
 }
 
-export function wait(ms: number) {
-  return new Promise(resolve => setTimeout(resolve, ms));
+export function wait<T>(ms: number) {
+  return new Promise<T>(resolve => setTimeout(resolve, ms));
 }
 
 export function max(a: number, b: number) {

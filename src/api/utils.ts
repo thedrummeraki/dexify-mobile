@@ -16,6 +16,7 @@ import {
 } from 'src/prodivers';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import {AuthResponse} from './mangadex/types';
+import {wait} from 'src/utils';
 
 export enum ResponseStatus {
   Pending = 0,
@@ -169,7 +170,9 @@ export function useCategoryRequest<T>(category: UICategory): RequestResult<T> {
   useEffect(() => {
     const categoryUrl = url(category);
     if (categoryUrl) {
-      callback(categoryUrl).finally(() => setLoading(false));
+      wait(100).then(() =>
+        callback(categoryUrl).finally(() => setLoading(false)),
+      );
     }
   }, [category]);
 

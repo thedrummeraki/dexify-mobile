@@ -1,5 +1,5 @@
 import React from 'react';
-import {RefreshControl, ScrollView} from 'react-native';
+import {RefreshControl, ScrollView, StatusBar} from 'react-native';
 import Section from './Section/Section';
 import TopManga from './Section/components/TopManga';
 import {FeedData} from './types';
@@ -9,6 +9,7 @@ import {useContinueReadingChaptersList, useIsLoggedIn} from 'src/prodivers';
 import {EmptySectionState} from './Section/components';
 import {Banner} from 'src/components';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import LinearGradient from 'react-native-linear-gradient';
 
 interface Props {
   data: FeedData;
@@ -130,33 +131,43 @@ export default function Feed({data, refreshing, onRefresh}: Props) {
 
   if (isLoggedIn) {
     return (
+      <>
+        {/* <LinearGradient
+          colors={['#79e3fe', '#635df8', '#42385D']}
+          style={{flex: 1}}>
+          <StatusBar />
+        </LinearGradient> */}
+
+        <ScrollView
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }>
+          {topMangaMarkup}
+          {continueReadingMarkup}
+          {readingNowMarkup}
+          {updatesMarkup}
+          {randomMangaMarkup}
+          {airingNowMarkup}
+          {recentlyAddedMarkup}
+          {popularMangaMarkup}
+        </ScrollView>
+      </>
+    );
+  }
+
+  return (
+    <>
       <ScrollView
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }>
         {topMangaMarkup}
         {continueReadingMarkup}
-        {readingNowMarkup}
-        {updatesMarkup}
-        {randomMangaMarkup}
         {airingNowMarkup}
+        {randomMangaMarkup}
         {recentlyAddedMarkup}
         {popularMangaMarkup}
       </ScrollView>
-    );
-  }
-
-  return (
-    <ScrollView
-      refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-      }>
-      {topMangaMarkup}
-      {continueReadingMarkup}
-      {airingNowMarkup}
-      {randomMangaMarkup}
-      {recentlyAddedMarkup}
-      {popularMangaMarkup}
-    </ScrollView>
+    </>
   );
 }
