@@ -9,7 +9,7 @@ import {
   ViewStyle,
   Pressable,
 } from 'react-native';
-import {Badge, Caption, Text, useTheme} from 'react-native-paper';
+import {Badge, Caption, useTheme} from 'react-native-paper';
 import SkeletonContent from 'react-native-skeleton-content-nonexpo';
 
 export interface ThumbnailDimensionsProps {

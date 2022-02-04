@@ -35,7 +35,6 @@ export default class UrlBuilder {
 
   public static mangaList(params?: Partial<MangaRequestParams>) {
     const defaultValues: Partial<MangaRequestParams> = {
-      contentRating: [ContentRating.pornographic],
       includes: ['cover_art', 'artist', 'author', 'tag'],
     };
 
