@@ -92,6 +92,12 @@ export namespace YourAnime {
     titles: object;
   }
 
+  export interface AiringSchedule {
+    airingAt: number;
+    episodeNumber: number;
+    timeUntilAiring: number;
+  }
+
   export interface Platform {
     name: string;
     title: string;

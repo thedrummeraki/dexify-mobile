@@ -66,7 +66,7 @@ function ModalChildren({onDismiss}: Pick<Props, 'onDismiss'>) {
   const theme = useTheme();
   const navigation = useDexifyNavigation();
   const {width} = useDimensions();
-  const {manga, isAiring, statistics} = useMangaDetails();
+  const {manga, isAiring, statistics, airingAnime} = useMangaDetails();
 
   const contentRating = contentRatingInfo(manga.attributes.contentRating);
   const contentRatingTextColor = useBackgroundColor(contentRating?.background);
@@ -172,6 +172,7 @@ function ModalChildren({onDismiss}: Pick<Props, 'onDismiss'>) {
               icon="video"
               background="primary"
               style={{borderRadius: 10}}
+              onPress={() => {}}
             />
           )}
           {manga.attributes.year && (
@@ -269,8 +270,6 @@ function ModalChildren({onDismiss}: Pick<Props, 'onDismiss'>) {
     </ScrollView>
   );
 }
-
-function RelatedManga() {}
 
 function MangaExternalLinks() {
   const {manga} = useMangaDetails();

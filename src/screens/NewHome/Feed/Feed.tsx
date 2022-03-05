@@ -10,6 +10,7 @@ import {EmptySectionState} from './Section/components';
 import {Banner} from 'src/components';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import LinearGradient from 'react-native-linear-gradient';
+import {currentSeason} from 'src/utils';
 
 interface Props {
   data: FeedData;
@@ -103,7 +104,7 @@ export default function Feed({data, refreshing, onRefresh}: Props) {
   const airingNowMarkup = airingNow ? (
     <Section
       section={{
-        title: 'With an anime simulcast',
+        title: `${currentSeason({capitalize: true})} anime simulcast`,
         type: 'general',
         manga: airingNow,
       }}

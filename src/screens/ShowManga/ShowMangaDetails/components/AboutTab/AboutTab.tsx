@@ -22,6 +22,7 @@ import {
   AddToLibraryModal,
   AddToMDListModal,
   ShowMangaDetailsModal,
+  AiringAnimeModal,
 } from './modals';
 import {FollowMangaAction, LibraryAction} from './actions';
 import {useLazyGetRequest} from 'src/api/utils';
@@ -42,6 +43,7 @@ export default function AboutTab() {
     addToMDList: false,
     addToLibrary: false,
     showDetails: false,
+    airingAnime: false,
   });
 
   const [getReadingStatus, {data, loading}] =
@@ -95,7 +97,14 @@ export default function AboutTab() {
           />
         )}
         {isAiring && (
-          <TextBadge content="Anime airing" icon="video" background="primary" />
+          <TextBadge
+            content="Anime airing"
+            icon="video"
+            background="primary"
+            onPress={() =>
+              setSetModalsState(current => ({...current, airingAnime: true}))
+            }
+          />
         )}
         {manga.attributes.year && (
           <TextBadge content={manga.attributes.year} background="none" />
@@ -197,6 +206,13 @@ export default function AboutTab() {
         visible={modalsState.showDetails}
         onDismiss={() =>
           setSetModalsState(current => ({...current, showDetails: false}))
+        }
+      />
+      <AiringAnimeModal
+        loading={loading}
+        visible={modalsState.airingAnime}
+        onDismiss={() =>
+          setSetModalsState(current => ({...current, airingAnime: false}))
         }
       />
     </>

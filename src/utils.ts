@@ -220,3 +220,40 @@ export const timeAgo = (
 
   return relativeTimeInWords;
 };
+
+export function currentSeason({
+  capitalize: isCapital = true,
+}: {
+  capitalize?: boolean;
+}) {
+  const now = new Date();
+  const month = now.getMonth();
+  let season = '';
+
+  switch (month) {
+    case 1:
+    case 2:
+    case 3:
+      season = 'winter';
+      break;
+    case 4:
+    case 5:
+    case 6:
+      season = 'spring';
+      break;
+    case 7:
+    case 8:
+    case 9:
+      season = 'summer';
+      break;
+    case 10:
+    case 11:
+    case 12:
+      season = 'fall';
+      break;
+  }
+
+  return [isCapital ? capitalize(season) : season, now.getFullYear()]
+    .map(x => String(x))
+    .join(' ');
+}

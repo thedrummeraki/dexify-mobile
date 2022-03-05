@@ -12,6 +12,8 @@ import {AboutTab} from './components';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import UrlBuilder from 'src/api/mangadex/types/api/url_builder';
 import {wait} from 'src/utils';
+import {useYourAnimeShow} from 'src/api/youranime/hooks';
+import {YourAnime} from 'src/api/youranime';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -28,6 +30,7 @@ interface MangaDetails {
   loading: boolean;
   manga: Manga;
   isAiring?: boolean;
+  airingAnime?: YourAnime.Anime;
   aggregate?: Manga.VolumeAggregateInfo;
   statistics?: Manga.Statistic;
   covers: CoverArt[];
@@ -67,6 +70,8 @@ export default function ShowMangaDetails({manga}: Props) {
     airing: boolean;
     slug: string | null;
   }>(UrlBuilder.animeAiringInfo(manga.id));
+
+  const [getAnimeInfo, {data: animeInfo}] = useYourAnimeShow();
 
   const [getMangaCovers, {data: coverData, loading: coversLoading}] =
     useLazyGetRequest<PagedResultsList<CoverArt>>(
@@ -114,6 +119,12 @@ export default function ShowMangaDetails({manga}: Props) {
     wait(1).then(() => getStats());
   }, []);
 
+  useEffect(() => {
+    if (airingNow?.slug) {
+      getAnimeInfo({variables: {slug: airingNow.slug}});
+    }
+  }, [airingNow]);
+
   return (
     <ShowMangaDetailsProvider
       loading={loading || coversLoading}
@@ -125,6 +136,7 @@ export default function ShowMangaDetails({manga}: Props) {
       error={error}
       coverUrl={coverUrl}
       isAiring={airingNow?.airing}
+      airingAnime={animeInfo?.show}
       covers={covers}
       onCoverUrlUpdate={setCoverUrl}>
       <View style={{flex: 1}}>
