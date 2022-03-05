@@ -65,6 +65,7 @@ export default function ShowMangaDetails({manga}: Props) {
 
   const [getAiringInfo, {data: airingNow}] = useLazyGetRequest<{
     airing: boolean;
+    slug: string | null;
   }>(UrlBuilder.animeAiringInfo(manga.id));
 
   const [getMangaCovers, {data: coverData, loading: coversLoading}] =

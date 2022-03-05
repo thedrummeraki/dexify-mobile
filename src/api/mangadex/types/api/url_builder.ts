@@ -30,7 +30,7 @@ export default class UrlBuilder {
   }
 
   public static animeAiringInfo(mangaId: string) {
-    return this.buildUrl('/home/manga/anime/airing/info', {mangaId});
+    return `https://airing-manga.herokuapp.com/check/${mangaId}`;
   }
 
   public static mangaList(params?: Partial<MangaRequestParams>) {
