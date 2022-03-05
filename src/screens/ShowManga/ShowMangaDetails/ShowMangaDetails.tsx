@@ -60,7 +60,7 @@ export function useMangaDetails() {
 export default function ShowMangaDetails({manga}: Props) {
   const [getAggregate, {data, loading, error}] =
     useLazyGetRequest<Manga.Aggregate>(
-      `https://api.mangadex.org/manga/${manga.id}/aggregate?translatedLanguage[]=en`,
+      `https://api.mangadex.org/manga/${manga.id}/aggregate`,
     );
 
   const [getAiringInfo, {data: airingNow}] = useLazyGetRequest<{

@@ -302,11 +302,17 @@ export function ChapterItem({
                   </Caption>
                 }
               />
-              {chapter.attributes.pages !== undefined ? (
-                <Caption style={{marginTop: -5}}>
-                  {pluralize(chapter.attributes.pages, 'page')}
+              <View>
+                <Caption>
+                  {chapter.attributes.translatedLanguage}
+                  {chapter.attributes.pages !== undefined ? (
+                    <Caption style={{marginTop: -5}}>
+                      {' - '}
+                      {pluralize(chapter.attributes.pages, 'page')}
+                    </Caption>
+                  ) : null}
                 </Caption>
-              ) : null}
+              </View>
             </View>
             <IconButton
               icon="check"

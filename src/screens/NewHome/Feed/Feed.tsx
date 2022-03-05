@@ -103,7 +103,7 @@ export default function Feed({data, refreshing, onRefresh}: Props) {
   const airingNowMarkup = airingNow ? (
     <Section
       section={{
-        title: 'Fall 2021 simulcast',
+        title: 'With an anime simulcast',
         type: 'general',
         manga: airingNow,
       }}
