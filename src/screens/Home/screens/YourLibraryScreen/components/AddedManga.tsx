@@ -1,6 +1,5 @@
 import React, {useEffect, useMemo, useState} from 'react';
-import {ScrollView, View} from 'react-native';
-import {ActivityIndicator, Text} from 'react-native-paper';
+import {ScrollView} from 'react-native';
 import {CoverSize, mangaImage, readingStatusInfo} from 'src/api';
 import {
   AllReadingStatusResponse,
@@ -11,16 +10,8 @@ import {
 import UrlBuilder from 'src/api/mangadex/types/api/url_builder';
 import {useLazyGetRequest} from 'src/api/utils';
 import BasicList from 'src/components/BasicList';
-import CategoriesCollectionSection from 'src/components/CategoriesCollection/CategoriesCollectionSection';
-import MangaCategoryItem from 'src/components/CategoriesCollection/MangaCategoryItem';
 import Thumbnail, {ThumbnailSkeleton} from 'src/foundation/Thumbnail';
 import {pluralize, useDimensions} from 'src/utils';
-
-// association of up to 4 manga titles and a reading status
-interface ReadingStatusInfo {
-  readingStatus: ReadingStatus;
-  manga: Manga[];
-}
 
 type GroupedMangaInfo = {
   [key in ReadingStatus]: {ids: string[]; totalCount: number};
@@ -50,14 +41,6 @@ export default function AddedManga() {
     [groupedMangaInfo],
   );
 
-  console.log(
-    Object.entries(groupedMangaInfo || {}).map(([status, value]) => [
-      status,
-      value.ids.length,
-    ]),
-    'ids',
-  );
-
   const [manga, setManga] = useState<Manga[]>([]);
 
   useEffect(() => {
@@ -73,7 +56,6 @@ export default function AddedManga() {
           storage[group].ids.push(item.id);
         }
 
-        console.log(group, storage[group].ids.length);
         storage[group].totalCount = mappedInfo.filter(
           x => x.status === group,
         ).length;

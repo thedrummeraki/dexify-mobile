@@ -1,13 +1,8 @@
 import React, {useEffect, useState} from 'react';
 import {View} from 'react-native';
 import {FlatList} from 'react-native-gesture-handler';
-import {
-  CoverSize,
-  findRelationship,
-  mangaImage,
-  preferredChapterTitle,
-} from 'src/api';
-import {Chapter, Manga, PagedResultsList} from 'src/api/mangadex/types';
+import {preferredChapterTitle} from 'src/api';
+import {Chapter, PagedResultsList} from 'src/api/mangadex/types';
 import UrlBuilder from 'src/api/mangadex/types/api/url_builder';
 import {useLazyGetRequest} from 'src/api/utils';
 import Thumbnail from 'src/foundation/Thumbnail';

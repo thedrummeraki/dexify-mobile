@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {View} from 'react-native';
+import {Image, TouchableNativeFeedback, View} from 'react-native';
 import {Chip, Title} from 'react-native-paper';
 import CategoriesCollectionSection from 'src/components/CategoriesCollection/CategoriesCollectionSection';
 import {useSession} from 'src/prodivers';
@@ -15,14 +15,33 @@ export enum LibraryFilter {
 
 export default function YourLibraryScreen() {
   const {username} = useSession()!;
-
   const [currentFilter, setCurrentFilter] = useState(LibraryFilter.Added);
-  const a = Object.values(LibraryFilter);
 
   return (
     <View style={{padding: 5}}>
-      <Title style={{marginHorizontal: 15}}>{username}'s Library</Title>
-      <View style={{paddingBottom: 5, marginTop: -5, marginHorizontal: 5}}>
+      <View
+        style={{
+          flexDirection: 'row',
+          padding: 5,
+          paddingBottom: 0,
+          marginHorizontal: 5,
+          marginBottom: -5,
+          alignItems: 'center',
+        }}>
+        <TouchableNativeFeedback
+          useForeground
+          onPress={() => {}}
+          background={TouchableNativeFeedback.Ripple('#fff', true)}>
+          <Image
+            source={{
+              uri: `https://api.multiavatar.com/${username}.png`,
+            }}
+            style={{width: 30, aspectRatio: 1, borderRadius: 150}}
+          />
+        </TouchableNativeFeedback>
+        <Title style={{marginHorizontal: 10}}>{username}'s Library</Title>
+      </View>
+      <View style={{paddingBottom: 5, marginHorizontal: 5}}>
         <CategoriesCollectionSection
           data={Object.values(LibraryFilter)}
           renderItem={item => {
@@ -36,9 +55,7 @@ export default function YourLibraryScreen() {
           }}
         />
       </View>
-      {/* <View style={{paddingHorizontal: 10, marginBottom: 20}}> */}
       <ScreenChooser filter={currentFilter} />
-      {/* </View> */}
     </View>
   );
 }

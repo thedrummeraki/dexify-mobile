@@ -43,8 +43,8 @@ export function preferredMangaDescription(manga: Manga) {
   }
 
   return (
-    manga.attributes.description[manga.attributes.originalLanguage] ||
-    manga.attributes.description.en
+    manga.attributes.description.en ||
+    manga.attributes.description[manga.attributes.originalLanguage]
   );
 }
 
