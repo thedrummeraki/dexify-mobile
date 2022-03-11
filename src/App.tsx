@@ -1,4 +1,5 @@
 import React, {PropsWithChildren} from 'react';
+import {IntlProvider} from 'react-intl';
 import {
   NavigationContainer,
   DarkTheme as NavigationDarkTheme,
@@ -9,6 +10,7 @@ import {
   Provider,
   DarkTheme as PaperDarkTheme,
   DefaultTheme as PaperDefaultTheme,
+  Text,
 } from 'react-native-paper';
 import merge from 'deepmerge';
 import {
@@ -34,7 +36,9 @@ export default function App() {
                 <LibraryProvider>
                   <ThemeProvider>
                     <ReadingStateProvider>
-                      <Navigation />
+                      <IntlProvider locale="en" textComponent={Text}>
+                        <Navigation />
+                      </IntlProvider>
                     </ReadingStateProvider>
                   </ThemeProvider>
                 </LibraryProvider>

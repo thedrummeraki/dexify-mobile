@@ -30,6 +30,8 @@ import {
 } from 'src/prodivers';
 import {isNumber, localizedDateTime, pluralize} from 'src/utils';
 import {useMangaDetails} from '../../ShowMangaDetails';
+import {FormattedDisplayName, IntlProvider} from 'react-intl';
+import {formatDisplayName} from '@formatjs/intl';
 
 type FlatListProps = React.ComponentProps<typeof FlatList>;
 type Props = Pick<FlatListProps, 'ListFooterComponent' | 'ListHeaderComponent'>;
@@ -304,7 +306,16 @@ export function ChapterItem({
               />
               <View>
                 <Caption>
-                  {chapter.attributes.translatedLanguage}
+                  <IntlProvider
+                    locale="en"
+                    textComponent={children => (
+                      <Caption children={children.children} />
+                    )}>
+                    <FormattedDisplayName
+                      value={chapter.attributes.translatedLanguage}
+                      type="language"
+                    />
+                  </IntlProvider>
                   {chapter.attributes.pages !== undefined ? (
                     <Caption style={{marginTop: -5}}>
                       {' - '}

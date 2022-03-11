@@ -1,4 +1,5 @@
 import React, {useCallback, useEffect, useRef, useState} from 'react';
+import {FormattedDisplayName} from 'react-intl';
 import {View} from 'react-native';
 import {ActivityIndicator, Button, IconButton} from 'react-native-paper';
 import {
@@ -22,6 +23,7 @@ import {
 } from 'src/prodivers';
 import {useMangaDetails, VolumeInfo} from '../../../ShowMangaDetails';
 import {ChapterItem} from '../ChaptersList';
+import LocaleSelectionModal from './LocaleSelectionModal';
 
 enum SortRule {
   Asc = -1,
@@ -50,6 +52,7 @@ export default function VolumeDetails({volumeInfo, onCancel}: Props) {
   const [title, setTitle] = useState('...');
 
   const [page, setPage] = useState(1);
+  const [showLocalesModal, setShowLocalesModal] = useState(false);
 
   const contentRating = useContentRatingFitlers();
   const [fetchChapters, {data, loading, error}] =
@@ -147,12 +150,17 @@ export default function VolumeDetails({volumeInfo, onCancel}: Props) {
             title={title}
             icon="arrow-left"
           />
-          <IconButton
-            disabled
-            icon={
-              sortRule === SortRule.Desc ? 'sort-descending' : 'sort-ascending'
-            }
-          />
+          <View style={{flexShrink: 1, flexDirection: 'row'}}>
+            <IconButton disabled icon="translate" />
+            <IconButton
+              disabled
+              icon={
+                sortRule === SortRule.Desc
+                  ? 'sort-descending'
+                  : 'sort-ascending'
+              }
+            />
+          </View>
         </View>
         <ActivityIndicator style={{flex: 1}} />
         {/* <BasicList
@@ -194,16 +202,24 @@ export default function VolumeDetails({volumeInfo, onCancel}: Props) {
             title={title}
             icon="arrow-left"
           />
-          <IconButton
-            disabled={sortButtonDisabled}
-            icon={
-              sortRule === SortRule.Desc ? 'sort-descending' : 'sort-ascending'
-            }
-            onPress={() => {
-              setSortButtonDisabled(true);
-              setSortOrder(current => current * -1);
-            }}
-          />
+          <View style={{flexShrink: 1, flexDirection: 'row'}}>
+            <IconButton
+              icon="translate"
+              onPress={() => setShowLocalesModal(true)}
+            />
+            <IconButton
+              disabled={sortButtonDisabled}
+              icon={
+                sortRule === SortRule.Desc
+                  ? 'sort-descending'
+                  : 'sort-ascending'
+              }
+              onPress={() => {
+                setSortButtonDisabled(true);
+                setSortOrder(current => current * -1);
+              }}
+            />
+          </View>
         </View>
         <BasicList
           data={chapters}
@@ -250,6 +266,11 @@ export default function VolumeDetails({volumeInfo, onCancel}: Props) {
             Next
           </Button>
         </View>
+        <LocaleSelectionModal
+          visible={showLocalesModal}
+          onDismiss={() => setShowLocalesModal(false)}
+          locales={manga.attributes.availableTranslatedLanguages}
+        />
       </View>
     );
   }
