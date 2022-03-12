@@ -1,12 +1,9 @@
 import React, {useState} from 'react';
 import {Image, TouchableNativeFeedback, View} from 'react-native';
 import {Chip, Title} from 'react-native-paper';
-import {FullScreenModal} from 'src/components';
 import CategoriesCollectionSection from 'src/components/CategoriesCollection/CategoriesCollectionSection';
 import {useDexifyNavigation} from 'src/foundation';
 import {useSession} from 'src/prodivers';
-import {MyProfileNavigationScreen} from '../MyProfileNavigationScreen';
-import {AddedManga} from './components';
 import ScreenChooser from './components/ScreenChooser';
 
 export enum LibraryFilter {

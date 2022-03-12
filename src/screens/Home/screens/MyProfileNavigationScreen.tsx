@@ -26,11 +26,9 @@ import {
   usePossibleSettingsLanguages,
   useSettingsContext,
 } from 'src/prodivers';
-import {useBackgroundColor} from 'src/components/colors';
 import CategoriesCollectionSection from 'src/components/CategoriesCollection/CategoriesCollectionSection';
 import {SimpleInputDropdown} from 'src/components';
 import {appVersion} from 'src/utils';
-import {useIntl} from 'react-intl';
 
 interface BasicSettingItemProps {
   title: string;

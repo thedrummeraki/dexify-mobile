@@ -162,7 +162,7 @@ export default function ShowSettings() {
           defaultSelectionText="All languages"
         />
         <OptionsSettingsItem
-          size="full"
+          size="basic"
           value={settings.chapterLanguages}
           defaultValue={defaultSettings.chapterLanguages}
           possibleValues={possibleSettingsLanguages}
@@ -306,7 +306,10 @@ function OptionsSettingsItem<T>({
   const modalProps = {
     title,
     visible: modalOpen,
-    onDismiss: () => setModalOpen(false),
+    onDismiss: () => {
+      setCurrentSelection(value);
+      setModalOpen(false);
+    },
     primaryAction: {
       content: 'Done',
       onAction: () => {
@@ -333,21 +336,27 @@ function OptionsSettingsItem<T>({
           flexWrap: 'wrap',
           padding: 5,
         }}>
-        {selectedValues.length ? (
-          <ChipsContainer
-            data={selectedValues}
-            renderChip={item => (
+        <CategoriesCollectionSection
+          data={
+            selectedValues.length
+              ? selectedValues
+              : [{name: defaultSelectionText, value: '' as any}]
+          }
+          renderItem={item => {
+            return (
               <Chip
                 selected
                 style={{margin: 2}}
-                onPress={() => handlePress(item.value)}>
+                onPress={
+                  selectedValues.length
+                    ? () => handlePress(item.value)
+                    : undefined
+                }>
                 {item.name}
               </Chip>
-            )}
-          />
-        ) : (
-          <Chip selected>{defaultSelectionText}</Chip>
-        )}
+            );
+          }}
+        />
       </View>
       <FlatList
         data={visiblePossibleValues}
@@ -397,9 +406,13 @@ function OptionsSettingsItem<T>({
 
       <View style={{paddingHorizontal: 10}}>
         <CategoriesCollectionSection
-          data={possibleValues.filter(possibleValue =>
-            selected.includes(possibleValue.value),
-          )}
+          data={
+            selected.length
+              ? possibleValues.filter(possibleValue =>
+                  selected.includes(possibleValue.value),
+                )
+              : [{name: defaultSelectionText, value: '' as any}]
+          }
           renderItem={item => {
             return <Chip selected>{item.name || item.value}</Chip>;
           }}

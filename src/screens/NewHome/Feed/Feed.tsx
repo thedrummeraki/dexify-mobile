@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {RefreshControl, ScrollView, StatusBar} from 'react-native';
 import Section from './Section/Section';
 import TopManga from './Section/components/TopManga';
@@ -16,9 +16,10 @@ interface Props {
   data: FeedData;
   refreshing: boolean;
   onRefresh: () => void;
+  onFocus: () => void;
 }
 
-export default function Feed({data, refreshing, onRefresh}: Props) {
+export default function Feed({data, refreshing, onRefresh, onFocus}: Props) {
   const {
     topManga,
     airingNow,
@@ -31,6 +32,15 @@ export default function Feed({data, refreshing, onRefresh}: Props) {
 
   const isLoggedIn = useIsLoggedIn();
   const navigation = useDexifyNavigation();
+
+  // useEffect(() => {
+  //   const remove = navigation.addListener('focus', () => {
+  //     console.log('on focus');
+  //     onFocus();
+  //   });
+
+  //   return remove;
+  // }, []);
 
   const continueReadingChapters = useContinueReadingChaptersList();
 
@@ -97,6 +107,11 @@ export default function Feed({data, refreshing, onRefresh}: Props) {
         title: 'Most popular titles',
         type: 'general',
         manga: popularManga,
+        viewMore: () =>
+          navigation.push('ShowMangaList', {
+            title: 'Most popular titles',
+            params: {order: {followedCount: 'desc'}, limit: 100},
+          }),
       }}
     />
   ) : null;
@@ -126,6 +141,11 @@ export default function Feed({data, refreshing, onRefresh}: Props) {
         title: 'Newest on Mangadex',
         type: 'general',
         manga: recentlyAdded,
+        viewMore: () =>
+          navigation.push('ShowMangaList', {
+            title: 'Newest on Mangadex',
+            params: {order: {createdAt: 'desc'}, limit: 100},
+          }),
       }}
     />
   ) : null;

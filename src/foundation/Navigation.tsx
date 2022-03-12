@@ -53,15 +53,16 @@ export default function Navigation() {
   return (
     <Stack.Navigator
       initialRouteName="Home"
-      screenOptions={{
-        header: ({navigation}) => (
-          <Header
-            goBack={navigation.canGoBack() ? navigation.goBack : undefined}
-            // title={headerContext.title || options.title || route.name}
-            subtitle={headerContext.subtitle || undefined}
-          />
-        ),
-      }}>
+      // screenOptions={{
+      //   header: ({navigation}) => (
+      //     <Header
+      //       goBack={navigation.canGoBack() ? navigation.goBack : undefined}
+      //       // title={headerContext.title || options.title || route.name}
+      //       subtitle={headerContext.subtitle || undefined}
+      //     />
+      //   ),
+      // }}
+    >
       <Stack.Screen
         name="Home"
         component={Home}
@@ -92,7 +93,11 @@ export default function Navigation() {
         component={ShowScanlationGroup}
         options={{headerShown: false}}
       />
-      <Stack.Screen name="ShowMangaList" component={ShowMangaList} />
+      <Stack.Screen
+        name="ShowMangaList"
+        component={ShowMangaList}
+        options={{headerShown: false}}
+      />
       <Stack.Screen
         name="ShowCustomList"
         component={ShowCustomList}

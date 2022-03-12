@@ -62,7 +62,7 @@ export function useLibraryStatus(manga: string | Manga) {
   return libraryStatus || null;
 }
 
-export function useMangaIs(manga: string | Manga, status: ReadingStatus) {
+export function useMangaIds(manga: string | Manga, status: ReadingStatus) {
   let mangaId: string;
   if (typeof manga === 'string') {
     mangaId = manga;

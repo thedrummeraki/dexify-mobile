@@ -44,28 +44,32 @@ export default function AddToLibraryModal({
       onDismiss={onDismiss}>
       <FlatList
         data={allReadingStatuses}
-        renderItem={({item}) => (
-          <TouchableNativeFeedback
-            onPress={() => {
-              onReadingStatusUpdate(item.value);
-              Promise.all([
-                updateReadingStatus(undefined, {status: item.value}),
-              ]);
-            }}>
-            <View
-              style={{
-                padding: 15,
+        renderItem={({item}) => {
+          const selected = readingStatus === item.value;
+
+          return (
+            <TouchableNativeFeedback
+              onPress={() => {
+                const status = selected ? null : item.value;
+
+                onReadingStatusUpdate(status);
+                Promise.all([updateReadingStatus(undefined, {status})]);
               }}>
-              <TextBadge
-                style={{marginLeft: -5}}
-                icon={readingStatus === item.value ? 'check' : undefined}
-                content={<Text>{item.content}</Text>}
-                background="none"
-              />
-              <Caption>{item.phrase}</Caption>
-            </View>
-          </TouchableNativeFeedback>
-        )}
+              <View
+                style={{
+                  padding: 15,
+                }}>
+                <TextBadge
+                  style={{marginLeft: -5}}
+                  icon={selected ? 'check' : undefined}
+                  content={<Text>{item.content}</Text>}
+                  background="none"
+                />
+                <Caption>{item.phrase}</Caption>
+              </View>
+            </TouchableNativeFeedback>
+          );
+        }}
       />
     </FullScreenModal>
   );

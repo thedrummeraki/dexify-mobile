@@ -1,5 +1,5 @@
 import React, {PropsWithChildren, useContext, useEffect, useState} from 'react';
-import {ContentRating} from 'src/api/mangadex/types';
+import {ContentRating, MangaRequestParams} from 'src/api/mangadex/types';
 import {useSession} from '.';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import {formatDisplayName} from '@formatjs/intl';
@@ -148,6 +148,18 @@ export function useSettingsContext() {
 
 export function useSettings() {
   return useSettingsContext().settings;
+}
+
+export function useGlobalMangaParams(): Pick<
+  MangaRequestParams,
+  'availableTranslatedLanguage' | 'contentRating'
+> {
+  const {mangaLanguages, contentRatings} = useSettings();
+
+  return {
+    availableTranslatedLanguage: mangaLanguages,
+    contentRating: contentRatings,
+  };
 }
 
 export function useContentRatingFitlers() {

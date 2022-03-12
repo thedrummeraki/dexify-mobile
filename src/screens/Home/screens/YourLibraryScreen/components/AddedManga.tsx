@@ -11,6 +11,7 @@ import UrlBuilder from 'src/api/mangadex/types/api/url_builder';
 import {useLazyGetRequest} from 'src/api/utils';
 import BasicList from 'src/components/BasicList';
 import Thumbnail, {ThumbnailSkeleton} from 'src/foundation/Thumbnail';
+import {useLibraryContext} from 'src/prodivers';
 import {pluralize, useDimensions} from 'src/utils';
 
 type GroupedMangaInfo = {
@@ -18,10 +19,13 @@ type GroupedMangaInfo = {
 };
 
 export default function AddedManga() {
-  const [getMangaIds, {data, loading: idsLoading, error}] =
-    useLazyGetRequest<AllReadingStatusResponse>(
-      UrlBuilder.readingStatusMangaIds(),
-    );
+  // const [getMangaIds, {data, loading: idsLoading, error}] =
+  //   useLazyGetRequest<AllReadingStatusResponse>(
+  //     UrlBuilder.readingStatusMangaIds(),
+  //   );
+
+  const {readingStatus: data} = useLibraryContext();
+  console.log({data});
 
   const {width} = useDimensions();
 
@@ -29,8 +33,6 @@ export default function AddedManga() {
   const idCountLimit = 100 / Object.values(ReadingStatus).length;
   const [getManga, {loading: mangaLoading}] =
     useLazyGetRequest<PagedResultsList<Manga>>();
-
-  const loading = mangaLoading || idsLoading;
 
   const [groupedMangaInfo, setGroupedMangaInfo] = useState<GroupedMangaInfo>();
   const mangaIds = useMemo(
@@ -41,31 +43,31 @@ export default function AddedManga() {
     [groupedMangaInfo],
   );
 
+  const loading = mangaLoading && mangaIds.length > 0;
+
   const [manga, setManga] = useState<Manga[]>([]);
 
   useEffect(() => {
-    getMangaIds().then(response => {
-      const mappedInfo = Object.entries(response?.statuses || []).map(
-        ([id, status]) => ({id, status}),
-      );
+    const mappedInfo = Object.entries(data?.statuses || []).map(
+      ([id, status]) => ({id, status}),
+    );
 
-      const grouped = mappedInfo.reduce((storage, item) => {
-        const group = item.status;
-        storage[group] = storage[group] || {ids: [], totalCount: 0};
-        if (storage[group].ids.length < idCountLimit) {
-          storage[group].ids.push(item.id);
-        }
+    const grouped = mappedInfo.reduce((storage, item) => {
+      const group = item.status;
+      storage[group] = storage[group] || {ids: [], totalCount: 0};
+      if (storage[group].ids.length < idCountLimit) {
+        storage[group].ids.push(item.id);
+      }
 
-        storage[group].totalCount = mappedInfo.filter(
-          x => x.status === group,
-        ).length;
+      storage[group].totalCount = mappedInfo.filter(
+        x => x.status === group,
+      ).length;
 
-        return storage;
-      }, {} as GroupedMangaInfo);
+      return storage;
+    }, {} as GroupedMangaInfo);
 
-      setGroupedMangaInfo(grouped);
-    });
-  }, []);
+    setGroupedMangaInfo(grouped);
+  }, [data]);
 
   useEffect(() => {
     if (mangaIds?.length) {

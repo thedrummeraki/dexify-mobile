@@ -1,5 +1,7 @@
-import {DateTime} from 'luxon';
-import React, {useEffect} from 'react';
+import {DateTime, Duration, DurationUnit} from 'luxon';
+import {RelativeTimeFormatSingularUnit} from '@formatjs/ecma402-abstract';
+import React, {useEffect, useState} from 'react';
+import {FormattedRelativeTime} from 'react-intl';
 import {Image, Linking, Pressable, ScrollView, View} from 'react-native';
 import {
   ActivityIndicator,
@@ -15,7 +17,7 @@ import {Banner, FullScreenModal} from 'src/components';
 import CategoriesCollectionSection from 'src/components/CategoriesCollection/CategoriesCollectionSection';
 import Thumbnail from 'src/foundation/Thumbnail';
 import {PlatformIcons, platforms} from 'src/icons';
-import {localizedDateTime, useDimensions} from 'src/utils';
+import {localizedDateTime, pluralize, useDimensions} from 'src/utils';
 import {useMangaDetails} from '../../../ShowMangaDetails';
 
 interface Props {
@@ -111,11 +113,30 @@ function AiringInfo() {
   const [getNextEpisode, {data, loading, error}] = useNextEpisodeForShow();
   const {airingAnime} = useMangaDetails();
 
+  const [nextAiringEpisode, setNextAiringEpisode] =
+    useState<YourAnime.AiringSchedule>();
+
+  const units: RelativeTimeFormatSingularUnit[] = [
+    'year',
+    'month',
+    'week',
+    'day',
+    'hour',
+    'minute',
+    'second',
+  ];
+
   useEffect(() => {
     if (airingAnime) {
       getNextEpisode({variables: {slug: airingAnime.slug}});
     }
   }, [airingAnime]);
+
+  useEffect(() => {
+    if (data?.nextAiringEpisode) {
+      setNextAiringEpisode(data.nextAiringEpisode);
+    }
+  }, [data]);
 
   if (!airingAnime?.nextEpisode) {
     return null;
@@ -129,15 +150,24 @@ function AiringInfo() {
     return <Banner>Airing schedule is not available at the moment.</Banner>;
   }
 
-  if (data?.nextAiringEpisode) {
+  if (nextAiringEpisode) {
+    const dateTime = DateTime.fromJSDate(
+      new Date(nextAiringEpisode.airingAt * 1000),
+    );
+    const diff = dateTime.diffNow().shiftTo(...units);
+    const unit = units.find(unit => diff.get(unit) !== 0) || 'second';
+
     return (
       <Card style={{marginHorizontal: -15, padding: 15}}>
-        <Text>Episode {data.nextAiringEpisode.episodeNumber}</Text>
-        <Text>
-          {DateTime.fromJSDate(
-            new Date(data.nextAiringEpisode.airingAt * 1000),
-          ).toLocaleString(DateTime.DATETIME_MED)}
-        </Text>
+        <View style={{flex: 1, flexDirection: 'row'}}>
+          <Text style={{marginRight: 3, fontWeight: 'bold'}}>
+            Episode {nextAiringEpisode.episodeNumber}
+          </Text>
+          <FormattedRelativeTime value={diff.get(unit)} unit={unit} />
+        </View>
+        <Caption>
+          {dateTime.toLocaleString(DateTime.DATETIME_MED_WITH_WEEKDAY)}
+        </Caption>
       </Card>
     );
   }

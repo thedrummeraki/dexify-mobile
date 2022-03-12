@@ -864,7 +864,7 @@
     "@formatjs/intl-localematcher" "0.2.24"
     tslib "^2.1.0"
 
-"@formatjs/intl-getcanonicallocales@1.9.0":
+"@formatjs/intl-getcanonicallocales@1.9.0", "@formatjs/intl-getcanonicallocales@^1.9.0":
   version "1.9.0"
   resolved "https://registry.yarnpkg.com/@formatjs/intl-getcanonicallocales/-/intl-getcanonicallocales-1.9.0.tgz#3fbe3fff5ac639b27e56d19c2f3e8c24a7b13e5f"
   integrity sha512-5f/5oX0lYw4SOPT6KEOJn/TFKY2GRemrxNuvi/+xdyb3kQhsQlUU0vbcSJhnP+sBcrZFOfoL7OVRkw/vFl9KOA==
@@ -894,6 +894,24 @@
   resolved "https://registry.yarnpkg.com/@formatjs/intl-localematcher/-/intl-localematcher-0.2.24.tgz#b49fd753c0f54421f26a3c1d0e9cf98a3966e78f"
   integrity sha512-K/HRGo6EMnCbhpth/y3u4rW4aXkmQNqRe1L2G+Y5jNr3v0gYhvaucV8WixNju/INAMbPBlbsRBRo/nfjnoOnxQ==
   dependencies:
+    tslib "^2.1.0"
+
+"@formatjs/intl-pluralrules@^4.3.2":
+  version "4.3.2"
+  resolved "https://registry.yarnpkg.com/@formatjs/intl-pluralrules/-/intl-pluralrules-4.3.2.tgz#8ac4b8592bc231fd2adcccc6e3012d17d007c638"
+  integrity sha512-ptV6vYF9asaDWbU3WvfXCgLYRZLGbl3LuiY1hFRr/BJtVXSLP+ocgLs2k6oEME401p3ucW+ZVMeqxftRTH8BFA==
+  dependencies:
+    "@formatjs/ecma402-abstract" "1.11.3"
+    "@formatjs/intl-localematcher" "0.2.24"
+    tslib "^2.1.0"
+
+"@formatjs/intl-relativetimeformat@^10.0.0":
+  version "10.0.0"
+  resolved "https://registry.yarnpkg.com/@formatjs/intl-relativetimeformat/-/intl-relativetimeformat-10.0.0.tgz#0dc1cc8769379beb6cdf08d84cbfd24a5b3f8ed4"
+  integrity sha512-MtzUxspCRaloseXSQBj0e0Y8F6tamO5Z6I2TkguS8EzIVWjMQeA73wTTljGHrRz9fEXdinxvtTgu/hR8a4QMng==
+  dependencies:
+    "@formatjs/ecma402-abstract" "1.11.3"
+    "@formatjs/intl-localematcher" "0.2.24"
     tslib "^2.1.0"
 
 "@formatjs/intl@2.0.0":
