@@ -32,6 +32,7 @@ interface MangaDetails {
   isAiring?: boolean;
   airingAnime?: YourAnime.Anime;
   aggregate?: Manga.VolumeAggregateInfo;
+  preferredLanguages: string[];
   statistics?: Manga.Statistic;
   covers: CoverArt[];
   volumes: string[];
@@ -39,6 +40,7 @@ interface MangaDetails {
   error?: any;
   coverUrl?: string;
   onCoverUrlUpdate: (coverUrl: string) => void;
+  onPreferredLanguagesChange: (preferredLanguages: string[]) => void;
 }
 
 const ShowMangaDetailsContext = React.createContext<MangaDetails>(
@@ -61,10 +63,10 @@ export function useMangaDetails() {
 }
 
 export default function ShowMangaDetails({manga}: Props) {
+  const [preferredLanguages, setPreferredLanguages] = useState<string[]>([]);
+
   const [getAggregate, {data, loading, error}] =
-    useLazyGetRequest<Manga.Aggregate>(
-      `https://api.mangadex.org/manga/${manga.id}/aggregate`,
-    );
+    useLazyGetRequest<Manga.Aggregate>();
 
   const [getAiringInfo, {data: airingNow}] = useLazyGetRequest<{
     airing: boolean;
@@ -113,11 +115,20 @@ export default function ShowMangaDetails({manga}: Props) {
   );
 
   useEffect(() => {
-    wait(1).then(() => getAggregate());
     wait(1).then(() => getMangaCovers());
     wait(1).then(() => getAiringInfo());
     wait(1).then(() => getStats());
   }, []);
+
+  useEffect(() => {
+    wait(1).then(() =>
+      getAggregate(
+        UrlBuilder.mangaVolumesAndChapters(manga.id, {
+          translatedLanguage: preferredLanguages,
+        }),
+      ),
+    );
+  }, [manga.id, preferredLanguages]);
 
   useEffect(() => {
     if (airingNow?.slug) {
@@ -138,7 +149,9 @@ export default function ShowMangaDetails({manga}: Props) {
       isAiring={airingNow?.airing}
       airingAnime={animeInfo?.show}
       covers={covers}
-      onCoverUrlUpdate={setCoverUrl}>
+      onCoverUrlUpdate={setCoverUrl}
+      preferredLanguages={preferredLanguages}
+      onPreferredLanguagesChange={setPreferredLanguages}>
       <View style={{flex: 1}}>
         <AboutTab />
       </View>

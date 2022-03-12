@@ -89,3 +89,8 @@ export type CoverRequestParams = Partial<{
   limit: number;
   offset: number;
 }>;
+
+export type VolumesAndChaptersParams = Partial<{
+  translatedLanguage: string[];
+  groups: string[];
+}>

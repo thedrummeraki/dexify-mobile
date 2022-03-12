@@ -16,6 +16,7 @@ import {
 } from 'src/api/utils';
 import {Banner, CloseCurrentScreenHeader} from 'src/components';
 import BasicList from 'src/components/BasicList';
+import {useBackgroundColor} from 'src/components/colors';
 import {
   useContentRatingFitlers,
   useSettings,
@@ -39,7 +40,8 @@ interface Props {
 
 export default function VolumeDetails({volumeInfo, onCancel}: Props) {
   const {volume, chapterIds: ids} = volumeInfo;
-  const {manga} = useMangaDetails();
+  const {manga, preferredLanguages, onPreferredLanguagesChange} =
+    useMangaDetails();
   const readChaptersInitialized = useRef(false);
   const {settings, updateSetting} = useSettingsContext();
   const [sortRule, setSortOrder] = useState<SortRule>(
@@ -61,6 +63,9 @@ export default function VolumeDetails({volumeInfo, onCancel}: Props) {
     data?.result === 'ok' && ids.length > data.offset + data.data.length;
   const hasPrevPage = data?.result === 'ok' && data.offset > 0;
 
+  const primaryColor = useBackgroundColor('primary');
+  const translateColor = preferredLanguages.length ? primaryColor : undefined;
+
   useEffect(() => {
     const limit = 100;
     const offset = (page - 1) * 100;
@@ -74,6 +79,7 @@ export default function VolumeDetails({volumeInfo, onCancel}: Props) {
           chapter: sortRule === SortRule.Asc ? 'asc' : 'desc',
           publishAt: 'asc',
         },
+        translatedLanguage: preferredLanguages,
         limit,
         offset,
       }),
@@ -85,7 +91,7 @@ export default function VolumeDetails({volumeInfo, onCancel}: Props) {
       setSortButtonDisabled(false);
     });
     getReadMarkers();
-  }, [page, sortRule]);
+  }, [page, sortRule, preferredLanguages]);
 
   useEffect(() => {
     updateSetting(
@@ -151,7 +157,7 @@ export default function VolumeDetails({volumeInfo, onCancel}: Props) {
             icon="arrow-left"
           />
           <View style={{flexShrink: 1, flexDirection: 'row'}}>
-            <IconButton disabled icon="translate" />
+            <IconButton disabled icon="translate" color={translateColor} />
             <IconButton
               disabled
               icon={
@@ -163,14 +169,6 @@ export default function VolumeDetails({volumeInfo, onCancel}: Props) {
           </View>
         </View>
         <ActivityIndicator style={{flex: 1}} />
-        {/* <BasicList
-          loading
-          data={[]}
-          aspectRatio={1}
-          skeletonItem={<List.Item.Skeleton />}
-          skeletonLength={ids.length}
-          itemStyle={{padding: 0}}
-        /> */}
       </View>
     );
   }
@@ -206,6 +204,7 @@ export default function VolumeDetails({volumeInfo, onCancel}: Props) {
             <IconButton
               icon="translate"
               onPress={() => setShowLocalesModal(true)}
+              color={translateColor}
             />
             <IconButton
               disabled={sortButtonDisabled}
@@ -267,13 +266,58 @@ export default function VolumeDetails({volumeInfo, onCancel}: Props) {
           </Button>
         </View>
         <LocaleSelectionModal
+          selectedLocales={preferredLanguages}
+          locales={manga.attributes.availableTranslatedLanguages}
           visible={showLocalesModal}
           onDismiss={() => setShowLocalesModal(false)}
-          locales={manga.attributes.availableTranslatedLanguages}
+          onSubmit={onPreferredLanguagesChange}
         />
       </View>
     );
   }
 
-  return null;
+  return (
+    <View>
+      <View
+        style={{
+          flex: 1,
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+        }}>
+        <CloseCurrentScreenHeader
+          onClose={onCancel}
+          title={title}
+          icon="arrow-left"
+        />
+        <View style={{flexShrink: 1, flexDirection: 'row'}}>
+          <IconButton
+            icon="translate"
+            color={translateColor}
+            onPress={() => setShowLocalesModal(true)}
+          />
+          <IconButton
+            disabled
+            icon={
+              sortRule === SortRule.Desc ? 'sort-descending' : 'sort-ascending'
+            }
+          />
+        </View>
+      </View>
+      <Banner
+        primaryAction={{
+          content: 'Change language',
+          onAction: () => setShowLocalesModal(true),
+        }}
+        secondaryAction={{content: 'Back', onAction: onCancel}}>
+        No chapters were found for your current language selection.
+      </Banner>
+      <LocaleSelectionModal
+        selectedLocales={preferredLanguages}
+        locales={manga.attributes.availableTranslatedLanguages}
+        visible={showLocalesModal}
+        onDismiss={() => setShowLocalesModal(false)}
+        onSubmit={onPreferredLanguagesChange}
+      />
+    </View>
+  );
 }

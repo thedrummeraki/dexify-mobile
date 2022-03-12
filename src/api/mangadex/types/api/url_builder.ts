@@ -7,6 +7,7 @@ import {
   Order,
   ScanlationGroupRequestParams,
   SingleMangaRequestParams,
+  VolumesAndChaptersParams,
 } from 'src/api/mangadex/types/api';
 import {UIMangaCategory} from 'src/categories';
 import {ContentRating, ReadingStatus, ScanlationGroup} from '..';
@@ -73,6 +74,10 @@ export default class UrlBuilder {
 
   public static mangaStatistics(mangaId: string) {
     return this.buildUrl(`/statistics/manga/${mangaId}`);
+  }
+
+  public static mangaVolumesAndChapters(mangaId: string, params?: VolumesAndChaptersParams) {
+    return this.buildUrl(`/manga/${mangaId}/aggregate`, params);
   }
 
   public static covers(params?: Partial<CoverRequestParams>) {

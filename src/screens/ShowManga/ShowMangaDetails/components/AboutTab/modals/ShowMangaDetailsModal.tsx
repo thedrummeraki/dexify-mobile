@@ -27,6 +27,7 @@ import {useBackgroundColor} from 'src/components/colors';
 import {useDexifyNavigation} from 'src/foundation';
 import {capitalize, onlyUnique, pluralize, useDimensions} from 'src/utils';
 import CategoriesCollectionSection from 'src/components/CategoriesCollection/CategoriesCollectionSection';
+import {FormattedDisplayName} from 'react-intl';
 
 interface Props {
   visible: boolean;
@@ -66,7 +67,7 @@ function ModalChildren({onDismiss}: Pick<Props, 'onDismiss'>) {
   const theme = useTheme();
   const navigation = useDexifyNavigation();
   const {width} = useDimensions();
-  const {manga, isAiring, statistics, airingAnime} = useMangaDetails();
+  const {manga, isAiring, statistics} = useMangaDetails();
 
   const contentRating = contentRatingInfo(manga.attributes.contentRating);
   const contentRatingTextColor = useBackgroundColor(contentRating?.background);
@@ -216,7 +217,12 @@ function ModalChildren({onDismiss}: Pick<Props, 'onDismiss'>) {
           }}>
           <Text style={{marginRight: 6}}>Original language:</Text>
           <TextBadge
-            content={manga.attributes.originalLanguage.toLocaleUpperCase()}
+            content={
+              <FormattedDisplayName
+                value={manga.attributes.originalLanguage}
+                type="language"
+              />
+            }
           />
         </View>
         <Markdown
