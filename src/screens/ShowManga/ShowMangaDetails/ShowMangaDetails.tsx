@@ -14,6 +14,7 @@ import UrlBuilder from 'src/api/mangadex/types/api/url_builder';
 import {wait} from 'src/utils';
 import {useYourAnimeShow} from 'src/api/youranime/hooks';
 import {YourAnime} from 'src/api/youranime';
+import {useSettings} from 'src/prodivers';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -63,7 +64,15 @@ export function useMangaDetails() {
 }
 
 export default function ShowMangaDetails({manga}: Props) {
-  const [preferredLanguages, setPreferredLanguages] = useState<string[]>([]);
+  const {chapterLanguages} = useSettings();
+  const [preferredLanguages, setPreferredLanguages] = useState<string[]>(() =>
+    manga.attributes.availableTranslatedLanguages.filter(
+      availableTranslatedLanguage =>
+        chapterLanguages.length
+          ? chapterLanguages.includes(availableTranslatedLanguage)
+          : true,
+    ),
+  );
 
   const [getAggregate, {data, loading, error}] =
     useLazyGetRequest<Manga.Aggregate>();

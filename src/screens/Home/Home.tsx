@@ -13,6 +13,7 @@ import {NewHome} from '..';
 import {useBackgroundColor} from 'src/components/colors';
 import {useDexifyNavigation} from 'src/foundation';
 import {Linking} from 'react-native';
+import ShowSettings from '../ShowSettings';
 
 const MANGA_URL_REGEX = /https:\/\/mangadex.org\/title\/([a-zA-Z-]+)(\/\s.)?/;
 
@@ -55,6 +56,7 @@ function AuthenticatedBottomNavigation() {
     {key: 'browse', title: 'Browse...', icon: 'magnify', color},
     // {key: 'followed', title: 'Followed', icon: 'heart', color},
     {key: 'profile', title: 'My profile', icon: 'account', color},
+    {key: 'settings', title: 'Settings', icon: 'cog', color},
   ]);
 
   useEffect(() => {
@@ -67,6 +69,7 @@ function AuthenticatedBottomNavigation() {
     // library: MyLibraryNavigationScreen,
     // followed: FollowedMangaScreen,
     profile: YourLibraryScreen,
+    settings: ShowSettings,
   });
 
   return (

@@ -20,11 +20,12 @@ interface FeedOptions {
     | 'randomManga'
     | 'recentlyAdded';
   contentRating?: ContentRating[];
+  translatedLanguage?: string[];
 }
 
 export default class UrlBuilder {
   static API_URL = 'https://mangadex-client-proxy.herokuapp.com'; // 'https://api.mangadex.org';
-  // static API_URL = 'http://192.168.2.24:3001';
+  // static API_URL = 'http://192.168.86.27:3001';
 
   public static feed(params?: FeedOptions) {
     return this.buildUrl('/home/feed', params);

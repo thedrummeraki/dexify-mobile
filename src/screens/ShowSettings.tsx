@@ -152,23 +152,23 @@ export default function ShowSettings() {
         />
         <OptionsSettingsItem
           size="full"
+          value={settings.mangaLanguages}
+          defaultValue={defaultSettings.mangaLanguages}
+          possibleValues={possibleSettingsLanguages}
+          onSelect={newValue => updateSetting('mangaLanguages', newValue)}
+          title="Manga language filters"
+          description="When set, only shows manga with chapters translated in the selected languages."
+          placeholder="Filter by language..."
+          defaultSelectionText="All languages"
+        />
+        <OptionsSettingsItem
+          size="full"
           value={settings.chapterLanguages}
           defaultValue={defaultSettings.chapterLanguages}
           possibleValues={possibleSettingsLanguages}
           onSelect={newValue => updateSetting('chapterLanguages', newValue)}
           title="Chapter language filters"
           description="Default language used when viewing chapters. Some manga may not have chapters available in your language"
-          placeholder="Filter by language..."
-          defaultSelectionText="All languages"
-        />
-        <OptionsSettingsItem
-          size="full"
-          value={settings.mangaLanguages}
-          defaultValue={defaultSettings.mangaLanguages}
-          possibleValues={possibleSettingsLanguages}
-          onSelect={newValue => updateSetting('mangaLanguages', newValue)}
-          title="Manga language filters"
-          description="When set, only shows manga in the selected languages."
           placeholder="Filter by language..."
           defaultSelectionText="All languages"
         />
