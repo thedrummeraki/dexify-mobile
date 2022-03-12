@@ -3,6 +3,7 @@ import {Image, TouchableNativeFeedback, View} from 'react-native';
 import {Chip, Title} from 'react-native-paper';
 import {FullScreenModal} from 'src/components';
 import CategoriesCollectionSection from 'src/components/CategoriesCollection/CategoriesCollectionSection';
+import {useDexifyNavigation} from 'src/foundation';
 import {useSession} from 'src/prodivers';
 import {MyProfileNavigationScreen} from '../MyProfileNavigationScreen';
 import {AddedManga} from './components';
@@ -18,7 +19,7 @@ export enum LibraryFilter {
 export default function YourLibraryScreen() {
   const {username} = useSession()!;
   const [currentFilter, setCurrentFilter] = useState(LibraryFilter.Added);
-  const [showProfileModal, setShowProfileModal] = useState(false);
+  const navigation = useDexifyNavigation();
 
   return (
     <View style={{padding: 5}}>
@@ -33,7 +34,7 @@ export default function YourLibraryScreen() {
         }}>
         <TouchableNativeFeedback
           useForeground
-          onPress={() => setShowProfileModal(true)}
+          onPress={() => navigation.push('ShowSettings')}
           background={TouchableNativeFeedback.Ripple('#fff', true)}>
           <Image
             source={{
@@ -59,13 +60,6 @@ export default function YourLibraryScreen() {
         />
       </View>
       <ScreenChooser filter={currentFilter} />
-      <FullScreenModal
-        animationType="fade"
-        visible={showProfileModal}
-        title="About me"
-        onDismiss={() => setShowProfileModal(false)}>
-        <MyProfileNavigationScreen />
-      </FullScreenModal>
     </View>
   );
 }

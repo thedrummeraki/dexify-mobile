@@ -224,8 +224,12 @@ export const possibleSettingsLocales = [
 ];
 
 export function usePossibleSettingsLanguages() {
+  return useLanguages(possibleSettingsLocales);
+}
+
+export function useLanguages(locales: string[]) {
   const intl = useIntl();
-  return possibleSettingsLocales.map(locale => ({
+  return locales.map(locale => ({
     value: locale,
     name: intl.formatDisplayName(locale, {type: 'language'}) || locale,
   }));

@@ -13,6 +13,7 @@ import {
   ShowCustomList,
   ShowMangaByTags,
   ShowScanlationGroup,
+  ShowSettings,
 } from 'src/screens';
 import {RouteProp, useNavigation, useRoute} from '@react-navigation/core';
 import {Header} from '.';
@@ -36,6 +37,7 @@ type RootStackParamList = {
   };
   ShowCustomList: {id: string};
   ShowMangaByTags: {tags: Manga.Tag[]};
+  ShowSettings: undefined;
 };
 
 export type DexifyNavigationProp = NativeStackNavigationProp<
@@ -101,6 +103,7 @@ export default function Navigation() {
         component={ShowMangaByTags}
         options={{headerShown: false}}
       />
+      <Stack.Screen name="ShowSettings" component={ShowSettings} />
     </Stack.Navigator>
   );
 }

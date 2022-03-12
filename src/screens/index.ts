@@ -8,3 +8,4 @@ export {default as ShowScanlationGroup} from './ShowScanlationGroup';
 export {default as ShowMangaList} from './ShowMangaList';
 export {default as ShowCustomList} from './ShowCustomList';
 export {default as ShowMangaByTags} from './ShowMangaByTags';
+export {default as ShowSettings} from './ShowSettings';
