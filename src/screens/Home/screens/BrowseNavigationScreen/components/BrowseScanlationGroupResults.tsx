@@ -3,6 +3,7 @@ import {PagedResultsList, ScanlationGroup} from 'src/api/mangadex/types';
 import UrlBuilder from 'src/api/mangadex/types/api/url_builder';
 import {useLazyGetRequest} from 'src/api/utils';
 import {List} from 'src/components/List/List';
+import {useDexifyNavigation} from 'src/foundation';
 import BrowseEmptyResults from './BrowseEmptyResults';
 
 interface Props {
@@ -13,6 +14,7 @@ export default function BrowseScanlationGroupResults({query}: Props) {
   const [getGroups, {data, loading}] =
     useLazyGetRequest<PagedResultsList<ScanlationGroup>>();
   const groups = data?.result === 'ok' ? data.data : [];
+  const navigation = useDexifyNavigation();
 
   useEffect(() => {
     getGroups(UrlBuilder.scanlationGroups({name: query}));
@@ -29,6 +31,7 @@ export default function BrowseScanlationGroupResults({query}: Props) {
       data={groups.map(group => ({
         title: group.attributes.name,
         image: {url: 'https://mangadex.org/avatar.png', width: 70},
+        onPress: () => navigation.push('ShowScanlationGroup', {id: group.id}),
       }))}
     />
   );

@@ -18,6 +18,7 @@ import {
 import {ThumbnailSkeleton} from 'src/foundation/Thumbnail';
 import {useDebouncedValue} from 'src/utils';
 import {HiddenMangaBanner} from '..';
+import Banner from '../Banner';
 import BasicList from '../BasicList';
 import MangaThumbnail from '../MangaThumbnail';
 import {MangaListItem} from './MangaListItem';
@@ -86,7 +87,6 @@ export default function MangaSearchCollection({
     HeaderComponent || filterOptions || showMissingTitlesBanner ? (
       <>
         {HeaderComponent}
-        {showMissingTitlesBanner && <HiddenMangaBanner />}
         {filterOptions && (
           <FilterTextInput
             {...filterOptions}
@@ -122,7 +122,7 @@ export default function MangaSearchCollection({
       skeletonItem={<ThumbnailSkeleton height={160} width={skeletonWidth} />}
       HeaderComponent={headerMarkup}
       HeaderComponentStyle={HeaderComponentStyle}
-      ListEmptyComponent={<Text>Empty!</Text>}
+      ListEmptyComponent={<Banner>No titles were found</Banner>}
     />
   );
 }

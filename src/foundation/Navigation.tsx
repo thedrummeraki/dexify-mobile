@@ -12,6 +12,7 @@ import {
   ShowMangaList,
   ShowCustomList,
   ShowMangaByTags,
+  ShowScanlationGroup,
 } from 'src/screens';
 import {RouteProp, useNavigation, useRoute} from '@react-navigation/core';
 import {Header} from '.';
@@ -26,6 +27,7 @@ type RootStackParamList = {
   ShowMangaGallery: {manga: Manga; number?: number};
   ShowChapter: {id: string; jumpToPage?: number};
   ShowArtist: {id: string; allowHentai?: boolean};
+  ShowScanlationGroup: {id: string; allowHentai?: boolean};
   ShowMangaList: {
     title?: string;
     description?: string;
@@ -83,6 +85,11 @@ export default function Navigation() {
         component={ShowArtist}
         options={{headerShown: false}}
       />
+      <Stack.Screen
+        name="ShowScanlationGroup"
+        component={ShowScanlationGroup}
+        options={{headerShown: false}}
+      />
       <Stack.Screen name="ShowMangaList" component={ShowMangaList} />
       <Stack.Screen
         name="ShowCustomList"
@@ -116,6 +123,10 @@ export function useShowChapterRoute() {
 
 export function useShowArtistRoute() {
   return useRoute<RouteProp<RootStackParamList, 'ShowArtist'>>();
+}
+
+export function useShowScanlationGroupRoute() {
+  return useRoute<RouteProp<RootStackParamList, 'ShowScanlationGroup'>>();
 }
 
 export function useShowMangaListRoute() {

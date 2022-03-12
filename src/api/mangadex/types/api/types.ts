@@ -16,6 +16,7 @@ export type MangaRequestParams = Partial<{
   excludedOriginalLanguage: string[];
   availableTranslatedLanguage: string[];
   publicationDemographic: PublicationDemographic[];
+  group: string;
   createdAtSince: string;
   updatedAtSince: string;
   contentRating: ContentRating[];
