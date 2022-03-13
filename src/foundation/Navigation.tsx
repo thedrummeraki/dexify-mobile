@@ -15,10 +15,11 @@ import {
   ShowScanlationGroup,
   ShowSettings,
   ShowAnimeSimulcastMangaList,
+  ShowReadingStatusLibrary,
 } from 'src/screens';
 import {RouteProp, useNavigation, useRoute} from '@react-navigation/core';
 import {HeaderContext} from 'src/prodivers';
-import {Manga, MangaRequestParams} from 'src/api/mangadex/types';
+import {Manga, MangaRequestParams, ReadingStatus} from 'src/api/mangadex/types';
 
 type MangaParams = Partial<Omit<Manga, 'type' | 'id'>> & {id: string};
 
@@ -36,6 +37,7 @@ type RootStackParamList = {
     params?: MangaRequestParams;
   };
   ShowAnimeSimulcastMangaList: undefined;
+  ShowReadingStatusLibrary: {readingStatus: ReadingStatus};
   ShowCustomList: {id: string};
   ShowMangaByTags: {tags: Manga.Tag[]};
   ShowSettings: undefined;
@@ -105,6 +107,11 @@ export default function Navigation() {
         options={{headerShown: false}}
       />
       <Stack.Screen
+        name="ShowReadingStatusLibrary"
+        component={ShowReadingStatusLibrary}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
         name="ShowCustomList"
         component={ShowCustomList}
         options={{headerShown: false}}
@@ -153,4 +160,8 @@ export function useShowCustomListRoute() {
 
 export function useShowMangaByTagsRoute() {
   return useRoute<RouteProp<RootStackParamList, 'ShowMangaByTags'>>();
+}
+
+export function useShowReadingStatusLibraryRoute() {
+  return useRoute<RouteProp<RootStackParamList, 'ShowReadingStatusLibrary'>>();
 }

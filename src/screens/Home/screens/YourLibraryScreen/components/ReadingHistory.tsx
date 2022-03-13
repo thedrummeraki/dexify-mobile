@@ -5,10 +5,12 @@ import {preferredChapterTitle} from 'src/api';
 import {Chapter, PagedResultsList} from 'src/api/mangadex/types';
 import UrlBuilder from 'src/api/mangadex/types/api/url_builder';
 import {useLazyGetRequest} from 'src/api/utils';
+import {useDexifyNavigation} from 'src/foundation';
 import Thumbnail from 'src/foundation/Thumbnail';
 import {useContinueReadingChaptersList} from 'src/prodivers';
 
 export default function ReadingHistory() {
+  const navigation = useDexifyNavigation();
   const chaptersInfo = useContinueReadingChaptersList();
 
   const [getChapters] = useLazyGetRequest<PagedResultsList<Chapter>>();
@@ -40,6 +42,12 @@ export default function ReadingHistory() {
               height={160}
               title={preferredChapterTitle(item)}
               subtitle={chapterInfo?.mangaName}
+              onPress={() => navigation.push('ShowChapter', {id: item.id})}
+              onLongPress={() => {
+                if (chapterInfo) {
+                  navigation.push('ShowManga', {id: chapterInfo?.mangaId});
+                }
+              }}
             />
           </View>
         );

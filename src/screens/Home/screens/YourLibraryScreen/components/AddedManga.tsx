@@ -10,6 +10,7 @@ import {
 import UrlBuilder from 'src/api/mangadex/types/api/url_builder';
 import {useLazyGetRequest} from 'src/api/utils';
 import BasicList from 'src/components/BasicList';
+import {useDexifyNavigation} from 'src/foundation';
 import Thumbnail, {ThumbnailSkeleton} from 'src/foundation/Thumbnail';
 import {useLibraryContext} from 'src/prodivers';
 import {pluralize, useDimensions} from 'src/utils';
@@ -19,14 +20,8 @@ type GroupedMangaInfo = {
 };
 
 export default function AddedManga() {
-  // const [getMangaIds, {data, loading: idsLoading, error}] =
-  //   useLazyGetRequest<AllReadingStatusResponse>(
-  //     UrlBuilder.readingStatusMangaIds(),
-  //   );
-
+  const navigation = useDexifyNavigation();
   const {readingStatus: data} = useLibraryContext();
-  console.log({data});
-
   const {width} = useDimensions();
 
   // making sure we never go over 100 ids across all reading status
@@ -115,7 +110,9 @@ export default function AddedManga() {
               imageUrl={imageUrl}
               width={width / 2 - 20}
               aspectRatio={1}
-              onPress={() => {}}
+              onPress={() =>
+                navigation.push('ShowReadingStatusLibrary', {readingStatus})
+              }
             />
           );
         }}
