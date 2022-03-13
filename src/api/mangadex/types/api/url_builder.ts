@@ -25,14 +25,11 @@ interface FeedOptions {
 
 export default class UrlBuilder {
   static API_URL = 'https://mangadex-client-proxy.herokuapp.com'; // 'https://api.mangadex.org';
+  static AIRING_MANGA_SERVICE_URL = 'https://airing-manga.herokuapp.com';
   // static API_URL = 'http://192.168.86.27:3001';
 
   public static feed(params?: FeedOptions) {
     return this.buildUrl('/home/feed', params);
-  }
-
-  public static animeAiringInfo(mangaId: string) {
-    return `https://airing-manga.herokuapp.com/check/${mangaId}`;
   }
 
   public static mangaList(params?: Partial<MangaRequestParams>) {
@@ -155,11 +152,27 @@ export default class UrlBuilder {
     return this.buildUrl(`/author/${id}`, params);
   }
 
+  public static animeAiringInfo(mangaId: string) {
+    return this.buildAiringMangaUrl(`/check/${mangaId}`);
+  }
+
+  public static mangaIdsWithAiringAnime() {
+    return this.buildAiringMangaUrl('/manga/airing');
+  }
+
   // Generic methods
 
   public static buildUrl(path: string, params?: ParamsLike) {
+    return this.buildUrlWithHost(UrlBuilder.API_URL, path, params);
+  }
+
+  public static buildAiringMangaUrl(path: string, params?: ParamsLike) {
+    return this.buildUrlWithHost(UrlBuilder.AIRING_MANGA_SERVICE_URL, path, params);
+  }
+
+  public static buildUrlWithHost(host: string, path: string, params?: ParamsLike) {
     let urlParts = [
-      UrlBuilder.API_URL,
+      host,
       path.startsWith('/') ? path : `/${path}`,
     ];
 

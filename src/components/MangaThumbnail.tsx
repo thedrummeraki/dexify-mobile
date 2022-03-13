@@ -24,6 +24,7 @@ interface Props {
   clickable?: boolean;
   coverSize?: CoverSize;
   onPress?(): void;
+  onLongPress?(): void;
 }
 
 export default function MangaThumbnail({
@@ -37,6 +38,7 @@ export default function MangaThumbnail({
   height,
   aspectRatio,
   onPress,
+  onLongPress,
 }: Props & Partial<ThumbnailDimensionsProps>) {
   const navigation = useDexifyNavigation();
   const handlePress = useCallback(() => {
@@ -86,6 +88,7 @@ export default function MangaThumbnail({
       height={height}
       aspectRatio={aspectRatio || 0.8}
       onPress={onPress || clickable ? handlePress : undefined}
+      onLongPress={onLongPress}
       onSubtitlePress={
         author
           ? () => navigation.navigate('ShowArtist', {id: author.id})

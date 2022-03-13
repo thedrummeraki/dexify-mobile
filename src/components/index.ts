@@ -11,3 +11,4 @@ export {default as SimpleInputDropdown} from './SimpleInputDropdown';
 export {default as HiddenMangaBanner} from './HiddenMangaBanner';
 export {default as FullScreenModal} from './FullScreenModal';
 export {default as BasicModal} from './BasicModal';
+export {default as MangaCollection} from './MangaCollection';

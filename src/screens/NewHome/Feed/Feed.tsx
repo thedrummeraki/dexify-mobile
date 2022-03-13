@@ -122,6 +122,9 @@ export default function Feed({data, refreshing, onRefresh, onFocus}: Props) {
         title: `${currentSeason({capitalize: true})} anime simulcast`,
         type: 'general',
         manga: airingNow,
+        viewMore: () => {
+          navigation.push('ShowAnimeSimulcastMangaList');
+        },
       }}
     />
   ) : null;

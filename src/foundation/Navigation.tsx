@@ -14,9 +14,9 @@ import {
   ShowMangaByTags,
   ShowScanlationGroup,
   ShowSettings,
+  ShowAnimeSimulcastMangaList,
 } from 'src/screens';
 import {RouteProp, useNavigation, useRoute} from '@react-navigation/core';
-import {Header} from '.';
 import {HeaderContext} from 'src/prodivers';
 import {Manga, MangaRequestParams} from 'src/api/mangadex/types';
 
@@ -35,6 +35,7 @@ type RootStackParamList = {
     ids?: string[];
     params?: MangaRequestParams;
   };
+  ShowAnimeSimulcastMangaList: undefined;
   ShowCustomList: {id: string};
   ShowMangaByTags: {tags: Manga.Tag[]};
   ShowSettings: undefined;
@@ -96,6 +97,11 @@ export default function Navigation() {
       <Stack.Screen
         name="ShowMangaList"
         component={ShowMangaList}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="ShowAnimeSimulcastMangaList"
+        component={ShowAnimeSimulcastMangaList}
         options={{headerShown: false}}
       />
       <Stack.Screen
