@@ -167,7 +167,7 @@ export default function Feed({data, refreshing, onRefresh, onFocus}: Props) {
           {continueReadingMarkup}
           {readingNowMarkup}
           {updatesMarkup}
-          {randomMangaMarkup}
+          {/* {randomMangaMarkup} */}
           {airingNowMarkup}
           {recentlyAddedMarkup}
           {popularMangaMarkup}
@@ -185,7 +185,7 @@ export default function Feed({data, refreshing, onRefresh, onFocus}: Props) {
         {topMangaMarkup}
         {continueReadingMarkup}
         {airingNowMarkup}
-        {randomMangaMarkup}
+        {/* {randomMangaMarkup} */}
         {recentlyAddedMarkup}
         {popularMangaMarkup}
       </ScrollView>

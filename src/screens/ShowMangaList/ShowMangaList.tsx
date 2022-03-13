@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {View} from 'react-native';
 import {ActivityIndicator} from 'react-native-paper';
 import {Manga, PagedResultsList} from 'src/api/mangadex/types';
@@ -40,9 +40,13 @@ function ShowMangaListDetails({
   loading: boolean;
   error: any;
 }) {
-  if (loading) {
-    return <ActivityIndicator style={{flex: 1}} />;
-  }
+  const [manga, setManga] = useState<Manga[]>([]);
+
+  useEffect(() => {
+    if (data?.result === 'ok') {
+      setManga(data.data);
+    }
+  }, [data]);
 
   if (data?.result === 'error' || error) {
     return (
@@ -53,17 +57,14 @@ function ShowMangaListDetails({
     );
   }
 
-  if (data?.result === 'ok') {
-    return (
-      <MangaCollection
-        showReadingStatus
-        manga={data.data}
-        description={description}
-      />
-    );
-  }
-
-  return null;
+  return (
+    <MangaCollection
+      loading={loading}
+      showReadingStatus
+      manga={manga}
+      description={description}
+    />
+  );
 }
 
 function useMangaListUrl() {
