@@ -8,6 +8,7 @@ import {
   MangaCollection,
   MangaSearchCollection,
 } from 'src/components';
+import {MangaCollectionDisplay} from 'src/components/MangaSearchCollection/MangaSearchCollection';
 import {useShowReadingStatusLibraryRoute} from 'src/foundation';
 import {useLibraryMangaIds} from 'src/prodivers';
 import {currentSeason} from 'src/utils';
@@ -24,7 +25,11 @@ export default function ShowReadingStatusLibrary() {
         title={readingStatusInfo(readingStatus).content}
       />
       {ids?.length ? (
-        <MangaSearchCollection options={{ids, limit: ids.length}} />
+        <MangaSearchCollection
+          showEverything
+          options={{ids, limit: ids.length}}
+          display={MangaCollectionDisplay.List}
+        />
       ) : null}
     </>
   );

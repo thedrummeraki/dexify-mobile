@@ -1,4 +1,5 @@
 import {BackgroundColor} from 'src/components/colors';
+import { mangaLinkInfoMap } from 'src/screens/ShowManga/ShowMangaDetails/components/AboutTab/modals/ShowMangaDetailsModal';
 import {
   Artist,
   Author,
@@ -229,7 +230,7 @@ export function readingStatusInfo(readingStatus?: ReadingStatus | null): {
       };
     case ReadingStatus.Reading:
       return {
-        content: 'Reading',
+        content: 'Reading now',
         phrase: "This manga caught your eye and you're reading it now.",
         background: 'primary',
         icon: 'play',
@@ -244,4 +245,13 @@ export function readingStatusInfo(readingStatus?: ReadingStatus | null): {
         value: readingStatus,
       };
   }
+}
+
+export function getPublisher(manga: Manga) {
+  const {attributes: {links}} = manga;
+  if (!links?.raw) {
+    return null;
+  }
+
+  return mangaLinkInfoMap.raw.deriveName?.(links.raw) || null;
 }

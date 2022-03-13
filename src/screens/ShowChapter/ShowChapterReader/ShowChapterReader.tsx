@@ -121,6 +121,7 @@ export default function ShowChapterReader({
     <View style={{flex: 1}}>
       <ReaderProvider
         manga={manga}
+        chapter={chapter}
         title={preferredChapterTitle(chapter)}
         subtitle={preferredMangaTitle(manga)}
         pages={sortedPages}

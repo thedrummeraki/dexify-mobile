@@ -18,6 +18,7 @@ import {useBackgroundColor} from './colors';
 
 interface Props {
   manga: Manga;
+  showImageIfHentai?: boolean;
   showReadingStatus?: boolean;
   hideTitle?: boolean;
   hideAuthor?: boolean;
@@ -30,6 +31,7 @@ interface Props {
 export default function MangaThumbnail({
   manga,
   showReadingStatus,
+  showImageIfHentai,
   hideTitle,
   hideAuthor,
   clickable = true,
@@ -70,6 +72,11 @@ export default function MangaThumbnail({
       </ThumbnailBadge>
     ) : null;
 
+  const allowActualImage = true || (isHentai && showImageIfHentai) || !isHentai;
+  const imageUrl = allowActualImage
+    ? mangaImage(manga, {size: coverSize})
+    : 'https://mangadex.org/avatar.png';
+
   return (
     <Thumbnail
       TopComponent={
@@ -79,7 +86,8 @@ export default function MangaThumbnail({
         </View>
       }
       hideTitle={hideTitle}
-      imageUrl={mangaImage(manga, {size: coverSize}) || '/'}
+      imageUrl={imageUrl}
+      blurRadius={isHentai ? 25 : undefined}
       title={preferredMangaTitle(manga)}
       subtitle={
         hideAuthor || !authorPresent ? undefined : author?.attributes.name

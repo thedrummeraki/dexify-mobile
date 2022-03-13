@@ -44,6 +44,7 @@ interface MapInfo {
   color: string;
   name: string;
   transform?: (value: string) => string;
+  deriveName?: (value: string) => string | undefined;
 }
 
 type MangaLinkInfoMap = {
@@ -310,10 +311,13 @@ function MangaExternalLinks() {
             return <Chip>???</Chip>;
           }
 
-          const {name, transform} = mangaLinkInfoMap[linkKey];
+          const {name, transform, deriveName} = mangaLinkInfoMap[linkKey];
           const finalUrl = transform ? transform(url) : url;
+          const actualName = deriveName ? deriveName(url) || name : name;
 
-          return <Chip onPress={() => Linking.openURL(finalUrl)}>{name}</Chip>;
+          return (
+            <Chip onPress={() => Linking.openURL(finalUrl)}>{actualName}</Chip>
+          );
         }}
       />
     );
@@ -321,7 +325,7 @@ function MangaExternalLinks() {
   return null;
 }
 
-const mangaLinkInfoMap: MangaLinkInfoMap = {
+export const mangaLinkInfoMap: MangaLinkInfoMap = {
   al: {
     // background: "#2b2d42",
     // color: "#d9e6ff",
@@ -376,5 +380,13 @@ const mangaLinkInfoMap: MangaLinkInfoMap = {
     name: 'Novel Updates',
     transform: slug => `https://www.novelupdates.com/series/${slug}`,
   },
-  raw: {background: '', color: '', name: 'Official (original)'},
+  raw: {
+    background: '',
+    color: '',
+    name: 'Official (original)',
+    deriveName: value => {
+      const extremelyBasicRegex = /http(s)?\:\/\/([\d\w\-\_\.]+)\/?.*/;
+      return value.match(extremelyBasicRegex)?.[2];
+    },
+  },
 };

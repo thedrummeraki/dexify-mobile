@@ -94,7 +94,7 @@ export default function ShowArtistDetails({author}: Props) {
         options={{
           artists: [author.id],
           limit: 100,
-          contentRating: contentRating,
+          contentRating,
           order: {followedCount: 'desc'},
         }}
       />

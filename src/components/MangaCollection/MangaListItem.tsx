@@ -33,7 +33,7 @@ export function MangaListItem({manga, selected}: Props) {
         flex: 1,
         flexDirection: 'row',
         alignItems: 'center',
-        marginBottom: 5,
+        // marginBottom: 5,
       }}>
       <TouchableNativeFeedback
         useForeground

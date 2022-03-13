@@ -11,6 +11,7 @@ import {Banner} from 'src/components';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import LinearGradient from 'react-native-linear-gradient';
 import {currentSeason} from 'src/utils';
+import {ReadingStatus} from 'src/api/mangadex/types';
 
 interface Props {
   data: FeedData;
@@ -97,6 +98,10 @@ export default function Feed({data, refreshing, onRefresh, onFocus}: Props) {
         title: 'Reading now',
         type: 'general',
         manga: readingNow,
+        viewMore: () =>
+          navigation.push('ShowReadingStatusLibrary', {
+            readingStatus: ReadingStatus.Reading,
+          }),
       }}
     />
   ) : null;

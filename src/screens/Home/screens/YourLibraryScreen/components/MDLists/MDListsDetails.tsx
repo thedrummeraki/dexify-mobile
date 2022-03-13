@@ -150,6 +150,7 @@ export default function MDListsDetails({
   return (
     <List
       loading={refreshing}
+      style={{marginBottom: 80}}
       data={customLists.map(customList => ({
         id: customList.id,
         title: customList.attributes.name,

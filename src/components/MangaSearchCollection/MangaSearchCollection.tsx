@@ -20,6 +20,7 @@ interface FilterOptions {
 
 type Props = {
   options?: MangaRequestParams;
+  showEverything?: boolean;
   timeout?: number;
   filterOptions?: FilterOptions;
   display?: MangaCollectionDisplay;
@@ -31,12 +32,13 @@ type Props = {
 
 export default function MangaSearchCollection({
   options,
+  showEverything,
   timeout,
   onMangaReady,
   ...otherProps
 }: Props) {
   const debouncedOptions = useDebouncedValue(options, timeout);
-  const [get, {loading, data}] = useLazyGetMangaList();
+  const [get, {loading, data}] = useLazyGetMangaList(undefined, showEverything);
 
   useEffect(() => {
     get(debouncedOptions);

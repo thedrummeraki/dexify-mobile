@@ -9,7 +9,7 @@ import {
   preferredMangaTitle,
 } from 'src/api';
 import {useGetMangaList} from 'src/api/mangadex/hooks';
-import {CustomList} from 'src/api/mangadex/types';
+import {ContentRating, CustomList} from 'src/api/mangadex/types';
 import {Banner, CloseCurrentScreenHeader} from 'src/components';
 import {List} from 'src/components/List/List';
 import {useDexifyNavigation} from 'src/foundation';
@@ -38,10 +38,13 @@ export default function ShowCustomListDetails({
     () => findRelationships(customList, 'manga').map(r => r.id),
     [customList],
   );
-  const {loading, data} = useGetMangaList({
-    ids,
-    limit: ids.length,
-  });
+  const {loading, data} = useGetMangaList(
+    {
+      ids,
+      limit: ids.length,
+    },
+    true,
+  );
   const manga = data?.result === 'ok' ? data.data : [];
   const imageUrl =
     manga.length < 1
@@ -96,6 +99,10 @@ export default function ShowCustomListDetails({
     image: {
       url: mangaImage(manga, {size: CoverSize.Small}),
       width: 70,
+      blurRadius:
+        manga.attributes.contentRating === ContentRating.pornographic
+          ? 25
+          : undefined,
     },
   }));
 
