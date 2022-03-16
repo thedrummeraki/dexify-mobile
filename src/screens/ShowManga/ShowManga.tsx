@@ -1,5 +1,6 @@
 import React from 'react';
 import {useManga} from 'src/api/mangadex/hooks';
+import {Authenticated} from 'src/components';
 import {useShowMangaRoute} from 'src/foundation/Navigation';
 import ShowMangaDetails from './ShowMangaDetails';
 import ShowMangaDetailsSkeleton from './ShowMangaDetailsSkeleton';

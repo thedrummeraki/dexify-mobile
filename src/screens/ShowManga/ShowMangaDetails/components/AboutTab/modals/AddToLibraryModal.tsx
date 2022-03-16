@@ -7,7 +7,7 @@ import {
   ReadingStatusUpdateResponse,
 } from 'src/api/mangadex/types';
 import UrlBuilder from 'src/api/mangadex/types/api/url_builder';
-import {usePostRequest} from 'src/api/utils';
+import {useAuthenticatedCallback, usePostRequest} from 'src/api/utils';
 import {FullScreenModal, TextBadge} from 'src/components';
 import {useMangaDetails} from '../../../ShowMangaDetails';
 
@@ -32,9 +32,11 @@ export default function AddToLibraryModal({
     readingStatusInfo(x),
   );
 
-  const [updateReadingStatus] = usePostRequest<ReadingStatusUpdateResponse>(
+  const [callback] = usePostRequest<ReadingStatusUpdateResponse>(
     UrlBuilder.buildUrl(`/manga/${manga.id}/status`),
   );
+
+  const updateReadingStatus = useAuthenticatedCallback(callback);
 
   return (
     <FullScreenModal

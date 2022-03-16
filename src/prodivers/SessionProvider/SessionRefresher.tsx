@@ -85,7 +85,7 @@ async function retrieveStoredSession(): Promise<SessionState | null> {
 }
 
 export function useUpdatedSession(refreshNow = true) {
-  const {session: token, setSession} = useContext(SessionContext);
+  const {loading, session: token, setSession} = useContext(SessionContext);
 
   const refreshToken = useCallback(
     async (otherToken?: SessionState | null, options?: {force?: boolean}) => {
@@ -156,10 +156,10 @@ export function useUpdatedSession(refreshNow = true) {
   );
 
   useEffect(() => {
-    if (refreshNow) {
+    if (refreshNow && !loading) {
       refreshToken();
     }
-  }, [refreshNow]);
+  }, [refreshNow, loading]);
 
-  return {session: token, refreshToken};
+  return {loading, session: token, refreshToken};
 }

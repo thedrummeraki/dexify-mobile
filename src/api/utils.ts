@@ -179,6 +179,21 @@ export function useCategoryRequest<T>(category: UICategory): RequestResult<T> {
   return {...result, loading};
 }
 
+export function useAuthenticatedCallback<T, Body = any>(
+  callback: (url?: string, body?: Body) => Promise<T | undefined>,
+) {
+  const {refreshToken} = useUpdatedSession(false);
+
+  const wrapperCallback = async (url?: string, body?: Body) => {
+    const res = await refreshToken();
+    if (res?.result === 'ok') {
+      return callback(url, body);
+    }
+  };
+
+  return wrapperCallback;
+}
+
 export function useAxiosRequest<T, Body = any>(
   params: RequestParams<Body>,
 ): [
@@ -189,7 +204,7 @@ export function useAxiosRequest<T, Body = any>(
   ) => Promise<T | undefined>,
   RequestResult<T>,
 ] {
-  const {session, refreshToken} = useUpdatedSession(false);
+  const {session} = useUpdatedSession(false);
 
   const [data, setData] = useState<T>();
   const [response, setResponse] = useState<AxiosResponse<T>>();
@@ -214,38 +229,8 @@ export function useAxiosRequest<T, Body = any>(
         ? `[${params.method}]`
         : `[?${params.method}]`;
       const config: AxiosRequestConfig = {};
-
-      if (params.refreshSession || callbackParams?.refreshSession) {
-        const refreshResponse = await refreshToken(session);
-        if (refreshResponse?.result === 'ok') {
-          config.headers = {
-            Authorization: refreshResponse.token.session,
-            'x-auth-session': refreshResponse.token.session,
-            'x-auth-refresh': refreshResponse.token.refresh,
-          };
-        } else if (
-          (params.throwIfRefreshFails || callbackParams?.throwIfRefreshFails) &&
-          refreshResponse?.result === 'error'
-        ) {
-          throw new Error(`Token refresh failed for url ${url}`);
-        } else if (
-          (params.requireSession || callbackParams?.requireSession) &&
-          !session
-        ) {
-          console.warn(
-            'This request',
-            requestMethod,
-            url,
-            'may fail because we could not refresh your token',
-          );
-        } else if (session) {
-          config.headers = {
-            Authorization: session.session.value,
-            'x-auth-session': session.session.value,
-            'x-auth-refresh': session.refresh.value,
-          };
-        }
-      } else if (session) {
+      
+      if (session) {
         // At this point, if the refreshResponse is undefined and the session
         // is present, then the session is valid.
         config.headers = {
@@ -253,8 +238,6 @@ export function useAxiosRequest<T, Body = any>(
           'x-auth-session': session.session.value,
           'x-auth-refresh': session.refresh.value,
         };
-      } else {
-        console.warn('no session');
       }
 
       const requestConfig = config || {};
