@@ -105,10 +105,6 @@ export function useUpdatedSession(refreshNow = true) {
 
       if (!options?.force) {
         if (!checkSessionValidity(refresh) || checkSessionValidity(session)) {
-          const reason = checkSessionValidity(session)
-            ? 'session valid'
-            : 'no valid refresh token found';
-          console.log('no need to refresh. Reason:', reason);
           return;
         }
 
@@ -149,6 +145,7 @@ export function useUpdatedSession(refreshNow = true) {
         return data || null;
       } catch (error) {
         console.error(error);
+        setSession(null);
         return null;
       }
     },

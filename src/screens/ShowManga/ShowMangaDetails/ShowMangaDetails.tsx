@@ -68,9 +68,7 @@ export default function ShowMangaDetails({manga}: Props) {
   const [preferredLanguages, setPreferredLanguages] = useState<string[]>(() =>
     manga.attributes.availableTranslatedLanguages.filter(
       availableTranslatedLanguage =>
-        chapterLanguages.length
-          ? chapterLanguages.includes(availableTranslatedLanguage)
-          : true,
+        chapterLanguages.includes(availableTranslatedLanguage),
     ),
   );
 

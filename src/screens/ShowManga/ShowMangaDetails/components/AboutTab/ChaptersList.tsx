@@ -16,8 +16,12 @@ import {
   useTheme,
 } from 'react-native-paper';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
-import {coverImage, preferredChapterTitle} from 'src/api';
-import {Chapter, PagedResultsList} from 'src/api/mangadex/types';
+import {coverImage, findRelationship, preferredChapterTitle} from 'src/api';
+import {
+  Chapter,
+  PagedResultsList,
+  ScanlationGroup,
+} from 'src/api/mangadex/types';
 import UrlBuilder from 'src/api/mangadex/types/api/url_builder';
 import {useLazyGetRequest} from 'src/api/utils';
 import {TextBadge} from 'src/components';
@@ -142,6 +146,9 @@ export default function ChaptersList({
         }),
       ).then(response => {
         initialized.current = response?.result === 'ok';
+        if (response?.result === 'ok') {
+          console.log(response.data.map(x => x.attributes.chapter));
+        }
       });
     }
   }, [chapterIds]);
@@ -249,6 +256,11 @@ export function ChapterItem({
   const width = Dimensions.get('window').width - 30;
   const navigation = useDexifyNavigation();
 
+  const scanlationGroup = findRelationship<ScanlationGroup>(
+    chapter,
+    'scanlation_group',
+  );
+
   const info = useContinueReadingChaptersList().find(
     info => info.id === chapter.id,
   );
@@ -291,17 +303,21 @@ export function ChapterItem({
                 {preferredChapterTitle(chapter)}
               </Text>
               <TextBadge
-                icon="clock-outline"
+                icon={scanlationGroup ? 'account-group' : 'clock-outline'}
                 background="none"
                 style={{marginLeft: -5, marginTop: 0}}
                 content={
-                  <Caption>
-                    Published on{' '}
-                    {localizedDateTime(
-                      chapter.attributes.publishAt,
-                      DateTime.DATE_MED,
-                    )}
-                  </Caption>
+                  scanlationGroup ? (
+                    <Caption>{scanlationGroup.attributes.name}</Caption>
+                  ) : (
+                    <Caption>
+                      Published on{' '}
+                      {localizedDateTime(
+                        chapter.attributes.publishAt,
+                        DateTime.DATE_MED,
+                      )}
+                    </Caption>
+                  )
                 }
               />
               <View>

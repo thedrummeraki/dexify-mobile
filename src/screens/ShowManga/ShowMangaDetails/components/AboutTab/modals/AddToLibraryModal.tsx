@@ -55,7 +55,9 @@ export default function AddToLibraryModal({
                 const status = selected ? null : item.value;
 
                 onReadingStatusUpdate(status);
-                Promise.all([updateReadingStatus(undefined, {status})]);
+                Promise.all([updateReadingStatus(undefined, {status})])
+                  .then(console.log)
+                  .catch(console.error);
               }}>
               <View
                 style={{

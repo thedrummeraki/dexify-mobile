@@ -18,7 +18,12 @@ import {
   EntityResponse,
 } from 'src/api/mangadex/types';
 import UrlBuilder from 'src/api/mangadex/types/api/url_builder';
-import {useLazyGetRequest, usePostRequest, usePutRequest} from 'src/api/utils';
+import {
+  useAuthenticatedLazyGetRequest,
+  useLazyGetRequest,
+  usePostRequest,
+  usePutRequest,
+} from 'src/api/utils';
 import {useSession, useUpdatedSession} from '.';
 
 interface LibraryState {
@@ -95,10 +100,11 @@ export default function LibraryProvider({children}: PropsWithChildren<{}>) {
   // Reading status (followed manga)
   const [
     getReadingStatus,
-    {data: readingStatus, loading: readingStatusLoading},
-  ] = useLazyGetRequest<AllReadingStatusResponse>(
+    {data: readingStatus, loading: readingStatusLoading, error},
+  ] = useAuthenticatedLazyGetRequest<AllReadingStatusResponse>(
     'https://api.mangadex.org/manga/status',
   );
+
   const [postReadingStatus, {loading: updating}] =
     usePostRequest<ReadingStatusUpdateResponse>();
 
@@ -111,7 +117,9 @@ export default function LibraryProvider({children}: PropsWithChildren<{}>) {
 
   useEffect(() => {
     if (session) {
-      getReadingStatus().catch(console.error);
+      getReadingStatus().catch(error => {
+        console.error('could not get reading status', error);
+      });
     }
   }, [session]);
 
@@ -134,7 +142,7 @@ export default function LibraryProvider({children}: PropsWithChildren<{}>) {
           },
         );
       } catch (error) {
-        console.error(error);
+        console.error('could not update manga reading status', error);
       }
     },
     [session],

@@ -59,6 +59,15 @@ type SimpleRequestParams<Body> = Omit<
   'method' | 'hookUrl'
 >;
 
+type LazyRequestResponse<T, Body = any> = [
+  (
+    url?: string,
+    body?: Body,
+    callbackParams?: SimpleRequestParams<Body>,
+  ) => Promise<T | undefined>,
+  RequestResult<T>,
+];
+
 export enum AxiosRequestType {
   Get = 'GET',
   Post = 'POST',
@@ -134,7 +143,7 @@ export function useDeleteRequest<T>(
   return useAxiosRequest<T>(options);
 }
 
-export function useLazyGetRequest<T>(
+export function useLazyGetRequest<T, Body = any>(
   hookUrl?: string,
   params?: SimpleRequestParams<Body>,
 ) {
@@ -148,6 +157,16 @@ export function useLazyGetRequest<T>(
   );
 
   return useAxiosRequest<T>(options);
+}
+
+export function useAuthenticatedLazyGetRequest<T, Body = any>(
+  hookUrl?: string,
+  params?: SimpleRequestParams<Body>,
+): LazyRequestResponse<T> {
+  const [callback, result] = useLazyGetRequest<T>(hookUrl, params);
+  const authenticatedCallback = useAuthenticatedCallback(callback);
+
+  return [authenticatedCallback, result];
 }
 
 export function useGetRequest<T>(
@@ -186,7 +205,7 @@ export function useAuthenticatedCallback<T, Body = any>(
 
   const wrapperCallback = async (url?: string, body?: Body) => {
     const res = await refreshToken();
-    if (res?.result === 'ok') {
+    if (!res || res?.result === 'ok') {
       return callback(url, body);
     }
   };
@@ -196,14 +215,7 @@ export function useAuthenticatedCallback<T, Body = any>(
 
 export function useAxiosRequest<T, Body = any>(
   params: RequestParams<Body>,
-): [
-  (
-    url?: string,
-    body?: Body,
-    callbackParams?: SimpleRequestParams<Body>,
-  ) => Promise<T | undefined>,
-  RequestResult<T>,
-] {
+): LazyRequestResponse<T> {
   const {session} = useUpdatedSession(false);
 
   const [data, setData] = useState<T>();
@@ -229,7 +241,7 @@ export function useAxiosRequest<T, Body = any>(
         ? `[${params.method}]`
         : `[?${params.method}]`;
       const config: AxiosRequestConfig = {};
-      
+
       if (session) {
         // At this point, if the refreshResponse is undefined and the session
         // is present, then the session is valid.
@@ -270,7 +282,7 @@ export function useAxiosRequest<T, Body = any>(
         if (axios.isAxiosError(error)) {
           setError(error as AxiosError<T>);
         } else {
-          console.error(error);
+          console.error('error while fetching', url, ':', error);
         }
       } finally {
         setLoading(false);

@@ -56,7 +56,7 @@ export default function VolumeDetails({volumeInfo, onCancel}: Props) {
   const [page, setPage] = useState(1);
   const [showLocalesModal, setShowLocalesModal] = useState(false);
 
-  const contentRating = useContentRatingFitlers();
+  const contentRating = [manga.attributes.contentRating]; //useContentRatingFitlers();
   const [fetchChapters, {data, loading, error}] =
     useLazyGetRequest<PagedResultsList<Chapter>>();
   const hasNextPage =
@@ -87,9 +87,15 @@ export default function VolumeDetails({volumeInfo, onCancel}: Props) {
         refreshSession: false,
         forceRefresh: false,
       },
-    ).finally(() => {
-      setSortButtonDisabled(false);
-    });
+    )
+      .then(res => {
+        if (res?.result === 'ok') {
+          console.log(res.data.map(x => x.attributes.chapter));
+        }
+      })
+      .finally(() => {
+        setSortButtonDisabled(false);
+      });
     getReadMarkers();
   }, [page, sortRule, preferredLanguages]);
 
