@@ -30,6 +30,7 @@ export interface Settings {
   mangaScreenDisplay: MangaScreenDisplay;
   continue: ContinueSettings;
   volumeSortOrder: 'asc' | 'desc';
+  chaptersSortOrder: 'asc' | 'desc';
 }
 
 interface SettingsContextState {
@@ -49,17 +50,14 @@ const defaultSettings: Settings = {
   chapterLanguages: [],
   mangaLanguages: [],
   readingDirection: ReadingDirection.TtB,
-  contentRatings: [
-    ContentRating.safe,
-    ContentRating.suggestive,
-    ContentRating.erotica,
-  ],
+  contentRatings: [ContentRating.safe, ContentRating.suggestive],
   dataSaver: true,
   spicyMode: false,
   lightTheme: false,
   mangaScreenDisplay: MangaScreenDisplay.PerVolume,
   continue: {},
   volumeSortOrder: 'desc',
+  chaptersSortOrder: 'asc',
 };
 
 export const SettingsContext = React.createContext<SettingsContextState>({
@@ -161,7 +159,7 @@ export const possibleSettingsContentRatings = [
   {value: ContentRating.safe, name: 'For everyone (safe)'},
   {value: ContentRating.suggestive, name: 'For 13+ (suggestive)'},
   {value: ContentRating.erotica, name: 'For 15+ (erotica)'},
-  {value: ContentRating.pornographic, name: 'For 18+ (hentai/pornographic)'},
+  // {value: ContentRating.pornographic, name: 'For 18+ (hentai/pornographic)'},
 ];
 
 export const possibleSettingsReadingDirections = [

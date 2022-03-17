@@ -29,6 +29,7 @@ interface MangaDetails {
   manga: Manga;
   isAiring?: boolean;
   aggregate?: Manga.VolumeAggregateInfo;
+  statistics?: Manga.Statistic;
   covers: CoverArt[];
   volumes: string[];
   volumeInfos: VolumeInfo[];
@@ -74,10 +75,20 @@ export default function ShowMangaDetails({manga}: Props) {
         order: {volume: 'desc'},
       }),
     );
+
+  const [getStats, {data: statsData, loading: statsLoading}] =
+    useLazyGetRequest<Manga.StatisticsResponse>(
+      UrlBuilder.mangaStatistics(manga.id),
+    );
+
   const [coverUrl, setCoverUrl] = useState<string>();
 
   const aggregate = data?.result === 'ok' ? data.volumes : undefined;
   const aggregateEntries = aggregate ? Object.entries(aggregate) : [];
+
+  const allStats =
+    statsData?.result === 'ok' ? statsData.statistics : undefined;
+  const stats = allStats ? allStats[manga.id] : undefined;
 
   const volumes = aggregateEntries.map(([volume, _]) => volume);
   const covers = coverData?.result === 'ok' ? coverData.data : [];
@@ -99,12 +110,14 @@ export default function ShowMangaDetails({manga}: Props) {
     wait(1).then(() => getAggregate());
     wait(1).then(() => getMangaCovers());
     wait(1).then(() => getAiringInfo());
+    wait(1).then(() => getStats());
   }, []);
 
   return (
     <ShowMangaDetailsProvider
       loading={loading || coversLoading}
       aggregate={aggregate}
+      statistics={stats}
       volumes={volumes}
       volumeInfos={volumeInfos}
       manga={manga}

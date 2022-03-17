@@ -319,3 +319,7 @@ async function request<T, Body = any>(
       );
   }
 }
+
+export function requestStarted(status: ResponseStatus) {
+  return status > ResponseStatus.Initiated;
+}

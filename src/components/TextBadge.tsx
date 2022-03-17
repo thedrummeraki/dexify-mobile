@@ -13,8 +13,9 @@ import {
 interface Props {
   content: React.ReactNode;
   numberOfLines?: number;
-  background?: BackgroundColor;
+  background?: BackgroundColor | 'none';
   icon?: string;
+  disablePress?: boolean;
   onPress?: () => void;
   style?: StyleProp<ViewStyle>;
   textStyle?: StyleProp<TextStyle>;
@@ -23,15 +24,17 @@ interface Props {
 export default function TextBadge({
   content,
   numberOfLines,
-  background,
+  background = 'background',
   icon,
   style,
   textStyle,
+  disablePress,
   onPress,
 }: Props) {
   const theme = useTheme();
-  const color = useTextColor(background);
-  const backgroundColor = background && theme.colors[background];
+  const color = useTextColor(background !== 'none' ? background : undefined);
+  const backgroundColor =
+    background !== 'none' ? theme.colors[background] : undefined;
 
   return (
     <View
@@ -45,7 +48,7 @@ export default function TextBadge({
         style,
       )}>
       <MaybeTouchable
-        onPress={onPress}
+        onPress={disablePress ? undefined : onPress}
         backgroundColor={backgroundColor || theme.dark ? '#fff' : '#000'}>
         <Text
           numberOfLines={numberOfLines}

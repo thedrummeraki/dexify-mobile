@@ -1,6 +1,6 @@
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {View} from 'react-native';
-import {ActivityIndicator, Button, IconButton, Text} from 'react-native-paper';
+import {ActivityIndicator, Button, IconButton} from 'react-native-paper';
 import {
   BasicResultsResponse,
   Chapter,
@@ -8,18 +8,25 @@ import {
 } from 'src/api/mangadex/types';
 import UrlBuilder from 'src/api/mangadex/types/api/url_builder';
 import {
+  requestStarted,
   useDeleteRequest,
-  useGetRequest,
   useLazyGetRequest,
   usePostRequest,
 } from 'src/api/utils';
-import {CloseCurrentScreenHeader} from 'src/components';
+import {Banner, CloseCurrentScreenHeader} from 'src/components';
 import BasicList from 'src/components/BasicList';
-import {List} from 'src/components/List/List';
-import {useContentRatingFitlers} from 'src/prodivers';
-import {isNumber} from 'src/utils';
+import {
+  useContentRatingFitlers,
+  useSettings,
+  useSettingsContext,
+} from 'src/prodivers';
 import {useMangaDetails, VolumeInfo} from '../../../ShowMangaDetails';
 import {ChapterItem} from '../ChaptersList';
+
+enum SortRule {
+  Asc = -1,
+  Desc = 1,
+}
 
 interface Props {
   volumeInfo: VolumeInfo;
@@ -32,7 +39,15 @@ export default function VolumeDetails({volumeInfo, onCancel}: Props) {
   const {volume, chapterIds: ids} = volumeInfo;
   const {manga} = useMangaDetails();
   const readChaptersInitialized = useRef(false);
+  const {settings, updateSetting} = useSettingsContext();
+  const [sortRule, setSortOrder] = useState<SortRule>(
+    settings.chaptersSortOrder === 'desc' ? SortRule.Desc : SortRule.Asc,
+  );
+  const [sortButtonDisabled, setSortButtonDisabled] = useState(false);
+
   const [readChapters, setReadChapters] = useState<string[]>([]);
+  const [chapters, setChapters] = useState<Chapter[]>();
+  const [title, setTitle] = useState('...');
 
   const [page, setPage] = useState(1);
 
@@ -53,7 +68,7 @@ export default function VolumeDetails({volumeInfo, onCancel}: Props) {
         ids: paginatedIds,
         contentRating,
         order: {
-          chapter: 'asc',
+          chapter: sortRule === SortRule.Asc ? 'asc' : 'desc',
           publishAt: 'asc',
         },
         limit,
@@ -63,13 +78,30 @@ export default function VolumeDetails({volumeInfo, onCancel}: Props) {
         refreshSession: false,
         forceRefresh: false,
       },
-    );
-  }, [page]);
+    ).finally(() => {
+      setSortButtonDisabled(false);
+    });
+    getReadMarkers();
+  }, [page, sortRule]);
 
-  const {data: readMarkersData, loading: readMarkersLoading} = useGetRequest<{
-    result: 'ok';
-    data: string[];
-  }>(UrlBuilder.mangaReadMarkers(manga.id));
+  useEffect(() => {
+    updateSetting(
+      'chaptersSortOrder',
+      sortRule === SortRule.Asc ? 'asc' : 'desc',
+    );
+  }, [sortRule]);
+
+  useEffect(() => {
+    if (data?.result === 'ok') {
+      setChapters(data.data);
+    }
+  }, [data]);
+
+  const [getReadMarkers, {data: readMarkersData, status: readMarkersStatus}] =
+    useLazyGetRequest<{
+      result: 'ok';
+      data: string[];
+    }>(UrlBuilder.mangaReadMarkers(manga.id));
 
   const [markRead] = usePostRequest<BasicResultsResponse>();
   const [markUnread] = useDeleteRequest<BasicResultsResponse>();
@@ -95,17 +127,33 @@ export default function VolumeDetails({volumeInfo, onCancel}: Props) {
     }
   }, [readMarkersData]);
 
-  const title =
-    volume === 'null' || volume === null ? 'No volume' : `Volume ${volume}`;
+  useEffect(() => {
+    setTitle(
+      volume === 'null' || volume === null ? 'No volume' : `Volume ${volume}`,
+    );
+  }, [volume]);
 
-  if (loading || readMarkersLoading) {
+  if (loading || !requestStarted(readMarkersStatus)) {
     return (
       <View>
-        <CloseCurrentScreenHeader
-          onClose={onCancel}
-          title={title}
-          icon="arrow-left"
-        />
+        <View
+          style={{
+            flex: 1,
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+          }}>
+          <CloseCurrentScreenHeader
+            onClose={onCancel}
+            title={title}
+            icon="arrow-left"
+          />
+          <IconButton
+            disabled
+            icon={
+              sortRule === SortRule.Desc ? 'sort-descending' : 'sort-ascending'
+            }
+          />
+        </View>
         <ActivityIndicator style={{flex: 1}} />
         {/* <BasicList
           loading
@@ -123,10 +171,16 @@ export default function VolumeDetails({volumeInfo, onCancel}: Props) {
     console.error(
       error || (data?.result === 'error' && data.errors) || 'unknown error',
     );
-    return <Text>Uh oh that didn't work!</Text>;
+    return (
+      <Banner
+        background="error"
+        title="Woops!"
+        body="Something went wrong when fetch the chapters."
+      />
+    );
   }
 
-  if (data) {
+  if (chapters?.length) {
     return (
       <View>
         <View
@@ -140,10 +194,19 @@ export default function VolumeDetails({volumeInfo, onCancel}: Props) {
             title={title}
             icon="arrow-left"
           />
-          <IconButton icon="dots-vertical" onPress={() => {}} />
+          <IconButton
+            disabled={sortButtonDisabled}
+            icon={
+              sortRule === SortRule.Desc ? 'sort-descending' : 'sort-ascending'
+            }
+            onPress={() => {
+              setSortButtonDisabled(true);
+              setSortOrder(current => current * -1);
+            }}
+          />
         </View>
         <BasicList
-          data={data.data}
+          data={chapters}
           aspectRatio={1}
           renderItem={chapter => {
             const markedAsRead = readChapters.includes(chapter.id);

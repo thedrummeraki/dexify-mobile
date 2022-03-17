@@ -12,7 +12,7 @@ import {
   useLazyGetRequest,
   usePostRequest,
 } from 'src/api/utils';
-import {Banner, FullScreenModal} from 'src/components';
+import {Banner, BasicModal, FullScreenModal} from 'src/components';
 import {List} from 'src/components/List/List';
 import {pluralize, wait} from 'src/utils';
 import {useMangaDetails} from '../../../ShowMangaDetails';
@@ -24,12 +24,12 @@ interface Props {
 
 export default function AddToMDListModal(props: Props) {
   return (
-    <FullScreenModal
+    <BasicModal
       {...props}
       title="Add to MDList"
       primaryAction={{content: 'Done', onAction: props.onDismiss}}>
       <CustomListsListModalChildren />
-    </FullScreenModal>
+    </BasicModal>
   );
 }
 
@@ -65,7 +65,7 @@ function CustomListsListModalChildren() {
   );
 
   useEffect(() => {
-    wait(100).then(() => getCustomLists());
+    wait(1).then(() => getCustomLists());
   }, []);
 
   useEffect(() => {

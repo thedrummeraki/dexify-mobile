@@ -60,6 +60,7 @@ export default function AddToLibraryModal({
                 style={{marginLeft: -5}}
                 icon={readingStatus === item.value ? 'check' : undefined}
                 content={<Text>{item.content}</Text>}
+                background="none"
               />
               <Caption>{item.phrase}</Caption>
             </View>

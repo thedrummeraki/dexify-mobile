@@ -31,8 +31,8 @@ export function isPortrait() {
   return dim.height >= dim.width;
 }
 
-export function useDimensions() {
-  return Dimensions.get('window');
+export function useDimensions(source: 'window' | 'screen' = 'window') {
+  return Dimensions.get(source);
 }
 
 export function useScreenOrientation(): ScreenOrientation {
