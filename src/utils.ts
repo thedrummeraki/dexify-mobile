@@ -1,6 +1,6 @@
 import {DateTime} from 'luxon';
 import {useEffect, useState} from 'react';
-import {Dimensions} from 'react-native';
+import {Dimensions, StatusBar} from 'react-native';
 
 export function appVersion() {
   const pkg = require('../package.json');
@@ -32,7 +32,8 @@ export function isPortrait() {
 }
 
 export function useDimensions(source: 'window' | 'screen' = 'window') {
-  return Dimensions.get(source);
+  const heightOffset = StatusBar.currentHeight || 0;
+  return {...Dimensions.get(source), heightOffset};
 }
 
 export function useScreenOrientation(): ScreenOrientation {

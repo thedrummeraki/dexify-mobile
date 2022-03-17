@@ -1,22 +1,15 @@
 import React, {PropsWithChildren, useContext, useEffect, useState} from 'react';
-import {View} from 'react-native';
-import {
-  BasicResultsResponse,
-  CoverArt,
-  Manga,
-  PagedResultsList,
-} from 'src/api/mangadex/types';
+import {StatusBar, View} from 'react-native';
+import {CoverArt, Manga, PagedResultsList} from 'src/api/mangadex/types';
 import {useLazyGetRequest} from 'src/api/utils';
 import {AboutTab} from './components';
 
-import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import UrlBuilder from 'src/api/mangadex/types/api/url_builder';
 import {wait} from 'src/utils';
 import {useYourAnimeShow} from 'src/api/youranime/hooks';
 import {YourAnime} from 'src/api/youranime';
 import {useSettings} from 'src/prodivers';
-
-const Tab = createMaterialTopTabNavigator();
+import {CoverSize, mangaImage} from 'src/api';
 
 interface Props {
   manga: Manga;
@@ -91,12 +84,23 @@ export default function ShowMangaDetails({manga}: Props) {
       }),
     );
 
+  const [get] = useLazyGetRequest<{
+    success: boolean;
+    color: string;
+    rgb: [number, number, number];
+  }>();
+  const [statusBarColor, setStatusBarColor] = useState<string | undefined>(
+    undefined,
+  );
+
   const [getStats, {data: statsData, loading: statsLoading}] =
     useLazyGetRequest<Manga.StatisticsResponse>(
       UrlBuilder.mangaStatistics(manga.id),
     );
 
-  const [coverUrl, setCoverUrl] = useState<string>();
+  const [coverUrl, setCoverUrl] = useState<string>(
+    mangaImage(manga, {size: CoverSize.Original}),
+  );
 
   const aggregate = data?.result === 'ok' ? data.volumes : undefined;
   const aggregateEntries = aggregate ? Object.entries(aggregate) : [];
@@ -143,6 +147,17 @@ export default function ShowMangaDetails({manga}: Props) {
     }
   }, [airingNow]);
 
+  useEffect(() => {
+    if (coverUrl) {
+      get(UrlBuilder.palette({imageUrl: coverUrl})).then(res => {
+        if (res?.success) {
+          const [r, g, b] = res.rgb;
+          setStatusBarColor(`rgb(${r}, ${g}, ${b})`);
+        }
+      });
+    }
+  }, [coverUrl]);
+
   return (
     <ShowMangaDetailsProvider
       loading={loading || coversLoading}
@@ -160,6 +175,7 @@ export default function ShowMangaDetails({manga}: Props) {
       preferredLanguages={preferredLanguages}
       onPreferredLanguagesChange={setPreferredLanguages}>
       <View style={{flex: 1}}>
+        <StatusBar animated backgroundColor={statusBarColor} />
         <AboutTab />
       </View>
     </ShowMangaDetailsProvider>

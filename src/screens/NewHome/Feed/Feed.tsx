@@ -1,5 +1,5 @@
-import React, {useEffect} from 'react';
-import {RefreshControl, ScrollView, StatusBar} from 'react-native';
+import React from 'react';
+import {RefreshControl, ScrollView} from 'react-native';
 import Section from './Section/Section';
 import TopManga from './Section/components/TopManga';
 import {FeedData} from './types';
@@ -9,7 +9,6 @@ import {useContinueReadingChaptersList, useIsLoggedIn} from 'src/prodivers';
 import {EmptySectionState} from './Section/components';
 import {Banner} from 'src/components';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import LinearGradient from 'react-native-linear-gradient';
 import {currentSeason} from 'src/utils';
 import {ReadingStatus} from 'src/api/mangadex/types';
 

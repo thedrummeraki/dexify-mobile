@@ -3,7 +3,7 @@ import {IconButton, useTheme} from 'react-native-paper';
 import {BasicResultsResponse} from 'src/api/mangadex/types';
 import UrlBuilder from 'src/api/mangadex/types/api/url_builder';
 import {
-  useDeleteRequest,
+  useAuthenticatedDeleteRequest,
   useLazyGetRequest,
   usePostRequest,
 } from 'src/api/utils';
@@ -27,7 +27,7 @@ export default function FollowMangaAction() {
   const [followManga] = usePostRequest<BasicResultsResponse>(
     UrlBuilder.buildUrl(`/manga/${manga.id}/follow`),
   );
-  const [unfollowManga] = useDeleteRequest<BasicResultsResponse>(
+  const [unfollowManga] = useAuthenticatedDeleteRequest<BasicResultsResponse>(
     UrlBuilder.buildUrl(`/manga/${manga.id}/follow`),
   );
 

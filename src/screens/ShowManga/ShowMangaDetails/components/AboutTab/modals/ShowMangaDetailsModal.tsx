@@ -121,8 +121,6 @@ function ModalChildren({onDismiss}: Pick<Props, 'onDismiss'>) {
     image: () => null, // disable images for now
   };
 
-  console.log(statistics);
-
   return (
     <ScrollView>
       <Banner visible={false} title="Watch out for spoilers~!">

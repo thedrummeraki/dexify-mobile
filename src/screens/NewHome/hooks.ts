@@ -6,7 +6,7 @@ import {
   Sections,
 } from './HomePresenter/Section/types';
 import {FeedResponse} from './Feed/types';
-import {useLazyGetRequest} from 'src/api/utils';
+import {useAuthenticatedLazyGetRequest, useLazyGetRequest} from 'src/api/utils';
 import UrlBuilder from 'src/api/mangadex/types/api/url_builder';
 import {AxiosError} from 'axios';
 import {useContentRatingFitlers, useSettings, useSettingsContext} from 'src/prodivers';
@@ -22,7 +22,7 @@ export function useFeed(): FeedPresenter {
   const {loading} = useSettingsContext();
   const contentRating = useContentRatingFitlers();
   const {mangaLanguages} = useSettings();
-  const [refresh, response] = useLazyGetRequest<FeedResponse>(
+  const [refresh, response] = useAuthenticatedLazyGetRequest<FeedResponse>(
     UrlBuilder.feed({contentRating, translatedLanguage: mangaLanguages}),
   );
 

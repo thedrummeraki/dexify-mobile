@@ -24,6 +24,7 @@ import {
 } from './prodivers';
 import {Navigation} from './foundation';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
+import {StatusBar} from 'react-native';
 
 export default function App() {
   return (
@@ -37,6 +38,7 @@ export default function App() {
                   <ThemeProvider>
                     <ReadingStateProvider>
                       <IntlProvider locale="en" textComponent={Text}>
+                        <StatusBar />
                         <Navigation />
                       </IntlProvider>
                     </ReadingStateProvider>

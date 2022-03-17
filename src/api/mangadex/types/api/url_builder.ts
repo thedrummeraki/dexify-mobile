@@ -28,6 +28,10 @@ export default class UrlBuilder {
   static AIRING_MANGA_SERVICE_URL = 'https://airing-manga.herokuapp.com';
   // static API_URL = 'http://192.168.86.27:3001';
 
+  public static palette({imageUrl}: {imageUrl: string}) {
+    return this.buildUrl('/palette', {imageUrl: encodeURIComponent(imageUrl)});
+  }
+
   public static feed(params?: FeedOptions) {
     return this.buildUrl('/home/feed', params);
   }

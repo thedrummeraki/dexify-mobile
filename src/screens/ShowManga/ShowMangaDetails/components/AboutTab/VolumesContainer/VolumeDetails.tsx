@@ -1,5 +1,4 @@
 import React, {useCallback, useEffect, useRef, useState} from 'react';
-import {FormattedDisplayName} from 'react-intl';
 import {View} from 'react-native';
 import {ActivityIndicator, Button, IconButton} from 'react-native-paper';
 import {
@@ -17,11 +16,7 @@ import {
 import {Banner, CloseCurrentScreenHeader} from 'src/components';
 import BasicList from 'src/components/BasicList';
 import {useBackgroundColor} from 'src/components/colors';
-import {
-  useContentRatingFitlers,
-  useSettings,
-  useSettingsContext,
-} from 'src/prodivers';
+import {useSettingsContext} from 'src/prodivers';
 import {useMangaDetails, VolumeInfo} from '../../../ShowMangaDetails';
 import {ChapterItem} from '../ChaptersList';
 import LocaleSelectionModal from './LocaleSelectionModal';
@@ -87,15 +82,9 @@ export default function VolumeDetails({volumeInfo, onCancel}: Props) {
         refreshSession: false,
         forceRefresh: false,
       },
-    )
-      .then(res => {
-        if (res?.result === 'ok') {
-          console.log(res.data.map(x => x.attributes.chapter));
-        }
-      })
-      .finally(() => {
-        setSortButtonDisabled(false);
-      });
+    ).finally(() => {
+      setSortButtonDisabled(false);
+    });
     getReadMarkers();
   }, [page, sortRule, preferredLanguages]);
 

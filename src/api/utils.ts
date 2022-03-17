@@ -169,6 +169,36 @@ export function useAuthenticatedLazyGetRequest<T, Body = any>(
   return [authenticatedCallback, result];
 }
 
+export function useAuthenticatedPostRequest<T, Body = any>(
+  hookUrl?: string,
+  params?: SimpleRequestParams<Body>,
+): LazyRequestResponse<T> {
+  const [callback, result] = usePostRequest<T>(hookUrl, params);
+  const authenticatedCallback = useAuthenticatedCallback(callback);
+
+  return [authenticatedCallback, result];
+}
+
+export function useAuthenticatedPutRequest<T, Body = any>(
+  hookUrl?: string,
+  params?: SimpleRequestParams<Body>,
+): LazyRequestResponse<T> {
+  const [callback, result] = usePutRequest<T>(hookUrl, params);
+  const authenticatedCallback = useAuthenticatedCallback(callback);
+
+  return [authenticatedCallback, result];
+}
+
+export function useAuthenticatedDeleteRequest<T, Body = any>(
+  hookUrl?: string,
+  params?: SimpleRequestParams<Body>,
+): LazyRequestResponse<T> {
+  const [callback, result] = useDeleteRequest<T>(hookUrl, params);
+  const authenticatedCallback = useAuthenticatedCallback(callback);
+
+  return [authenticatedCallback, result];
+}
+
 export function useGetRequest<T>(
   url: string,
   params?: SimpleRequestParams<never>,
