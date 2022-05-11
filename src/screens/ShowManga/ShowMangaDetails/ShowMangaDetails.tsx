@@ -1,5 +1,5 @@
 import React, {PropsWithChildren, useContext, useEffect, useState} from 'react';
-import {StatusBar, View} from 'react-native';
+import {View} from 'react-native';
 import {CoverArt, Manga, PagedResultsList} from 'src/api/mangadex/types';
 import {useLazyGetRequest} from 'src/api/utils';
 import {AboutTab} from './components';
@@ -84,15 +84,6 @@ export default function ShowMangaDetails({manga}: Props) {
       }),
     );
 
-  const [get] = useLazyGetRequest<{
-    success: boolean;
-    color: string;
-    rgb: [number, number, number];
-  }>();
-  const [statusBarColor, setStatusBarColor] = useState<string | undefined>(
-    undefined,
-  );
-
   const [getStats, {data: statsData, loading: statsLoading}] =
     useLazyGetRequest<Manga.StatisticsResponse>(
       UrlBuilder.mangaStatistics(manga.id),
@@ -126,9 +117,7 @@ export default function ShowMangaDetails({manga}: Props) {
   );
 
   useEffect(() => {
-    wait(1).then(() => getMangaCovers());
-    wait(1).then(() => getAiringInfo());
-    wait(1).then(() => getStats());
+    Promise.allSettled([getMangaCovers(), getAiringInfo(), getStats()]);
   }, []);
 
   useEffect(() => {
@@ -147,17 +136,6 @@ export default function ShowMangaDetails({manga}: Props) {
     }
   }, [airingNow]);
 
-  useEffect(() => {
-    if (coverUrl) {
-      get(UrlBuilder.palette({imageUrl: coverUrl})).then(res => {
-        if (res?.success) {
-          const [r, g, b] = res.rgb;
-          setStatusBarColor(`rgb(${r}, ${g}, ${b})`);
-        }
-      });
-    }
-  }, [coverUrl]);
-
   return (
     <ShowMangaDetailsProvider
       loading={loading || coversLoading}
@@ -175,7 +153,6 @@ export default function ShowMangaDetails({manga}: Props) {
       preferredLanguages={preferredLanguages}
       onPreferredLanguagesChange={setPreferredLanguages}>
       <View style={{flex: 1}}>
-        <StatusBar animated backgroundColor={statusBarColor} />
         <AboutTab />
       </View>
     </ShowMangaDetailsProvider>

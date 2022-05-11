@@ -9,6 +9,7 @@ import {ThumbnailSkeleton} from 'src/foundation/Thumbnail';
 import {useHeader} from 'src/prodivers';
 import Banner from '../Banner';
 import BasicList from '../BasicList';
+import {List} from '../List/List';
 import MangaThumbnail from '../MangaThumbnail';
 import {MangaListItem} from './MangaListItem';
 
@@ -83,6 +84,13 @@ export default function MangaCollection({
     }
   }, [manga, filterQuery]);
 
+  const skeletonItemMarkup =
+    display === MangaCollectionDisplay.Images ? (
+      <ThumbnailSkeleton height={160} width={skeletonWidth} />
+    ) : (
+      <List.Item.Skeleton imageWidth={70} />
+    );
+
   const renderItem = useCallback(
     (manga: Manga) => {
       switch (display) {
@@ -113,7 +121,7 @@ export default function MangaCollection({
         itemStyle={{padding: 5}}
         renderItem={renderItem}
         skeletonLength={12}
-        skeletonItem={<ThumbnailSkeleton height={160} width={skeletonWidth} />}
+        skeletonItem={skeletonItemMarkup}
         HeaderComponent={headerMarkup}
         HeaderComponentStyle={HeaderComponentStyle}
         ListEmptyComponent={

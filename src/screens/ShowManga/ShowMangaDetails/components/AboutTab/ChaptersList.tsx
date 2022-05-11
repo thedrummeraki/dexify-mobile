@@ -3,6 +3,7 @@ import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {
   Dimensions,
   FlatList,
+  Linking,
   TouchableNativeFeedback,
   View,
 } from 'react-native';
@@ -265,14 +266,19 @@ export function ChapterItem({
     info => info.id === chapter.id,
   );
   const progress = useChapterProgress(chapter.id);
-  const disabled = chapter.attributes.pages === 0;
+  const isExternal = (chapter.attributes.externalUrl?.length || 0) > 0;
+  const disabled = chapter.attributes.pages === 0 && !isExternal;
 
   const handleOnPress = useCallback(() => {
-    onPress?.();
-    navigation.push('ShowChapter', {
-      id: chapter.id,
-      jumpToPage: info?.currentPage,
-    });
+    if (isExternal) {
+      Linking.openURL(chapter.attributes.externalUrl!);
+    } else {
+      onPress?.();
+      navigation.push('ShowChapter', {
+        id: chapter.id,
+        jumpToPage: info?.currentPage,
+      });
+    }
   }, [navigation, chapter.id, info, onPress]);
 
   return (
@@ -303,7 +309,13 @@ export function ChapterItem({
                 {preferredChapterTitle(chapter)}
               </Text>
               <TextBadge
-                icon={scanlationGroup ? 'account-group' : 'clock-outline'}
+                icon={
+                  isExternal
+                    ? 'open-in-new'
+                    : scanlationGroup
+                    ? 'account-group'
+                    : 'clock-outline'
+                }
                 background="none"
                 style={{marginLeft: -5, marginTop: 0}}
                 content={
@@ -332,7 +344,7 @@ export function ChapterItem({
                       type="language"
                     />
                   </IntlProvider>
-                  {chapter.attributes.pages !== undefined ? (
+                  {!isExternal && chapter.attributes.pages !== undefined ? (
                     <Caption style={{marginTop: -5}}>
                       {' - '}
                       {pluralize(chapter.attributes.pages, 'page')}

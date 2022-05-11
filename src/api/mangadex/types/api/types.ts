@@ -1,6 +1,8 @@
 import {Order} from '.';
 import {ContentRating, MangaStatus, PublicationDemographic, TagMode} from '..';
 
+export type MangaOrder = Order<'createdAt' | 'updatedAt' | 'followedCount' | 'relevance'>
+
 export type MangaRequestParams = Partial<{
   title: string;
   artists: string[];
@@ -10,7 +12,7 @@ export type MangaRequestParams = Partial<{
   includedTags: string[];
   includedTagsMode: TagMode;
   excludedTags: string[];
-  excludedTagsMode: TagMode[];
+  excludedTagsMode: TagMode;
   status: MangaStatus[];
   originalLanguage: string[];
   excludedOriginalLanguage: string[];
@@ -20,7 +22,7 @@ export type MangaRequestParams = Partial<{
   createdAtSince: string;
   updatedAtSince: string;
   contentRating: ContentRating[];
-  order: Order<'createdAt' | 'updatedAt' | 'followedCount' | 'relevance'>;
+  order: MangaOrder;
   includes: string[];
   hasAvailableChapters: '0' | '1' | 'true' | 'false';
   limit: number;

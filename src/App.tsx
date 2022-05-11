@@ -11,6 +11,7 @@ import {
   DarkTheme as PaperDarkTheme,
   DefaultTheme as PaperDefaultTheme,
   Text,
+  useTheme,
 } from 'react-native-paper';
 import merge from 'deepmerge';
 import {
@@ -24,7 +25,7 @@ import {
 } from './prodivers';
 import {Navigation} from './foundation';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
-import {StatusBar} from 'react-native';
+import {StatusBar as RNStatusBar} from 'react-native';
 
 export default function App() {
   return (
@@ -74,5 +75,19 @@ function ThemeProvider({children}: PropsWithChildren<{}>) {
     <Provider theme={theme}>
       <NavigationContainer theme={theme}>{children}</NavigationContainer>
     </Provider>
+  );
+}
+
+function StatusBar() {
+  const {
+    colors: {background},
+    dark,
+  } = useTheme();
+
+  return (
+    <RNStatusBar
+      backgroundColor={background}
+      barStyle={dark ? 'light-content' : 'dark-content'}
+    />
   );
 }
