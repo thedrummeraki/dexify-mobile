@@ -14,3 +14,4 @@ export {default as FullScreenModal} from './FullScreenModal';
 export {default as BasicModal} from './BasicModal';
 export {default as ShareButton} from './ShareButton';
 export {default as Authenticated} from './Authenticated';
+export {default as MangaSearchFilters} from './MangaSearchFilters';
