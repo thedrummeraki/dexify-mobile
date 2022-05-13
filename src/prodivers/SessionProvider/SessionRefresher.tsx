@@ -85,7 +85,7 @@ async function retrieveStoredSession(): Promise<SessionState | null> {
 }
 
 export function useUpdatedSession(refreshNow = true) {
-  const {session: token, setSession} = useContext(SessionContext);
+  const {loading, session: token, setSession} = useContext(SessionContext);
 
   const refreshToken = useCallback(
     async (otherToken?: SessionState | null, options?: {force?: boolean}) => {
@@ -105,10 +105,6 @@ export function useUpdatedSession(refreshNow = true) {
 
       if (!options?.force) {
         if (!checkSessionValidity(refresh) || checkSessionValidity(session)) {
-          const reason = checkSessionValidity(session)
-            ? 'session valid'
-            : 'no valid refresh token found';
-          console.log('no need to refresh. Reason:', reason);
           return;
         }
 
@@ -149,6 +145,7 @@ export function useUpdatedSession(refreshNow = true) {
         return data || null;
       } catch (error) {
         console.error(error);
+        setSession(null);
         return null;
       }
     },
@@ -156,10 +153,10 @@ export function useUpdatedSession(refreshNow = true) {
   );
 
   useEffect(() => {
-    if (refreshNow) {
+    if (refreshNow && !loading) {
       refreshToken();
     }
-  }, [refreshNow]);
+  }, [refreshNow, loading]);
 
-  return {session: token, refreshToken};
+  return {loading, session: token, refreshToken};
 }

@@ -30,7 +30,7 @@ export default function ReadingStatusCategoryItem({category}: Props) {
   }, [data]);
 
   if (error) {
-    console.error(error);
+    console.error('could not get reading status', error);
   }
 
   return (

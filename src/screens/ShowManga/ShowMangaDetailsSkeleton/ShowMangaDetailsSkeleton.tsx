@@ -63,7 +63,3 @@ function AboutSkeleton() {
     </ScrollView>
   );
 }
-
-function EmptyContent() {
-  return <View />;
-}

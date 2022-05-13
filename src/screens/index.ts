@@ -4,6 +4,10 @@ export {default as ShowManga} from './ShowManga';
 export {default as ShowMangaGallery} from './ShowMangaGallery';
 export {default as ShowChapter} from './ShowChapter';
 export {default as ShowArtist} from './ShowArtist';
+export {default as ShowScanlationGroup} from './ShowScanlationGroup';
 export {default as ShowMangaList} from './ShowMangaList';
+export {default as ShowAnimeSimulcastMangaList} from './ShowAnimeSimulcastMangaList';
+export {default as ShowReadingStatusLibrary} from './ShowReadingStatusLibrary'
 export {default as ShowCustomList} from './ShowCustomList';
 export {default as ShowMangaByTags} from './ShowMangaByTags';
+export {default as ShowSettings} from './ShowSettings';

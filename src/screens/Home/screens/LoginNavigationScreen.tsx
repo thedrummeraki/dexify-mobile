@@ -1,6 +1,13 @@
 import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {Image, Linking, View} from 'react-native';
-import {Button, Caption, Text, TextInput, Title} from 'react-native-paper';
+import {
+  Button,
+  Caption,
+  Snackbar,
+  Text,
+  TextInput,
+  Title,
+} from 'react-native-paper';
 import {AuthResponse} from 'src/api/mangadex/types';
 import {useLazyGetRequest, usePostRequest} from 'src/api/utils';
 import {SessionContext} from 'src/prodivers';
@@ -14,10 +21,21 @@ export function LoginNavigationScreen() {
   const [submitting, setSubmitting] = useState(false);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [snackbarVisible, setSnackbarVisible] = useState(false);
+  const [snackbarMessage, setSnackbardMessage] = useState('');
 
   useEffect(() => {
     setSubmitEnabled(password.length >= 8 && Boolean(username));
   }, [username, password]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setSnackbarVisible(false);
+      setSnackbardMessage('');
+    }, 5000);
+
+    return () => clearTimeout(timer);
+  }, [snackbarVisible]);
 
   const handleGoToMangadex = () => {
     Linking.openURL('https://mangadex.org/login');
@@ -48,6 +66,10 @@ export function LoginNavigationScreen() {
               ),
             },
           });
+        } else {
+          setSnackbarVisible(true);
+          setSnackbardMessage('Invalid login credentials.');
+          setSubmitEnabled(true);
         }
       })
       .catch(() => setSubmitEnabled(true))
@@ -113,6 +135,12 @@ export function LoginNavigationScreen() {
         Have trouble logging in? Don't have an account? Click here to go to
         https://www.mangadex.org/login for more info.
       </Caption>
+      <Snackbar
+        style={{padding: -20}}
+        visible={snackbarVisible}
+        onDismiss={() => setSnackbarVisible(false)}>
+        {snackbarMessage}
+      </Snackbar>
     </View>
   );
 }

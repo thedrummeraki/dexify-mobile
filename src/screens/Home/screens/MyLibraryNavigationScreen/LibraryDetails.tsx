@@ -1,30 +1,16 @@
 import React, {useEffect, useState} from 'react';
-import {
-  RefreshControl,
-  SafeAreaView,
-  View,
-  ScrollView,
-  Keyboard,
-} from 'react-native';
+import {RefreshControl, SafeAreaView, View, Keyboard} from 'react-native';
 import {
   ActivityIndicator,
-  Badge,
-  Button,
   Caption,
   IconButton,
   TextInput,
   Title,
 } from 'react-native-paper';
-import {findRelationships, mangaImage} from 'src/api';
-import {ContentRating, CustomList, Manga} from 'src/api/mangadex/types';
-import BasicList from 'src/components/BasicList';
-import {useBackgroundColor} from 'src/components/colors';
+import {findRelationships} from 'src/api';
+import {CustomList, Manga} from 'src/api/mangadex/types';
 import {List} from 'src/components/List/List';
 import {useDexifyNavigation} from 'src/foundation';
-import Thumbnail, {
-  ThumbnailBadge,
-  ThumbnailSkeleton,
-} from 'src/foundation/Thumbnail';
 import {useLibraryContext} from 'src/prodivers';
 import {pluralize} from 'src/utils';
 

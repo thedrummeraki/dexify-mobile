@@ -7,9 +7,10 @@ import {
   Order,
   ScanlationGroupRequestParams,
   SingleMangaRequestParams,
+  VolumesAndChaptersParams,
 } from 'src/api/mangadex/types/api';
 import {UIMangaCategory} from 'src/categories';
-import {ContentRating, ScanlationGroup} from '..';
+import {ContentRating, ReadingStatus, ScanlationGroup} from '..';
 
 interface FeedOptions {
   only?:
@@ -19,23 +20,24 @@ interface FeedOptions {
     | 'randomManga'
     | 'recentlyAdded';
   contentRating?: ContentRating[];
+  translatedLanguage?: string[];
 }
 
 export default class UrlBuilder {
   static API_URL = 'https://mangadex-client-proxy.herokuapp.com'; // 'https://api.mangadex.org';
-  // static API_URL = 'http://192.168.2.24:3001';
+  static AIRING_MANGA_SERVICE_URL = 'https://airing-manga.herokuapp.com';
+  // static API_URL = 'http://192.168.86.27:3001';
+
+  public static palette({imageUrl}: {imageUrl: string}) {
+    return this.buildUrl('/palette', {imageUrl: encodeURIComponent(imageUrl)});
+  }
 
   public static feed(params?: FeedOptions) {
     return this.buildUrl('/home/feed', params);
   }
 
-  public static animeAiringInfo(mangaId: string) {
-    return this.buildUrl('/home/manga/anime/airing/info', {mangaId});
-  }
-
   public static mangaList(params?: Partial<MangaRequestParams>) {
     const defaultValues: Partial<MangaRequestParams> = {
-      contentRating: [ContentRating.pornographic],
       includes: ['cover_art', 'artist', 'author', 'tag'],
     };
 
@@ -57,6 +59,10 @@ export default class UrlBuilder {
     return this.mangaList(Object.assign(defaultParams, category.params));
   }
 
+  public static readingStatusMangaIds(status?: ReadingStatus | null) {
+    return this.buildUrl('/manga/status', {status: status ? status : ''});
+  }
+
   public static mangaById(
     id: string,
     params?: Partial<SingleMangaRequestParams>,
@@ -70,6 +76,10 @@ export default class UrlBuilder {
 
   public static mangaStatistics(mangaId: string) {
     return this.buildUrl(`/statistics/manga/${mangaId}`);
+  }
+
+  public static mangaVolumesAndChapters(mangaId: string, params?: VolumesAndChaptersParams) {
+    return this.buildUrl(`/manga/${mangaId}/aggregate`, params);
   }
 
   public static covers(params?: Partial<CoverRequestParams>) {
@@ -146,11 +156,27 @@ export default class UrlBuilder {
     return this.buildUrl(`/author/${id}`, params);
   }
 
+  public static animeAiringInfo(mangaId: string) {
+    return this.buildAiringMangaUrl(`/check/${mangaId}`);
+  }
+
+  public static mangaIdsWithAiringAnime() {
+    return this.buildAiringMangaUrl('/manga/airing');
+  }
+
   // Generic methods
 
   public static buildUrl(path: string, params?: ParamsLike) {
+    return this.buildUrlWithHost(UrlBuilder.API_URL, path, params);
+  }
+
+  public static buildAiringMangaUrl(path: string, params?: ParamsLike) {
+    return this.buildUrlWithHost(UrlBuilder.AIRING_MANGA_SERVICE_URL, path, params);
+  }
+
+  public static buildUrlWithHost(host: string, path: string, params?: ParamsLike) {
     let urlParts = [
-      UrlBuilder.API_URL,
+      host,
       path.startsWith('/') ? path : `/${path}`,
     ];
 

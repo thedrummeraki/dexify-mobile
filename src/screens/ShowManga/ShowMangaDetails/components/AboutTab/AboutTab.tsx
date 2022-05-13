@@ -1,10 +1,12 @@
 import React, {useEffect, useState} from 'react';
 import {ScrollView, View} from 'react-native';
-import {Button, Paragraph} from 'react-native-paper';
+import {Button, IconButton, Paragraph} from 'react-native-paper';
 import {
   contentRatingInfo,
   findRelationship,
+  getPublisher,
   preferredMangaDescription,
+  preferredMangaTitle,
 } from 'src/api';
 import {
   AllReadingStatusResponse,
@@ -12,7 +14,7 @@ import {
   Author,
   ReadingStatus,
 } from 'src/api/mangadex/types';
-import {TextBadge} from 'src/components';
+import {ShareButton, TextBadge} from 'src/components';
 import {useBackgroundColor} from 'src/components/colors';
 import TopManga from 'src/screens/NewHome/Feed/Section/components/TopManga';
 import {useMangaDetails} from '../../ShowMangaDetails';
@@ -22,6 +24,7 @@ import {
   AddToLibraryModal,
   AddToMDListModal,
   ShowMangaDetailsModal,
+  AiringAnimeModal,
 } from './modals';
 import {FollowMangaAction, LibraryAction} from './actions';
 import {useLazyGetRequest} from 'src/api/utils';
@@ -42,6 +45,7 @@ export default function AboutTab() {
     addToMDList: false,
     addToLibrary: false,
     showDetails: false,
+    airingAnime: false,
   });
 
   const [getReadingStatus, {data, loading}] =
@@ -95,7 +99,14 @@ export default function AboutTab() {
           />
         )}
         {isAiring && (
-          <TextBadge content="Anime airing" icon="video" background="primary" />
+          <TextBadge
+            content="Anime airing"
+            icon="video"
+            background="primary"
+            onPress={() =>
+              setSetModalsState(current => ({...current, airingAnime: true}))
+            }
+          />
         )}
         {manga.attributes.year && (
           <TextBadge content={manga.attributes.year} background="none" />
@@ -117,7 +128,9 @@ export default function AboutTab() {
       <ScrollView>
         <TopManga
           allowCloseScreen
-          description={author?.attributes.name}
+          description={[author?.attributes.name, getPublisher(manga)]
+            .filter(x => (x?.length || 0) > 0)
+            .join(' ・ ')}
           manga={manga}
           aspectRatio={1.2}
           FooterComponent={basicInfoMarkup}
@@ -128,29 +141,32 @@ export default function AboutTab() {
             alignItems: 'center',
             marginTop: -15,
           }}>
-          <LibraryAction
-            readingStatus={readingStatus}
-            loading={loading}
-            onPress={() =>
-              setSetModalsState(current => ({
-                ...current,
-                addToLibrary: true,
-              }))
-            }
-          />
-          <FollowMangaAction />
-          <Button
-            disabled={!loggedIn}
-            icon="plus"
-            uppercase={false}
-            onPress={() =>
-              setSetModalsState(current => ({
-                ...current,
-                addToMDList: true,
-              }))
-            }>
-            ADD TO MDList
-          </Button>
+          <View style={{flexGrow: 1, flexDirection: 'row'}}>
+            <LibraryAction
+              readingStatus={readingStatus}
+              loading={loading}
+              onPress={() =>
+                setSetModalsState(current => ({
+                  ...current,
+                  addToLibrary: true,
+                }))
+              }
+            />
+            <IconButton
+              icon="playlist-plus"
+              disabled={!loggedIn}
+              onPress={() =>
+                setSetModalsState(current => ({
+                  ...current,
+                  addToMDList: true,
+                }))
+              }
+            />
+            <FollowMangaAction />
+          </View>
+          <View style={{flexShrink: 1, flexDirection: 'row'}}>
+            <ShareButton resource={manga} title={preferredMangaTitle(manga)} />
+          </View>
         </View>
         <View style={{marginHorizontal: 15}}>
           <Paragraph numberOfLines={2}>{description}</Paragraph>
@@ -197,6 +213,13 @@ export default function AboutTab() {
         visible={modalsState.showDetails}
         onDismiss={() =>
           setSetModalsState(current => ({...current, showDetails: false}))
+        }
+      />
+      <AiringAnimeModal
+        loading={loading}
+        visible={modalsState.airingAnime}
+        onDismiss={() =>
+          setSetModalsState(current => ({...current, airingAnime: false}))
         }
       />
     </>

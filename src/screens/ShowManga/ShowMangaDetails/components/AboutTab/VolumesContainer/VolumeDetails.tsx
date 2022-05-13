@@ -15,13 +15,11 @@ import {
 } from 'src/api/utils';
 import {Banner, CloseCurrentScreenHeader} from 'src/components';
 import BasicList from 'src/components/BasicList';
-import {
-  useContentRatingFitlers,
-  useSettings,
-  useSettingsContext,
-} from 'src/prodivers';
+import {useBackgroundColor} from 'src/components/colors';
+import {useSettingsContext} from 'src/prodivers';
 import {useMangaDetails, VolumeInfo} from '../../../ShowMangaDetails';
 import {ChapterItem} from '../ChaptersList';
+import LocaleSelectionModal from './LocaleSelectionModal';
 
 enum SortRule {
   Asc = -1,
@@ -37,7 +35,8 @@ interface Props {
 
 export default function VolumeDetails({volumeInfo, onCancel}: Props) {
   const {volume, chapterIds: ids} = volumeInfo;
-  const {manga} = useMangaDetails();
+  const {manga, preferredLanguages, onPreferredLanguagesChange} =
+    useMangaDetails();
   const readChaptersInitialized = useRef(false);
   const {settings, updateSetting} = useSettingsContext();
   const [sortRule, setSortOrder] = useState<SortRule>(
@@ -50,13 +49,17 @@ export default function VolumeDetails({volumeInfo, onCancel}: Props) {
   const [title, setTitle] = useState('...');
 
   const [page, setPage] = useState(1);
+  const [showLocalesModal, setShowLocalesModal] = useState(false);
 
-  const contentRating = useContentRatingFitlers();
+  const contentRating = [manga.attributes.contentRating]; //useContentRatingFitlers();
   const [fetchChapters, {data, loading, error}] =
     useLazyGetRequest<PagedResultsList<Chapter>>();
   const hasNextPage =
     data?.result === 'ok' && ids.length > data.offset + data.data.length;
   const hasPrevPage = data?.result === 'ok' && data.offset > 0;
+
+  const primaryColor = useBackgroundColor('primary');
+  const translateColor = preferredLanguages.length ? primaryColor : undefined;
 
   useEffect(() => {
     const limit = 100;
@@ -71,6 +74,7 @@ export default function VolumeDetails({volumeInfo, onCancel}: Props) {
           chapter: sortRule === SortRule.Asc ? 'asc' : 'desc',
           publishAt: 'asc',
         },
+        translatedLanguage: preferredLanguages,
         limit,
         offset,
       }),
@@ -82,7 +86,7 @@ export default function VolumeDetails({volumeInfo, onCancel}: Props) {
       setSortButtonDisabled(false);
     });
     getReadMarkers();
-  }, [page, sortRule]);
+  }, [page, sortRule, preferredLanguages]);
 
   useEffect(() => {
     updateSetting(
@@ -147,22 +151,19 @@ export default function VolumeDetails({volumeInfo, onCancel}: Props) {
             title={title}
             icon="arrow-left"
           />
-          <IconButton
-            disabled
-            icon={
-              sortRule === SortRule.Desc ? 'sort-descending' : 'sort-ascending'
-            }
-          />
+          <View style={{flexShrink: 1, flexDirection: 'row'}}>
+            <IconButton disabled icon="translate" color={translateColor} />
+            <IconButton
+              disabled
+              icon={
+                sortRule === SortRule.Desc
+                  ? 'sort-descending'
+                  : 'sort-ascending'
+              }
+            />
+          </View>
         </View>
         <ActivityIndicator style={{flex: 1}} />
-        {/* <BasicList
-          loading
-          data={[]}
-          aspectRatio={1}
-          skeletonItem={<List.Item.Skeleton />}
-          skeletonLength={ids.length}
-          itemStyle={{padding: 0}}
-        /> */}
       </View>
     );
   }
@@ -194,16 +195,25 @@ export default function VolumeDetails({volumeInfo, onCancel}: Props) {
             title={title}
             icon="arrow-left"
           />
-          <IconButton
-            disabled={sortButtonDisabled}
-            icon={
-              sortRule === SortRule.Desc ? 'sort-descending' : 'sort-ascending'
-            }
-            onPress={() => {
-              setSortButtonDisabled(true);
-              setSortOrder(current => current * -1);
-            }}
-          />
+          <View style={{flexShrink: 1, flexDirection: 'row'}}>
+            <IconButton
+              icon="translate"
+              onPress={() => setShowLocalesModal(true)}
+              color={translateColor}
+            />
+            <IconButton
+              disabled={sortButtonDisabled}
+              icon={
+                sortRule === SortRule.Desc
+                  ? 'sort-descending'
+                  : 'sort-ascending'
+              }
+              onPress={() => {
+                setSortButtonDisabled(true);
+                setSortOrder(current => current * -1);
+              }}
+            />
+          </View>
         </View>
         <BasicList
           data={chapters}
@@ -250,9 +260,59 @@ export default function VolumeDetails({volumeInfo, onCancel}: Props) {
             Next
           </Button>
         </View>
+        <LocaleSelectionModal
+          selectedLocales={preferredLanguages}
+          locales={manga.attributes.availableTranslatedLanguages}
+          visible={showLocalesModal}
+          onDismiss={() => setShowLocalesModal(false)}
+          onSubmit={onPreferredLanguagesChange}
+        />
       </View>
     );
   }
 
-  return null;
+  return (
+    <View>
+      <View
+        style={{
+          flex: 1,
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+        }}>
+        <CloseCurrentScreenHeader
+          onClose={onCancel}
+          title={title}
+          icon="arrow-left"
+        />
+        <View style={{flexShrink: 1, flexDirection: 'row'}}>
+          <IconButton
+            icon="translate"
+            color={translateColor}
+            onPress={() => setShowLocalesModal(true)}
+          />
+          <IconButton
+            disabled
+            icon={
+              sortRule === SortRule.Desc ? 'sort-descending' : 'sort-ascending'
+            }
+          />
+        </View>
+      </View>
+      <Banner
+        primaryAction={{
+          content: 'Change language',
+          onAction: () => setShowLocalesModal(true),
+        }}
+        secondaryAction={{content: 'Back', onAction: onCancel}}>
+        No chapters were found for your current language selection.
+      </Banner>
+      <LocaleSelectionModal
+        selectedLocales={preferredLanguages}
+        locales={manga.attributes.availableTranslatedLanguages}
+        visible={showLocalesModal}
+        onDismiss={() => setShowLocalesModal(false)}
+        onSubmit={onPreferredLanguagesChange}
+      />
+    </View>
+  );
 }

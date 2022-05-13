@@ -68,6 +68,7 @@ function Home() {
       data={data.data}
       refreshing={refreshing}
       onRefresh={handleOnRefresh}
+      onFocus={refresh}
     />
   );
 }

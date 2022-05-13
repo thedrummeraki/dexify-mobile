@@ -2,7 +2,7 @@ import React, {useEffect, useRef, useState} from 'react';
 import {ActivityIndicator} from 'react-native-paper';
 import {CustomList, EntityResponse} from 'src/api/mangadex/types';
 import UrlBuilder from 'src/api/mangadex/types/api/url_builder';
-import {useLazyGetRequest} from 'src/api/utils';
+import {useAuthenticatedLazyGetRequest} from 'src/api/utils';
 import {useShowCustomListRoute} from 'src/foundation';
 import ShowCustomListDetails from './ShowCustomListDetails';
 
@@ -14,7 +14,7 @@ export default function ShowCustomList() {
   const route = useShowCustomListRoute();
   const {id} = route.params;
 
-  const [get, {data, loading, error}] = useLazyGetRequest<
+  const [get, {data, loading, error}] = useAuthenticatedLazyGetRequest<
     EntityResponse<CustomList>
   >(UrlBuilder.customList(id));
 

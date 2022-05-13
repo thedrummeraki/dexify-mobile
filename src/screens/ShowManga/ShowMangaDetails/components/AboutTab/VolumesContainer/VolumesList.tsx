@@ -13,6 +13,8 @@ import {
   useContinueReadingChaptersList,
   useSettingsContext,
 } from 'src/prodivers';
+import LocaleSelectionModal from './LocaleSelectionModal';
+import {useBackgroundColor} from 'src/components/colors';
 
 enum SortRule {
   Asc = -1,
@@ -33,14 +35,25 @@ export default function VolumesList({
   const successfulJumpToVolume = useRef(false);
   const navigation = useDexifyNavigation();
   const {settings, updateSetting} = useSettingsContext();
+  const [showLocalesModal, setShowLocalesModal] = useState(false);
   const [sortRule, setSortOrder] = useState<SortRule>(
     settings.volumeSortOrder === 'desc' ? SortRule.Desc : SortRule.Asc,
   );
 
-  const {covers, manga, volumeInfos, loading} = useMangaDetails();
+  const {
+    covers,
+    manga,
+    volumeInfos,
+    loading,
+    preferredLanguages,
+    onPreferredLanguagesChange,
+  } = useMangaDetails();
   const itemWidth = useDimensions().width / 3 - 5 * 3;
 
   const continueReadingChapters = useContinueReadingChaptersList();
+
+  const primaryColor = useBackgroundColor('primary');
+  const translateColor = preferredLanguages.length ? primaryColor : undefined;
 
   const sortedVolumeInfos = useMemo(() => {
     return volumeInfos.sort((left, right) => {
@@ -114,6 +127,11 @@ export default function VolumesList({
                 onPress={() => {}}
               />
             ) : null} */}
+            <IconButton
+              icon="translate"
+              onPress={() => setShowLocalesModal(true)}
+              color={translateColor}
+            />
             <IconButton
               icon="palette"
               onPress={() => navigation.push('ShowMangaGallery', {manga})}
@@ -212,6 +230,13 @@ export default function VolumesList({
           <ThumbnailSkeleton width={itemWidth} height={itemWidth / 1.25} />
         }
         skeletonLength={6}
+      />
+      <LocaleSelectionModal
+        selectedLocales={preferredLanguages}
+        locales={manga.attributes.availableTranslatedLanguages}
+        visible={showLocalesModal}
+        onDismiss={() => setShowLocalesModal(false)}
+        onSubmit={onPreferredLanguagesChange}
       />
     </View>
   );

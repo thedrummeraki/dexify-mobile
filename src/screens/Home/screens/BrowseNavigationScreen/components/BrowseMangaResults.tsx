@@ -5,6 +5,7 @@ import {Artist, Author} from 'src/api/mangadex/types';
 import {ResponseStatus} from 'src/api/utils';
 import {List} from 'src/components/List/List';
 import {useDexifyNavigation} from 'src/foundation';
+import {useSettings} from 'src/prodivers';
 import BrowseEmptyResults from './BrowseEmptyResults';
 
 interface Props {
@@ -18,9 +19,14 @@ export default function BrowseMangaResults({query}: Props) {
     order: {relevance: 'desc'},
   });
   const manga = data?.result === 'ok' ? data.data : [];
+  const {contentRatings, mangaLanguages} = useSettings();
 
   useEffect(() => {
-    searchManga({title: query});
+    searchManga({
+      title: query,
+      contentRating: contentRatings,
+      availableTranslatedLanguage: mangaLanguages,
+    });
   }, [query]);
 
   return (

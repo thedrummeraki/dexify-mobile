@@ -1,4 +1,4 @@
-import React, {ComponentProps} from 'react';
+import React, {ComponentProps, useEffect, useState} from 'react';
 import {View, Modal} from 'react-native';
 import {Button, useTheme} from 'react-native-paper';
 import {useDimensions} from 'src/utils';
@@ -36,6 +36,7 @@ export default function FullScreenModal({
       animationType="slide"
       visible={visible}
       transparent
+      {...modalProps}
       onRequestClose={modalProps.onDismiss}>
       <View
         style={{

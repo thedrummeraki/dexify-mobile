@@ -18,17 +18,20 @@ import {useBackgroundColor} from './colors';
 
 interface Props {
   manga: Manga;
+  showImageIfHentai?: boolean;
   showReadingStatus?: boolean;
   hideTitle?: boolean;
   hideAuthor?: boolean;
   clickable?: boolean;
   coverSize?: CoverSize;
   onPress?(): void;
+  onLongPress?(): void;
 }
 
 export default function MangaThumbnail({
   manga,
   showReadingStatus,
+  showImageIfHentai,
   hideTitle,
   hideAuthor,
   clickable = true,
@@ -37,6 +40,7 @@ export default function MangaThumbnail({
   height,
   aspectRatio,
   onPress,
+  onLongPress,
 }: Props & Partial<ThumbnailDimensionsProps>) {
   const navigation = useDexifyNavigation();
   const handlePress = useCallback(() => {
@@ -68,6 +72,11 @@ export default function MangaThumbnail({
       </ThumbnailBadge>
     ) : null;
 
+  const allowActualImage = true || (isHentai && showImageIfHentai) || !isHentai;
+  const imageUrl = allowActualImage
+    ? mangaImage(manga, {size: coverSize})
+    : 'https://mangadex.org/avatar.png';
+
   return (
     <Thumbnail
       TopComponent={
@@ -77,7 +86,8 @@ export default function MangaThumbnail({
         </View>
       }
       hideTitle={hideTitle}
-      imageUrl={mangaImage(manga, {size: coverSize}) || '/'}
+      imageUrl={imageUrl}
+      blurRadius={isHentai ? 25 : undefined}
       title={preferredMangaTitle(manga)}
       subtitle={
         hideAuthor || !authorPresent ? undefined : author?.attributes.name
@@ -86,6 +96,7 @@ export default function MangaThumbnail({
       height={height}
       aspectRatio={aspectRatio || 0.8}
       onPress={onPress || clickable ? handlePress : undefined}
+      onLongPress={onLongPress}
       onSubtitlePress={
         author
           ? () => navigation.navigate('ShowArtist', {id: author.id})

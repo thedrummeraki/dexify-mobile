@@ -8,6 +8,7 @@ import {
   useTheme,
 } from 'react-native-paper';
 import Animated, {useAnimatedStyle, withTiming} from 'react-native-reanimated';
+import {shareResource} from 'src/components/ShareButton/ShareButton';
 import {useDexifyNavigation} from 'src/foundation';
 import {useReaderContext} from '../ReaderProvider';
 
@@ -19,7 +20,7 @@ export default function ShowChapterReaderHeader({visible}: Props) {
   const navigation = useDexifyNavigation();
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const {title, subtitle, manga} = useReaderContext();
+  const {title, subtitle, manga, chapter} = useReaderContext();
   const {
     colors: {surface},
   } = useTheme();
@@ -47,6 +48,14 @@ export default function ShowChapterReaderHeader({visible}: Props) {
         setMenuOpen(false);
         navigation.navigate('ShowManga', manga);
       },
+    });
+  }
+
+  if (chapter) {
+    menuOptions.push({
+      title: 'Share chapter...',
+      icon: 'share-variant',
+      onAction: () => shareResource(chapter),
     });
   }
 

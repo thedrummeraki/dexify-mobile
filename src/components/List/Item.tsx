@@ -11,6 +11,7 @@ interface Props {
     width: number;
     url: string | string[];
     rounded?: boolean;
+    blurRadius?: number;
   };
   imageWidth?: number;
   selected?: boolean;
@@ -59,6 +60,7 @@ export function Item({image, selected, title, subtitle, onPress}: Props) {
                   aspectRatio: 1,
                   borderRadius: image?.rounded ? 1000 : 0,
                 }}
+                blurRadius={image.blurRadius}
               />
             ) : (
               <Thumbnail

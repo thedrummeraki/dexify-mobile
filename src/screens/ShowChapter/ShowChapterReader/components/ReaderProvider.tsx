@@ -14,6 +14,7 @@ interface State {
   title: string;
   subtitle?: string;
   manga?: Manga;
+  chapter?: Chapter;
   group?: string | null;
   locale?: string;
   currentPage: number;
@@ -26,6 +27,7 @@ interface Props {
   manga: Manga;
   title: string;
   locale?: string;
+  chapter?: Chapter;
   subtitle?: string;
   pages: Page[];
   group?: string | null;
@@ -46,6 +48,7 @@ export function useReaderContext() {
 export default function ReaderProvider({
   children,
   manga,
+  chapter,
   title,
   subtitle,
   group,
@@ -74,6 +77,7 @@ export default function ReaderProvider({
         pages,
         group,
         locale,
+        chapter,
         onPageChange: handlePageChange,
       }}>
       {children}

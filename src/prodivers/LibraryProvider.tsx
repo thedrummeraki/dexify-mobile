@@ -3,9 +3,7 @@ import React, {
   useCallback,
   useContext,
   useEffect,
-  useState,
 } from 'react';
-import {findRelationships} from 'src/api';
 import {
   AllReadingStatusResponse,
   Manga,
@@ -13,12 +11,14 @@ import {
   PagedResultsList,
   ReadingStatus,
   ReadingStatusUpdateResponse,
-  ContentRating,
   BasicResultsResponse,
   EntityResponse,
 } from 'src/api/mangadex/types';
-import UrlBuilder from 'src/api/mangadex/types/api/url_builder';
-import {useLazyGetRequest, usePostRequest, usePutRequest} from 'src/api/utils';
+import {
+  useAuthenticatedLazyGetRequest,
+  useAuthenticatedPostRequest,
+  useAuthenticatedPutRequest,
+} from 'src/api/utils';
 import {useSession, useUpdatedSession} from '.';
 
 interface LibraryState {
@@ -62,7 +62,7 @@ export function useLibraryStatus(manga: string | Manga) {
   return libraryStatus || null;
 }
 
-export function useMangaIs(manga: string | Manga, status: ReadingStatus) {
+export function useMangaIds(manga: string | Manga, status: ReadingStatus) {
   let mangaId: string;
   if (typeof manga === 'string') {
     mangaId = manga;
@@ -96,22 +96,28 @@ export default function LibraryProvider({children}: PropsWithChildren<{}>) {
   const [
     getReadingStatus,
     {data: readingStatus, loading: readingStatusLoading},
-  ] = useLazyGetRequest<AllReadingStatusResponse>(
+  ] = useAuthenticatedLazyGetRequest<AllReadingStatusResponse>(
     'https://api.mangadex.org/manga/status',
   );
+
   const [postReadingStatus, {loading: updating}] =
-    usePostRequest<ReadingStatusUpdateResponse>();
+    useAuthenticatedPostRequest<ReadingStatusUpdateResponse>();
 
   // Custom lists (library)
-  const [postCreateCustomList] = usePostRequest<EntityResponse<CustomList>>();
-  const [putUpdateCustomList] = usePutRequest<EntityResponse<CustomList>>();
-  const [postAddMangaToCustomList] = usePostRequest<BasicResultsResponse>();
+  const [postCreateCustomList] =
+    useAuthenticatedPostRequest<EntityResponse<CustomList>>();
+  const [putUpdateCustomList] =
+    useAuthenticatedPutRequest<EntityResponse<CustomList>>();
+  const [postAddMangaToCustomList] =
+    useAuthenticatedPostRequest<BasicResultsResponse>();
 
   const loading = readingStatusLoading;
 
   useEffect(() => {
     if (session) {
-      getReadingStatus().catch(console.error);
+      getReadingStatus().catch(error => {
+        console.error('could not get reading status', error);
+      });
     }
   }, [session]);
 
@@ -134,7 +140,7 @@ export default function LibraryProvider({children}: PropsWithChildren<{}>) {
           },
         );
       } catch (error) {
-        console.error(error);
+        console.error('could not update manga reading status', error);
       }
     },
     [session],

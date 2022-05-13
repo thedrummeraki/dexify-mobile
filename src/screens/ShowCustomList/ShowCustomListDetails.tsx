@@ -1,24 +1,17 @@
 import React, {useEffect, useMemo, useRef, useState} from 'react';
-import {BackHandler, RefreshControl, ScrollView, View} from 'react-native';
-import {Text, TextInput} from 'react-native-paper';
+import {BackHandler, RefreshControl} from 'react-native';
+import {TextInput} from 'react-native-paper';
 import {
   CoverSize,
-  findRelationship,
   findRelationships,
   mangaImage,
   preferredMangaAuthor,
   preferredMangaTitle,
 } from 'src/api';
 import {useGetMangaList} from 'src/api/mangadex/hooks';
-import {Artist, Author, CustomList} from 'src/api/mangadex/types';
-import {
-  Banner,
-  CloseCurrentScreenHeader,
-  HiddenMangaBanner,
-} from 'src/components';
-import BasicList from 'src/components/BasicList';
+import {ContentRating, CustomList} from 'src/api/mangadex/types';
+import {Banner, CloseCurrentScreenHeader} from 'src/components';
 import {List} from 'src/components/List/List';
-import {MangaListItem} from 'src/components/MangaSearchCollection/MangaListItem';
 import {useDexifyNavigation} from 'src/foundation';
 import Thumbnail, {ThumbnailSkeleton} from 'src/foundation/Thumbnail';
 import CustomListActions from './CustomListActions';
@@ -45,10 +38,13 @@ export default function ShowCustomListDetails({
     () => findRelationships(customList, 'manga').map(r => r.id),
     [customList],
   );
-  const {loading, data} = useGetMangaList({
-    ids,
-    limit: ids.length,
-  });
+  const {loading, data} = useGetMangaList(
+    {
+      ids,
+      limit: ids.length,
+    },
+    true,
+  );
   const manga = data?.result === 'ok' ? data.data : [];
   const imageUrl =
     manga.length < 1
@@ -103,6 +99,10 @@ export default function ShowCustomListDetails({
     image: {
       url: mangaImage(manga, {size: CoverSize.Small}),
       width: 70,
+      blurRadius:
+        manga.attributes.contentRating === ContentRating.pornographic
+          ? 25
+          : undefined,
     },
   }));
 
