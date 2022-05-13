@@ -6,7 +6,6 @@ import {CloseCurrentScreenHeader} from '.';
 
 interface ModalAction {
   content: string;
-  showCancel?: boolean;
   disabled?: boolean;
   onAction(): void;
 }
@@ -15,6 +14,7 @@ interface BasicProps {
   title?: string;
   visible?: boolean;
   primaryAction?: ModalAction;
+  secondaryAction?: ModalAction;
   onDismiss(): void;
 }
 
@@ -26,6 +26,7 @@ export default function FullScreenModal({
   title,
   visible,
   primaryAction,
+  secondaryAction,
   ...modalProps
 }: Props) {
   const {width, height} = useDimensions();
@@ -61,7 +62,7 @@ export default function FullScreenModal({
             {visible ? children : undefined}
           </View>
         </View>
-        {primaryAction ? (
+        {primaryAction || secondaryAction ? (
           <View
             style={{
               position: 'absolute',
@@ -70,12 +71,19 @@ export default function FullScreenModal({
               right: 0,
               flexDirection: 'row-reverse',
             }}>
-            <Button onPress={primaryAction.onAction}>
-              {primaryAction.content}
-            </Button>
-            {primaryAction.showCancel ? (
-              <Button color="white" onPress={modalProps.onDismiss}>
-                Cancel
+            {primaryAction ? (
+              <Button
+                onPress={primaryAction.onAction}
+                disabled={primaryAction.disabled}>
+                {primaryAction.content}
+              </Button>
+            ) : null}
+            {secondaryAction ? (
+              <Button
+                color="white"
+                onPress={secondaryAction.onAction}
+                disabled={secondaryAction.disabled}>
+                {secondaryAction.content}
               </Button>
             ) : null}
           </View>

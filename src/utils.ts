@@ -258,3 +258,10 @@ export function currentSeason({
     .map(x => String(x))
     .join(' ');
 }
+
+export function notEmpty<T>(value: T | T[] | null | undefined): value is T {
+  if (Array.isArray(value)) {
+    return value.length > 0;
+  }
+  return value !== null && value !== undefined;
+}

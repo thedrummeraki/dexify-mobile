@@ -28,6 +28,10 @@ export default class UrlBuilder {
   static AIRING_MANGA_SERVICE_URL = 'https://airing-manga.herokuapp.com';
   // static API_URL = 'http://192.168.86.27:3001';
 
+  public static tagList() {
+    return this.buildUrl('/manga/tag');
+  }
+
   public static palette({imageUrl}: {imageUrl: string}) {
     return this.buildUrl('/palette', {imageUrl: encodeURIComponent(imageUrl)});
   }
@@ -78,7 +82,10 @@ export default class UrlBuilder {
     return this.buildUrl(`/statistics/manga/${mangaId}`);
   }
 
-  public static mangaVolumesAndChapters(mangaId: string, params?: VolumesAndChaptersParams) {
+  public static mangaVolumesAndChapters(
+    mangaId: string,
+    params?: VolumesAndChaptersParams,
+  ) {
     return this.buildUrl(`/manga/${mangaId}/aggregate`, params);
   }
 
@@ -171,14 +178,19 @@ export default class UrlBuilder {
   }
 
   public static buildAiringMangaUrl(path: string, params?: ParamsLike) {
-    return this.buildUrlWithHost(UrlBuilder.AIRING_MANGA_SERVICE_URL, path, params);
+    return this.buildUrlWithHost(
+      UrlBuilder.AIRING_MANGA_SERVICE_URL,
+      path,
+      params,
+    );
   }
 
-  public static buildUrlWithHost(host: string, path: string, params?: ParamsLike) {
-    let urlParts = [
-      host,
-      path.startsWith('/') ? path : `/${path}`,
-    ];
+  public static buildUrlWithHost(
+    host: string,
+    path: string,
+    params?: ParamsLike,
+  ) {
+    let urlParts = [host, path.startsWith('/') ? path : `/${path}`];
 
     if (params) {
       urlParts = urlParts.concat('/?', this.paramsToString(params));
