@@ -5,7 +5,7 @@ import {
   TouchableNativeFeedback,
   View,
 } from 'react-native';
-import {Text, useTheme} from 'react-native-paper';
+import {Chip, Text, useTheme} from 'react-native-paper';
 import {preferredTitle, readingStatusInfo} from 'src/api';
 import {
   CloseCurrentScreenHeader,
@@ -41,6 +41,7 @@ import {
   IncludedTagsFilter,
   ContentRatingFilter,
   TagsFilter,
+  RenderContext,
 } from 'src/components/MangaSearchFilters';
 import {PublicationStatusFitler} from 'src/components/MangaSearchFilters/components/PublicationStatusFilter';
 import {PublicationDemographicFilter} from 'src/components/MangaSearchFilters/components/PublicationDemographicFilter';
@@ -86,12 +87,17 @@ export default function ShowReadingStatusLibrary() {
         onFiltersApply={setParams}
       /> */}
       <MangaSearchFilters filters={filters} onFiltersChange={setFilters}>
-        <ContentRatingFilter
-          visibleContentRatings={Object.values(ContentRating)}
-        />
-        <PublicationStatusFitler />
-        <PublicationDemographicFilter />
-        <TagsFilter />
+        <RenderContext mode="modal">
+          <ContentRatingFilter
+            visibleContentRatings={Object.values(ContentRating)}
+          />
+          <PublicationStatusFitler />
+          <PublicationDemographicFilter />
+          <TagsFilter />
+        </RenderContext>
+        <RenderContext mode="scroll">
+          <ExcludedTagsFilter />
+        </RenderContext>
       </MangaSearchFilters>
       {ids?.length ? (
         <MangaSearchCollection

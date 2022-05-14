@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {FlatList, View} from 'react-native';
 import {TextInput, Title} from 'react-native-paper';
+import {useRenderContext} from './RenderContext';
 
 interface Props<T> {
   title: string;
@@ -21,6 +22,11 @@ export function Section<T>({
   Description,
 }: Props<T>) {
   const [query, setQuery] = useState('');
+  const {mode} = useRenderContext();
+
+  if (mode !== 'modal') {
+    return null;
+  }
 
   useEffect(() => {
     if (search) {

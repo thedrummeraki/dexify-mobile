@@ -1,7 +1,7 @@
 import {Field, useField, useForm} from '@shopify/react-form';
 import React, {PropsWithChildren, useContext, useState} from 'react';
 import {ScrollView, View} from 'react-native';
-import {Button, Chip, IconButton} from 'react-native-paper';
+import {Button, Chip, IconButton, Text} from 'react-native-paper';
 import {
   ContentRating,
   Manga,
@@ -15,6 +15,9 @@ import UrlBuilder from 'src/api/mangadex/types/api/url_builder';
 import {useGetRequest} from 'src/api/utils';
 import {notEmpty} from 'src/utils';
 import FullScreenModal from '../FullScreenModal';
+import {RenderContext} from './components';
+import {RenderInModal} from './components/RenderInModal';
+import {RenderInScrollView} from './components/RenderInScrollView';
 
 type AllowedFilters = Exclude<
   keyof MangaRequestParams,
@@ -23,7 +26,13 @@ type AllowedFilters = Exclude<
 
 type Filters = Pick<MangaRequestParams, AllowedFilters>;
 
+type FilterChild = React.ReactElement<{mode: 'modal' | 'scroll'}>;
+
+type FiltersChildren = [FilterChild, FilterChild];
+
 interface Props {
+  // two children
+  children: React.ReactElement[] | React.ReactElement;
   filters: Filters;
   onFiltersChange(appliedFilters: Filters): void;
 }
@@ -35,6 +44,7 @@ type FiltersFieldBag = {
 interface ContextState {
   fields: FiltersFieldBag;
   tags: Manga.Tag[];
+  dirty: boolean;
   reset(): void;
   submit(): void;
 }
@@ -45,7 +55,7 @@ export default function MangaSearchFilters({
   filters,
   children,
   onFiltersChange: onFiltersApply,
-}: PropsWithChildren<Props>) {
+}: Props) {
   const {data} = useGetRequest<PagedResultsList<Manga.Tag>>(
     UrlBuilder.tagList(),
   );
@@ -100,46 +110,28 @@ export default function MangaSearchFilters({
 
   const {fields, dirty, reset, submit} = form;
 
+  const allChildren = Array.isArray(children) ? children : [children];
+
+  const modalChildren = allChildren.filter(({props}) => props.mode === 'modal');
+  const scrollChildren = allChildren.filter(
+    ({props}) => props.mode === 'scroll',
+  );
+
   return (
-    <Context.Provider value={{fields, tags, reset, submit}}>
-      <ScrollView horizontal>
-        <View
-          style={{
-            display: 'flex',
-            flexDirection: 'row',
-            alignItems: 'center',
-            paddingBottom: 10,
-          }}>
-          <IconButton
-            icon="filter-variant"
-            onPress={() => setModalOpen(true)}
-          />
-          <Chip icon="sort-variant" style={{marginRight: 5}}>
-            Order by...
-          </Chip>
-          <Chip icon="calendar-range" style={{marginRight: 5}}>
-            Year
-          </Chip>
-        </View>
-      </ScrollView>
-      <FullScreenModal
-        visible={modalOpen}
-        title="Filter manga by..."
-        onDismiss={() => setModalOpen(false)}
-        primaryAction={{
-          content: 'Apply',
-          onAction: () => {
-            submit();
-            setModalOpen(false);
-          },
-        }}
-        secondaryAction={{
-          content: 'Reset',
-          onAction: reset,
-          disabled: !dirty,
-        }}>
-        {children}
-      </FullScreenModal>
+    <Context.Provider
+      value={{
+        fields,
+        tags,
+        dirty,
+        reset,
+        submit,
+      }}>
+      <RenderInScrollView onModalOpen={() => setModalOpen(true)}>
+        {scrollChildren}
+      </RenderInScrollView>
+      <RenderInModal modalOpen={modalOpen} onModalOpen={setModalOpen}>
+        {modalChildren}
+      </RenderInModal>
     </Context.Provider>
   );
 }
@@ -147,9 +139,7 @@ export default function MangaSearchFilters({
 export function useFiltersContext() {
   const context = useContext(Context);
   if (!context) {
-    throw new Error(
-      'useFiltersContext must be used within <MangaSearchFilters>',
-    );
+    throw new Error('This component must be used within <MangaSearchFilters>');
   }
 
   return context;
