@@ -1,54 +1,23 @@
-import React, {useCallback, useEffect, useState} from 'react';
-import {
-  FlatList,
-  ScrollView,
-  TouchableNativeFeedback,
-  View,
-} from 'react-native';
-import {Chip, Text, useTheme} from 'react-native-paper';
-import {preferredTitle, readingStatusInfo} from 'src/api';
+import React, {useState} from 'react';
+import {readingStatusInfo} from 'src/api';
 import {
   CloseCurrentScreenHeader,
-  FullScreenModal,
   MangaSearchCollection,
   MangaSearchFilters,
-  TextBadge,
 } from 'src/components';
 import {MangaCollectionDisplay} from 'src/components/MangaSearchCollection/MangaSearchCollection';
 import {useShowReadingStatusLibraryRoute} from 'src/foundation';
-import {useLibraryMangaIds} from 'src/prodivers';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import {useLibraryMangaIds, useSettings} from 'src/prodivers';
+import {ContentRating, MangaRequestParams} from 'src/api/mangadex/types';
+import {Field} from '@shopify/react-form';
 import {
-  ContentRating,
-  Manga,
-  MangaRequestParams,
-  MangaStatus,
-  PagedResultsList,
-  PublicationDemographic,
-  TagMode,
-} from 'src/api/mangadex/types';
-import {useGetRequest} from 'src/api/utils';
-import {
-  useForm,
-  useField,
-  Field,
-  Form,
-  FieldBag,
-  FormMapping,
-} from '@shopify/react-form';
-import {
-  ExcludedTagsFilter,
-  IncludedTagsFilter,
   ContentRatingFilter,
   TagsFilter,
   RenderContext,
+  PreviewFilters,
 } from 'src/components/MangaSearchFilters';
 import {PublicationStatusFitler} from 'src/components/MangaSearchFilters/components/PublicationStatusFilter';
 import {PublicationDemographicFilter} from 'src/components/MangaSearchFilters/components/PublicationDemographicFilter';
-
-type FiltersFieldBag<T> = {
-  [K in keyof T]: Field<T[K]>;
-};
 
 export default function ShowReadingStatusLibrary() {
   const {
@@ -56,36 +25,18 @@ export default function ShowReadingStatusLibrary() {
   } = useShowReadingStatusLibraryRoute();
   const ids = useLibraryMangaIds(readingStatus) || undefined;
 
-  // const [options, setOptions] = useState<MangaRequestParams>({
-  //   includedTags: [],
-  //   includedTagsMode: TagMode.AND,
-  //   excludedTags: [],
-  //   excludedTagsMode: TagMode.OR,
-  //   status: [],
-  //   originalLanguage: [],
-  //   excludedOriginalLanguage: [],
-  //   availableTranslatedLanguage: [],
-  //   publicationDemographic: [],
-  //   contentRating: [],
-  //   order: {
-  //     createdAt: 'asc',
-  //     followedCount: 'desc',
-  //     relevance: 'asc',
-  //     updatedAt: 'asc',
-  //   },
-  // })
+  const {contentRatings} = useSettings();
 
-  const [filters, setFilters] = useState<MangaRequestParams>({ids});
+  const [filters, setFilters] = useState<MangaRequestParams>({
+    ids,
+    contentRating: contentRatings,
+  });
 
   return (
     <>
       <CloseCurrentScreenHeader
         title={readingStatusInfo(readingStatus).content}
       />
-      {/* <MangaSearchFilters
-        keys={['includedTags', 'status']}
-        onFiltersApply={setParams}
-      /> */}
       <MangaSearchFilters filters={filters} onFiltersChange={setFilters}>
         <RenderContext mode="modal">
           <ContentRatingFilter
@@ -96,7 +47,7 @@ export default function ShowReadingStatusLibrary() {
           <TagsFilter />
         </RenderContext>
         <RenderContext mode="scroll">
-          <ExcludedTagsFilter />
+          <PreviewFilters />
         </RenderContext>
       </MangaSearchFilters>
       {ids?.length ? (
@@ -113,70 +64,6 @@ export default function ShowReadingStatusLibrary() {
     </>
   );
 }
-
-// function SearchFilters({
-//   includedTags,
-//   status,
-//   onApply,
-// }: {
-//   includedTags: FiltersFieldBag['includedTags'];
-//   status: FiltersFieldBag['status'];
-//   onApply(): void;
-// }) {
-//   const {data: tagsData, loading: tagsLoading} = useGetRequest<
-//     PagedResultsList<Manga.Tag>
-//   >('https://api.mangadex.org/manga/tag');
-
-//   // show disabled filters when loading
-//   if (tagsLoading) {
-//     return null;
-//   }
-
-//   return (
-//     <ScrollView horizontal style={{margin: 0}}>
-//       {/* <IconButton icon="filter-variant" onPress={() => {}} /> */}
-//       {/* <View
-//         style={{
-//           flex: 0,
-//           flexDirection: 'row',
-//           alignItems: 'center',
-//           marginHorizontal: 15,
-//           marginBottom: 10,
-//         }}> */}
-//       <FilterButton
-//         values={Object.values(MangaStatus)}
-//         currentValues={status.value}
-//         name="Status"
-//         icon="chevron-down"
-//         getName={item => item}
-//         onApply={value => {
-//           status.onChange(value);
-//           onApply();
-//         }}
-//         onDismiss={() => status.reset()}
-//       />
-//       {tagsData?.result === 'ok' ? (
-//         <FilterButton
-//           values={tagsData.data}
-//           currentValues={tagsData.data.filter(tag =>
-//             includedTags.value.includes(tag.id),
-//           )}
-//           name="With tags"
-//           icon="chevron-down"
-//           getName={item => preferredTitle(item.attributes.name)}
-//           compare={(a, b) => (a.id === b.id ? 0 : -1)}
-//           onApply={tags => {
-//             includedTags.onChange(tags.map(tag => tag.id));
-//             onApply();
-//           }}
-//           onDismiss={() => includedTags.reset()}
-//         />
-//       ) : null}
-
-//       {/* </View> */}
-//     </ScrollView>
-//   );
-// }
 
 // type Test = {
 //   a: string[];

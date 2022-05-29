@@ -260,7 +260,7 @@ export function currentSeason({
 }
 
 export function notEmpty<T>(value: T | T[] | null | undefined): value is T {
-  if (Array.isArray(value)) {
+  if (Array.isArray(value) || typeof value === 'string') {
     return value.length > 0;
   }
   return value !== null && value !== undefined;

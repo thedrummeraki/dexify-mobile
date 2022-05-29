@@ -270,10 +270,10 @@ export function ChapterItem({
   const disabled = chapter.attributes.pages === 0 && !isExternal;
 
   const handleOnPress = useCallback(() => {
+    onPress?.();
     if (isExternal) {
       Linking.openURL(chapter.attributes.externalUrl!);
     } else {
-      onPress?.();
       navigation.push('ShowChapter', {
         id: chapter.id,
         jumpToPage: info?.currentPage,

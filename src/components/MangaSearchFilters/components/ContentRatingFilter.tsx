@@ -8,27 +8,6 @@ interface Props {
   visibleContentRatings?: ContentRating[];
 }
 
-// export function ContentRatingFilter({
-//   visibleContentRatings = [
-//     ContentRating.safe,
-//     ContentRating.suggestive,
-//     ContentRating.erotica,
-//   ],
-// }: Props) {
-//   const {fields, submit} = useFiltersContext();
-
-//   return (
-//     <FilterButton
-//       name="Content rating..."
-//       values={visibleContentRatings}
-//       currentValues={fields.contentRating.value}
-//       onApply={submit}
-//       onDismiss={fields.contentRating.reset}
-//       onSelectionChange={fields.contentRating.onChange}
-//     />
-//   );
-// }
-
 export function ContentRatingFilter({
   visibleContentRatings = [
     ContentRating.safe,
@@ -43,6 +22,20 @@ export function ContentRatingFilter({
       title="Content rating"
       values={visibleContentRatings}
       field={fields.contentRating}
+      getName={contentRatingName}
     />
   );
+}
+
+export function contentRatingName(contentRating: ContentRating) {
+  switch (contentRating) {
+    case ContentRating.safe:
+      return 'For everyone';
+    case ContentRating.suggestive:
+      return 'For 13+ (suggestive)';
+    case ContentRating.erotica:
+      return 'For 15+ (erotica)';
+    case ContentRating.pornographic:
+      return 'For 18+ (hentai)';
+  }
 }

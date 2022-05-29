@@ -1,5 +1,5 @@
 import {BackgroundColor} from 'src/components/colors';
-import { mangaLinkInfoMap } from 'src/screens/ShowManga/ShowMangaDetails/components/AboutTab/modals/ShowMangaDetailsModal';
+import {mangaLinkInfoMap} from 'src/screens/ShowManga/ShowMangaDetails/components/AboutTab/modals/ShowMangaDetailsModal';
 import {
   Artist,
   Author,
@@ -25,6 +25,10 @@ export function preferredMangaTitle(manga: Manga) {
     manga.attributes.title[manga.attributes.originalLanguage] ||
     preferredTitle(manga.attributes.title)
   );
+}
+
+export function preferredTagName(tag: Manga.Tag) {
+  return preferredTitle(tag.attributes.name);
 }
 
 export function preferredMangaAuthor(manga: Manga) {
@@ -248,7 +252,9 @@ export function readingStatusInfo(readingStatus?: ReadingStatus | null): {
 }
 
 export function getPublisher(manga: Manga) {
-  const {attributes: {links}} = manga;
+  const {
+    attributes: {links},
+  } = manga;
   if (!links?.raw) {
     return null;
   }

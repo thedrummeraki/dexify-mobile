@@ -12,6 +12,24 @@ export function PublicationDemographicFilter() {
       title="Demographic"
       values={Object.values(PublicationDemographic)}
       field={fields.publicationDemographic}
+      getName={publicationDemographicName}
     />
   );
+}
+
+export function publicationDemographicName(
+  publicationDemographic: PublicationDemographic,
+) {
+  switch (publicationDemographic) {
+    case PublicationDemographic.josei:
+      return 'Josei';
+    case PublicationDemographic.seinen:
+      return 'Seinen';
+    case PublicationDemographic.shoujo:
+      return 'Shoujo';
+    case PublicationDemographic.shonen:
+      return 'Shounen';
+    case PublicationDemographic.none:
+      return 'No demographic';
+  }
 }

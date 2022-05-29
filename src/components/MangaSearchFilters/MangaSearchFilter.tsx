@@ -1,20 +1,13 @@
-import {Field, useField, useForm} from '@shopify/react-form';
-import React, {PropsWithChildren, useContext, useState} from 'react';
-import {ScrollView, View} from 'react-native';
-import {Button, Chip, IconButton, Text} from 'react-native-paper';
+import {Field, Form, useField, useForm} from '@shopify/react-form';
+import React, {useContext, useRef, useState} from 'react';
 import {
-  ContentRating,
   Manga,
   MangaRequestParams,
-  MangaStatus,
   PagedResultsList,
-  PublicationDemographic,
-  TagMode,
 } from 'src/api/mangadex/types';
 import UrlBuilder from 'src/api/mangadex/types/api/url_builder';
 import {useGetRequest} from 'src/api/utils';
 import {notEmpty} from 'src/utils';
-import FullScreenModal from '../FullScreenModal';
 import {RenderContext} from './components';
 import {RenderInModal} from './components/RenderInModal';
 import {RenderInScrollView} from './components/RenderInScrollView';
@@ -26,42 +19,56 @@ type AllowedFilters = Exclude<
 
 type Filters = Pick<MangaRequestParams, AllowedFilters>;
 
-type FilterChild = React.ReactElement<{mode: 'modal' | 'scroll'}>;
-
-type FiltersChildren = [FilterChild, FilterChild];
+type FilterChild = React.ReactElement<{
+  mode: 'modal' | 'scroll';
+}>;
 
 interface Props {
   // two children
-  children: React.ReactElement[] | React.ReactElement;
+  hideOpenModalIcon?: boolean;
+  modalOpen?: boolean;
+  children: FilterChild[] | FilterChild;
   filters: Filters;
   onFiltersChange(appliedFilters: Filters): void;
+  onModalOpen?(open: boolean): void;
 }
 
 type FiltersFieldBag = {
   [key in AllowedFilters]-?: Field<Filters[key]>;
 };
 
-interface ContextState {
-  fields: FiltersFieldBag;
+type FormState = Form<FiltersFieldBag>;
+
+interface ContextState extends FormState {
   tags: Manga.Tag[];
-  dirty: boolean;
-  reset(): void;
-  submit(): void;
+  filtersPresent: boolean;
 }
 
 export const Context = React.createContext<ContextState | null>(null);
 
 export default function MangaSearchFilters({
+  modalOpen: modalOpenProp,
+  hideOpenModalIcon,
   filters,
   children,
   onFiltersChange: onFiltersApply,
+  onModalOpen: onModalOpenProp,
 }: Props) {
   const {data} = useGetRequest<PagedResultsList<Manga.Tag>>(
     UrlBuilder.tagList(),
   );
   const tags = (data?.result === 'ok' && data.data) || [];
 
+  const originalFiltersRef = useRef(filters);
+
   const [modalOpen, setModalOpen] = useState(false);
+  const handleModalOpen = (open: boolean) => {
+    if (onModalOpenProp) {
+      onModalOpenProp(open);
+    } else {
+      setModalOpen(open);
+    }
+  };
 
   const form = useForm<FiltersFieldBag>({
     fields: {
@@ -108,8 +115,6 @@ export default function MangaSearchFilters({
     },
   });
 
-  const {fields, dirty, reset, submit} = form;
-
   const allChildren = Array.isArray(children) ? children : [children];
 
   const modalChildren = allChildren.filter(({props}) => props.mode === 'modal');
@@ -117,19 +122,18 @@ export default function MangaSearchFilters({
     ({props}) => props.mode === 'scroll',
   );
 
+  const filtersPresent = form.dirty;
+
   return (
-    <Context.Provider
-      value={{
-        fields,
-        tags,
-        dirty,
-        reset,
-        submit,
-      }}>
-      <RenderInScrollView onModalOpen={() => setModalOpen(true)}>
+    <Context.Provider value={{tags, filtersPresent, ...form}}>
+      <RenderInScrollView
+        hideOpenModalIcon={hideOpenModalIcon}
+        onModalOpen={() => handleModalOpen(true)}>
         {scrollChildren}
       </RenderInScrollView>
-      <RenderInModal modalOpen={modalOpen} onModalOpen={setModalOpen}>
+      <RenderInModal
+        modalOpen={modalOpenProp || modalOpen}
+        onModalOpen={handleModalOpen}>
         {modalChildren}
       </RenderInModal>
     </Context.Provider>
@@ -144,3 +148,5 @@ export function useFiltersContext() {
 
   return context;
 }
+
+MangaSearchFilters.Render = RenderContext;

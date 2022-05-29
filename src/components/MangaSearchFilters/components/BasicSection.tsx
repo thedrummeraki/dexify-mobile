@@ -8,6 +8,7 @@ interface Props<T> {
   values: T[];
   field: Field<T[] | undefined>;
   searchable?: boolean;
+  getName?: (value: T) => string;
 }
 
 export function BasicSection<T>(props: Props<T>) {
@@ -29,7 +30,7 @@ export function BasicSection<T>(props: Props<T>) {
                 field.onChange([...(field.value || []), item]);
               }
             }}>
-            {item}
+            {props.getName ? props.getName(item) : item}
           </Chip>
         );
       }}

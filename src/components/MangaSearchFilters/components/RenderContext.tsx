@@ -1,8 +1,5 @@
-import React, {PropsWithChildren, useContext, useEffect, useState} from 'react';
-import {Text} from 'react-native-paper';
+import React, {useContext} from 'react';
 import {useFiltersContext} from '../MangaSearchFilter';
-import {RenderInModal} from './RenderInModal';
-import {RenderInScrollView} from './RenderInScrollView';
 
 type DisplayMode = 'modal' | 'scroll';
 
@@ -12,17 +9,27 @@ interface ContextState {
 
 const Context = React.createContext<ContextState | null>(null);
 
-interface Props {
+interface BasicProps {
   mode: DisplayMode;
   children: React.ReactNode;
 }
+
+interface ScrollModeProps extends BasicProps {
+  mode: 'scroll';
+}
+
+interface ModalModeProps extends BasicProps {
+  mode: 'modal';
+}
+
+type Props = ScrollModeProps | ModalModeProps;
 
 export function RenderContext({mode, children}: Props) {
   useFiltersContext();
 
   return (
     <Context.Provider value={{mode}}>
-      <RenderInCorrectMode>{children}</RenderInCorrectMode>
+      <>{children}</>
     </Context.Provider>
   );
 }
@@ -33,8 +40,4 @@ export function useRenderContext() {
     throw new Error('This component must be used within a <RenderContext>');
   }
   return context;
-}
-
-function RenderInCorrectMode({children}: PropsWithChildren<{}>) {
-  return <>{children}</>;
 }

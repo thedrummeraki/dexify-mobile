@@ -1,33 +1,42 @@
 import React, {PropsWithChildren} from 'react';
 import {ScrollView, View} from 'react-native';
 import {IconButton} from 'react-native-paper';
+import {useFiltersContext} from '../MangaSearchFilter';
 
-interface Props {
+export interface RenderInScrollViewProps {
+  hideOpenModalIcon?: boolean;
   onModalOpen(): void;
 }
 
 export function RenderInScrollView({
+  hideOpenModalIcon,
   children,
   onModalOpen,
-}: PropsWithChildren<Props>) {
+}: PropsWithChildren<RenderInScrollViewProps>) {
+  const {dirty, filtersPresent, submit, makeClean} = useFiltersContext();
+
   return (
-    <ScrollView horizontal>
-      <View
-        style={{
-          display: 'flex',
-          flexDirection: 'row',
-          alignItems: 'center',
-          paddingBottom: 10,
-        }}>
+    <View
+      style={{
+        display: 'flex',
+        flexDirection: 'row',
+        paddingBottom: 10,
+      }}>
+      {!hideOpenModalIcon ? (
         <IconButton icon="filter-variant" onPress={onModalOpen} />
-        {/* <Chip icon="sort-variant" style={{marginRight: 5}}>
-            Order by...
-          </Chip>
-          <Chip icon="calendar-range" style={{marginRight: 5}}>
-            Year
-          </Chip> */}
-        {children}
-      </View>
-    </ScrollView>
+      ) : null}
+      <ScrollView horizontal>
+        <View
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'center',
+          }}>
+          {children}
+        </View>
+      </ScrollView>
+      {dirty ? <IconButton icon="check" onPress={submit} /> : null}
+      {filtersPresent ? <IconButton icon="close" onPress={makeClean} /> : null}
+    </View>
   );
 }

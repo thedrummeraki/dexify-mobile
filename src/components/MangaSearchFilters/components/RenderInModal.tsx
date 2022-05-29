@@ -1,7 +1,7 @@
 import React, {PropsWithChildren} from 'react';
+import {ScrollView} from 'react-native';
 import FullScreenModal from 'src/components/FullScreenModal';
 import {useFiltersContext} from '../MangaSearchFilter';
-import {useRenderContext} from './RenderContext';
 
 interface Props {
   modalOpen: boolean;
@@ -32,7 +32,7 @@ export function RenderInModal({
         onAction: reset,
         disabled: !dirty,
       }}>
-      {children}
+      <ScrollView>{children}</ScrollView>
     </FullScreenModal>
   );
 }

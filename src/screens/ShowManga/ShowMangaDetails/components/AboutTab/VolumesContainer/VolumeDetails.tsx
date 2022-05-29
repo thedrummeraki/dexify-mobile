@@ -1,6 +1,7 @@
 import React, {useCallback, useEffect, useRef, useState} from 'react';
-import {View} from 'react-native';
+import {ToastAndroid, View} from 'react-native';
 import {ActivityIndicator, Button, IconButton} from 'react-native-paper';
+import {preferredChapterTitle} from 'src/api';
 import {
   BasicResultsResponse,
   Chapter,
@@ -117,12 +118,32 @@ export default function VolumeDetails({volumeInfo, onCancel}: Props) {
     [markRead],
   );
 
+  const handleMarkAsRead = (chapter: Chapter) => {
+    markAsRead(chapter).then(() => {
+      if (!readChapters.includes(chapter.id)) {
+        ToastAndroid.show(
+          `Reading "${preferredChapterTitle(chapter)}"...`,
+          ToastAndroid.SHORT,
+        );
+      }
+    });
+  };
+
   const markAsUnread = useCallback(
     (chapter: {id: string}) => {
       return markUnread(UrlBuilder.unmarkChapterAsRead(chapter));
     },
     [markUnread],
   );
+
+  const handleMarkAsUnread = (chapter: Chapter) => {
+    markAsUnread(chapter).then(() => {
+      ToastAndroid.show(
+        `No longer reading "${preferredChapterTitle(chapter)}"...`,
+        ToastAndroid.SHORT,
+      );
+    });
+  };
 
   useEffect(() => {
     if (readMarkersData?.result === 'ok' && !readChaptersInitialized.current) {
@@ -229,16 +250,19 @@ export default function VolumeDetails({volumeInfo, onCancel}: Props) {
                   // we're marking as read here, the API call is when the chapter
                   // is actually opened.
                   setReadChapters(current => [...current, chapter.id]);
+                  if (chapter.attributes.externalUrl) {
+                    handleMarkAsRead(chapter);
+                  }
                 }}
                 onLongPress={() => {
                   if (markedAsRead) {
                     setReadChapters(current =>
                       current.filter(x => !x.includes(chapter.id)),
                     );
-                    markAsUnread(chapter);
+                    handleMarkAsUnread(chapter);
                   } else {
                     setReadChapters(current => [...current, chapter.id]);
-                    markAsRead(chapter);
+                    handleMarkAsRead(chapter);
                   }
                 }}
               />

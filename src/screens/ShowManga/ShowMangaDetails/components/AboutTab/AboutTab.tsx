@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
-import {ScrollView, View} from 'react-native';
-import {Button, IconButton, Paragraph} from 'react-native-paper';
+import {Linking, ScrollView, View} from 'react-native';
+import {IconButton, Paragraph} from 'react-native-paper';
 import {
   contentRatingInfo,
   findRelationship,
@@ -12,11 +12,14 @@ import {
   AllReadingStatusResponse,
   Artist,
   Author,
+  ContentRating,
   ReadingStatus,
 } from 'src/api/mangadex/types';
 import {ShareButton, TextBadge} from 'src/components';
 import {useBackgroundColor} from 'src/components/colors';
-import TopManga from 'src/screens/NewHome/Feed/Section/components/TopManga';
+import TopManga, {
+  TopMangaDescription,
+} from 'src/screens/NewHome/Feed/Section/components/TopManga';
 import {useMangaDetails} from '../../ShowMangaDetails';
 import VolumesContainer from './VolumesContainer';
 import {useIsLoggedIn, useLibraryContext} from 'src/prodivers';
@@ -30,9 +33,10 @@ import {FollowMangaAction, LibraryAction} from './actions';
 import {useLazyGetRequest} from 'src/api/utils';
 import UrlBuilder from 'src/api/mangadex/types/api/url_builder';
 import {wait} from 'src/utils';
-import {useShowMangaRoute} from 'src/foundation';
+import {useDexifyNavigation, useShowMangaRoute} from 'src/foundation';
 
 export default function AboutTab() {
+  const navigation = useDexifyNavigation();
   const {manga, isAiring, statistics} = useMangaDetails();
   const loggedIn = useIsLoggedIn();
   const {
@@ -115,6 +119,31 @@ export default function AboutTab() {
     </View>
   );
 
+  const topMangaDescription: TopMangaDescription = [];
+  if (author) {
+    topMangaDescription.push({
+      content: author.attributes.name,
+      onPress: () => {
+        navigation.push('ShowArtist', {
+          id: author.id,
+          allowHentai:
+            manga.attributes.contentRating === ContentRating.pornographic,
+        });
+      },
+    });
+  }
+
+  // if there's no publisher link, there will not be a publisher name
+  const publisherLink = manga.attributes.links?.raw;
+  if (publisherLink) {
+    topMangaDescription.push({
+      content: getPublisher(manga)!,
+      onPress: () => {
+        Linking.openURL(publisherLink);
+      },
+    });
+  }
+
   return (
     <>
       {/* <View
@@ -128,9 +157,7 @@ export default function AboutTab() {
       <ScrollView>
         <TopManga
           allowCloseScreen
-          description={[author?.attributes.name, getPublisher(manga)]
-            .filter(x => (x?.length || 0) > 0)
-            .join(' ・ ')}
+          description={topMangaDescription}
           manga={manga}
           aspectRatio={1.2}
           FooterComponent={basicInfoMarkup}

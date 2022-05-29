@@ -6,6 +6,7 @@ import {useRenderContext} from './RenderContext';
 interface Props<T> {
   title: string;
   values: T[];
+  style?: 'list' | 'wrap';
   renderItem: (value: T) => React.ReactElement | null;
   search?: {
     placeholder?: string;
@@ -17,6 +18,7 @@ interface Props<T> {
 export function Section<T>({
   title,
   values,
+  style = 'list',
   renderItem,
   search,
   Description,
@@ -52,13 +54,27 @@ export function Section<T>({
           {Description}
         </View>
       ) : null}
-      <FlatList
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        data={values}
-        contentContainerStyle={{paddingHorizontal: 15, paddingRight: 10}}
-        renderItem={({item}) => renderItem(item)}
-      />
+      {style === 'list' ? (
+        <FlatList
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          data={values}
+          contentContainerStyle={{paddingHorizontal: 15, paddingRight: 10}}
+          renderItem={({item}) => renderItem(item)}
+        />
+      ) : (
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'flex-start',
+            flexWrap: 'wrap',
+            marginHorizontal: 15,
+            marginVertical: 10,
+          }}>
+          {values.map(value => renderItem(value))}
+        </View>
+      )}
     </View>
   );
 }
