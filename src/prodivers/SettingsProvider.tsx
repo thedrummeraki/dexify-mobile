@@ -32,6 +32,7 @@ export interface Settings {
   lightTheme: boolean;
   mangaScreenDisplay: MangaScreenDisplay;
   continue: ContinueSettings;
+  blurPornographicEntries: boolean;
   volumeSortOrder: 'asc' | 'desc';
   chaptersSortOrder: 'asc' | 'desc';
 }
@@ -59,6 +60,7 @@ const defaultSettings: Settings = {
   lightTheme: false,
   mangaScreenDisplay: MangaScreenDisplay.PerVolume,
   continue: {},
+  blurPornographicEntries: true,
   volumeSortOrder: 'desc',
   chaptersSortOrder: 'asc',
 };
@@ -174,7 +176,7 @@ export const possibleSettingsContentRatings = [
   {value: ContentRating.safe, name: 'For everyone (safe)'},
   {value: ContentRating.suggestive, name: 'For 13+ (suggestive)'},
   {value: ContentRating.erotica, name: 'For 15+ (erotica)'},
-  // {value: ContentRating.pornographic, name: 'For 18+ (hentai/pornographic)'},
+  {value: ContentRating.pornographic, name: 'For 18+ (hentai/pornographic)'},
 ];
 
 export const possibleSettingsReadingDirections = [

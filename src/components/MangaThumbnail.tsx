@@ -13,13 +13,14 @@ import Thumbnail, {
   ThumbnailBadge,
   ThumbnailDimensionsProps,
 } from 'src/foundation/Thumbnail';
-import {useLibraryStatus} from 'src/prodivers';
+import {useLibraryStatus, useSettings} from 'src/prodivers';
 import {useBackgroundColor} from './colors';
 
 interface Props {
   manga: Manga;
   showImageIfHentai?: boolean;
   showReadingStatus?: boolean;
+  subtitle?: string;
   hideTitle?: boolean;
   hideAuthor?: boolean;
   clickable?: boolean;
@@ -32,6 +33,7 @@ export default function MangaThumbnail({
   manga,
   showReadingStatus,
   showImageIfHentai,
+  subtitle,
   hideTitle,
   hideAuthor,
   clickable = true,
@@ -49,6 +51,8 @@ export default function MangaThumbnail({
   const readingStatus = useLibraryStatus(manga);
   const isHentai =
     manga.attributes.contentRating === ContentRating.pornographic;
+
+  const {blurPornographicEntries} = useSettings();
 
   const author =
     findRelationship<Author>(manga, 'author') ||
@@ -87,10 +91,14 @@ export default function MangaThumbnail({
       }
       hideTitle={hideTitle}
       imageUrl={imageUrl}
-      blurRadius={isHentai ? 25 : undefined}
+      blurRadius={blurPornographicEntries && isHentai ? 25 : undefined}
       title={preferredMangaTitle(manga)}
       subtitle={
-        hideAuthor || !authorPresent ? undefined : author?.attributes.name
+        subtitle
+          ? subtitle
+          : hideAuthor || !authorPresent
+          ? undefined
+          : author?.attributes.name
       }
       width={width || '100%'}
       height={height}

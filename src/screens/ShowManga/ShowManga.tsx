@@ -27,7 +27,7 @@ export default function ShowManga() {
 
 function NotLoadedShowMangaDetails({id}: {id: string}) {
   const {data, loading} = useManga(id, {
-    includes: ['cover_art', 'author', 'artist', 'tag'],
+    includes: ['cover_art', 'author', 'artist', 'tag', 'manga'],
   });
 
   if (loading) {

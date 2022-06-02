@@ -1,7 +1,10 @@
 import {Order} from '.';
 import {ContentRating, MangaStatus, PublicationDemographic, TagMode} from '..';
+import {Manga} from '../manga';
 
-export type MangaOrder = Order<'createdAt' | 'updatedAt' | 'followedCount' | 'relevance'>
+export type MangaOrder = Order<
+  'createdAt' | 'updatedAt' | 'followedCount' | 'relevance'
+>;
 
 export type MangaRequestParams = Partial<{
   title: string;
@@ -96,4 +99,23 @@ export type CoverRequestParams = Partial<{
 export type VolumesAndChaptersParams = Partial<{
   translatedLanguage: string[];
   groups: string[];
-}>
+}>;
+
+export enum MangaRelationshipType {
+  Monochrome = 'monochrome',
+  Colored = 'colored',
+  Preserialization = 'preserialization',
+  Serialization = 'serialization',
+  Prequel = 'prequel',
+  Sequel = 'sequel',
+  MainStory = 'main_story',
+  SideStory = 'side_story',
+  AdaptedFrom = 'adapted_from',
+  SpinOff = 'spin_off',
+  BasedOn = 'based_on',
+  Doujinshi = 'doujinshi',
+  SameFranchise = 'same_franchise',
+  SharedUniverse = 'shared_universe',
+  AlternateStory = 'alternate_story',
+  AlternateVersion = 'alternate_version',
+}

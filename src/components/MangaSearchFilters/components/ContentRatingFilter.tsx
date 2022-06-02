@@ -1,6 +1,7 @@
 import React from 'react';
 import {Chip} from 'react-native-paper';
 import {ContentRating} from 'src/api/mangadex/types';
+import {useSettings} from 'src/prodivers';
 import {useFiltersContext} from '../MangaSearchFilter';
 import {BasicSection} from './BasicSection';
 
@@ -8,19 +9,16 @@ interface Props {
   visibleContentRatings?: ContentRating[];
 }
 
-export function ContentRatingFilter({
-  visibleContentRatings = [
-    ContentRating.safe,
-    ContentRating.suggestive,
-    ContentRating.erotica,
-  ],
-}: Props) {
+export function ContentRatingFilter({visibleContentRatings}: Props) {
   const {fields} = useFiltersContext();
+
+  const {contentRatings} = useSettings();
+  const values = visibleContentRatings || contentRatings;
 
   return (
     <BasicSection
       title="Content rating"
-      values={visibleContentRatings}
+      values={values}
       field={fields.contentRating}
       getName={contentRatingName}
     />

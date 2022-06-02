@@ -1,11 +1,20 @@
 import React, {useEffect, useState} from 'react';
 import {findRelationship, mangaImage, preferredMangaTitle} from 'src/api';
 import {useLazyGetMangaList} from 'src/api/mangadex/hooks';
-import {Artist, Author, MangaRequestParams} from 'src/api/mangadex/types';
+import {
+  Artist,
+  Author,
+  ContentRating,
+  MangaRequestParams,
+} from 'src/api/mangadex/types';
 import {ResponseStatus} from 'src/api/utils';
 import {MangaSearchFilters, TextBadge} from 'src/components';
 import {List} from 'src/components/List/List';
-import {PreviewFilters, TagsFilter} from 'src/components/MangaSearchFilters';
+import {
+  ContentRatingFilter,
+  PreviewFilters,
+  TagsFilter,
+} from 'src/components/MangaSearchFilters';
 import {useDexifyNavigation} from 'src/foundation';
 import {useSettings} from 'src/prodivers';
 import BrowseEmptyResults from './BrowseEmptyResults';
@@ -23,13 +32,12 @@ export default function BrowseMangaResults({query}: Props) {
     order: {relevance: 'desc'},
   });
   const manga = data?.result === 'ok' ? data.data : [];
-  const {contentRatings, mangaLanguages} = useSettings();
+  const {mangaLanguages} = useSettings();
 
   useEffect(() => {
     searchManga({
       title: query,
       ...filters,
-      contentRating: contentRatings,
       availableTranslatedLanguage: mangaLanguages,
     });
   }, [query, filters]);
@@ -41,6 +49,7 @@ export default function BrowseMangaResults({query}: Props) {
           <PreviewFilters />
         </MangaSearchFilters.Render>
         <MangaSearchFilters.Render mode="modal">
+          <ContentRatingFilter />
           <TagsFilter />
         </MangaSearchFilters.Render>
       </MangaSearchFilters>

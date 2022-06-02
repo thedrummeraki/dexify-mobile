@@ -45,6 +45,7 @@ import {
 } from 'src/components';
 import {appVersion} from 'src/utils';
 import {useIntl} from 'react-intl';
+import {ContentRating} from 'src/api/mangadex/types';
 
 interface BasicSettingItemProps {
   title: string;
@@ -150,6 +151,16 @@ export default function ShowSettings() {
           }
           defaultSelectionText="All content ratings"
         />
+        {settings.contentRatings.includes(ContentRating.pornographic) ? (
+          <TogglableSettingsItem
+            value={settings.blurPornographicEntries}
+            onToggle={newValue =>
+              updateSetting('blurPornographicEntries', newValue)
+            }
+            title="Blur 18+ (Hentai) thumbnails"
+            description="Blurs 18+ (Hentai) thumbnail images when browsing the app."
+          />
+        ) : null}
         <OptionsSettingsItem
           size="full"
           value={settings.mangaLanguages}

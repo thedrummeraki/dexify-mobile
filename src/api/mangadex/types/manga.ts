@@ -29,7 +29,7 @@ export interface Manga {
   id: string;
   type: 'manga';
   attributes: MangaAttributes;
-  relationships: Relationship<Author | ScanlationGroup | CoverArt>[];
+  relationships: Relationship<Author | ScanlationGroup | CoverArt | Manga>[];
 }
 
 export interface MangaAttributes {

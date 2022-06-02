@@ -7,6 +7,7 @@ import {
   ContentRating,
   CoverArt,
   Manga,
+  MangaRelationshipType,
   PossibleRelationship,
   PossibleRelationshipTypes,
   ReadingStatus,
@@ -251,6 +252,77 @@ export function readingStatusInfo(readingStatus?: ReadingStatus | null): {
   }
 }
 
+export function mangaRelationshipTypeInfo(type: MangaRelationshipType) {
+  switch (type) {
+    case MangaRelationshipType.AdaptedFrom:
+      return {
+        content: 'Adapted from',
+      };
+    case MangaRelationshipType.AlternateStory:
+      return {
+        content: 'Alt. story',
+      };
+    case MangaRelationshipType.AlternateVersion:
+      return {
+        content: 'Alt. version',
+      };
+    case MangaRelationshipType.BasedOn:
+      return {
+        content: 'Based on',
+      };
+    case MangaRelationshipType.Colored:
+      return {
+        content: 'In color',
+      };
+    case MangaRelationshipType.Doujinshi:
+      return {
+        content: 'Doujinshi',
+      };
+    case MangaRelationshipType.MainStory:
+      return {
+        content: 'Main story',
+      };
+    case MangaRelationshipType.Monochrome:
+      return {
+        content: 'Monochrome',
+      };
+    case MangaRelationshipType.Prequel:
+      return {
+        content: 'Prequel',
+      };
+    case MangaRelationshipType.Preserialization:
+      return {
+        content: 'Pre-serialization',
+      };
+    case MangaRelationshipType.SameFranchise:
+      return {
+        content: 'Same franchize',
+      };
+    case MangaRelationshipType.Sequel:
+      return {
+        content: 'Sequel',
+      };
+    case MangaRelationshipType.Serialization:
+      return {
+        content: 'Serialization',
+      };
+    case MangaRelationshipType.SharedUniverse:
+      return {
+        content: 'Shared universe',
+      };
+    case MangaRelationshipType.SideStory:
+      return {
+        content: 'Side story',
+      };
+    case MangaRelationshipType.SpinOff:
+      return {
+        content: 'Spin-off',
+      };
+    default:
+      return {content: undefined};
+  }
+}
+
 export function getPublisher(manga: Manga) {
   const {
     attributes: {links},
@@ -260,4 +332,14 @@ export function getPublisher(manga: Manga) {
   }
 
   return mangaLinkInfoMap.raw.deriveName?.(links.raw) || null;
+}
+
+export function mangaRelationships(manga: Manga) {
+  const {relationships} = manga;
+
+  return relationships.filter(isMangaRelation);
+}
+
+function isMangaRelation(value: Relationship): value is Relationship<Manga> {
+  return value.type === 'manga';
 }

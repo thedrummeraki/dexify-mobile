@@ -1,10 +1,11 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {Linking, ScrollView, View} from 'react-native';
 import {IconButton, Paragraph} from 'react-native-paper';
 import {
   contentRatingInfo,
   findRelationship,
   getPublisher,
+  mangaRelationships,
   preferredMangaDescription,
   preferredMangaTitle,
 } from 'src/api';
@@ -15,7 +16,12 @@ import {
   ContentRating,
   ReadingStatus,
 } from 'src/api/mangadex/types';
-import {ShareButton, TextBadge} from 'src/components';
+import {
+  FullScreenModal,
+  MangaRelationshipsCollection,
+  ShareButton,
+  TextBadge,
+} from 'src/components';
 import {useBackgroundColor} from 'src/components/colors';
 import TopManga, {
   TopMangaDescription,
@@ -44,12 +50,14 @@ export default function AboutTab() {
   } = useShowMangaRoute();
 
   const {refreshReadingStatuses} = useLibraryContext();
+  const hasOpenedRelatedMangaModal = useRef(false);
 
   const [modalsState, setSetModalsState] = useState({
     addToMDList: false,
     addToLibrary: false,
     showDetails: false,
     airingAnime: false,
+    relatedManga: false,
   });
 
   const [getReadingStatus, {data, loading}] =
@@ -70,6 +78,15 @@ export default function AboutTab() {
     wait(1).then(() => getReadingStatus());
   }, []);
 
+  // closes the related mangas modal when clicking on another manga
+  useEffect(() => {
+    if (modalsState.relatedManga && !hasOpenedRelatedMangaModal.current) {
+      hasOpenedRelatedMangaModal.current = true;
+    } else if (modalsState.relatedManga && hasOpenedRelatedMangaModal.current) {
+      setSetModalsState(current => ({...current, relatedManga: false}));
+    }
+  }, [manga, modalsState]);
+
   const author =
     findRelationship<Author>(manga, 'author') ||
     findRelationship<Artist>(manga, 'artist');
@@ -78,6 +95,8 @@ export default function AboutTab() {
 
   const contentRating = contentRatingInfo(manga.attributes.contentRating);
   const contentRatingTextColor = useBackgroundColor(contentRating?.background);
+
+  const related = mangaRelationships(manga);
 
   const basicInfoMarkup = (
     <View style={{flex: 1}}>
@@ -192,6 +211,16 @@ export default function AboutTab() {
             <FollowMangaAction />
           </View>
           <View style={{flexShrink: 1, flexDirection: 'row'}}>
+            <IconButton
+              icon="book-open-variant"
+              disabled={related.length === 0}
+              onPress={() =>
+                setSetModalsState(current => ({
+                  ...current,
+                  relatedManga: true,
+                }))
+              }
+            />
             <ShareButton resource={manga} title={preferredMangaTitle(manga)} />
           </View>
         </View>
@@ -249,6 +278,14 @@ export default function AboutTab() {
           setSetModalsState(current => ({...current, airingAnime: false}))
         }
       />
+      <FullScreenModal
+        visible={modalsState.relatedManga}
+        title="Related manga"
+        onDismiss={() => {
+          setSetModalsState(current => ({...current, relatedManga: false}));
+        }}>
+        <MangaRelationshipsCollection relatedManga={related} />
+      </FullScreenModal>
     </>
   );
 }
