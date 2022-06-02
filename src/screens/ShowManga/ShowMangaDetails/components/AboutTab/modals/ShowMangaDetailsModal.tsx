@@ -159,14 +159,14 @@ function ModalChildren({onDismiss}: Pick<Props, 'onDismiss'>) {
             content={statistics?.rating.average?.toFixed(2) || 'N/A'}
             onPress={() => {}}
           />
-          {statistics?.follows && (
+          {statistics?.follows ? (
             <TextBadge
               icon="bookmark-check"
               content={pluralize(statistics.follows, 'follow')}
               onPress={() => {}}
             />
-          )}
-          {isAiring && (
+          ) : null}
+          {isAiring ? (
             <TextBadge
               content="Anime airing"
               icon="video"
@@ -174,10 +174,10 @@ function ModalChildren({onDismiss}: Pick<Props, 'onDismiss'>) {
               style={{borderRadius: 10}}
               onPress={() => {}}
             />
-          )}
-          {manga.attributes.year && (
+          ) : null}
+          {manga.attributes.year ? (
             <TextBadge content={manga.attributes.year} />
-          )}
+          ) : null}
         </View>
         <View
           style={{
