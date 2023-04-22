@@ -16,13 +16,27 @@ import {
 import {useDexifyNavigation} from 'src/foundation';
 import {useLibraryStatus} from 'src/prodivers';
 import {useMangaDetails} from 'src/screens/ShowManga/ShowMangaDetails/ShowMangaDetails';
+import {notEmpty} from 'src/utils';
+
+type BasicDescription = string | null | undefined;
+interface ClickableDescription {
+  content: Exclude<BasicDescription, null | undefined>;
+  onPress(): void;
+}
+
+type Description = BasicDescription | ClickableDescription;
+export type TopMangaDescription =
+  | Description
+  | Description[]
+  | null
+  | undefined;
 
 interface Props {
   manga: Manga;
   aspectRatio?: number;
   showReadingStatus?: boolean;
   navigateToManga?: boolean;
-  description?: string | null;
+  description?: TopMangaDescription;
   descriptionNumberOfLines?: number;
   primaryAction?: {content: string; onPress(): void};
   FooterComponent?: React.ReactElement;
@@ -99,14 +113,10 @@ export default function TopManga({
             />
           ) : null}
         </View>
-        {description ? (
-          <Text
-            numberOfLines={descriptionNumberOfLines}
-            ellipsizeMode="tail"
-            style={{fontSize: 12, marginTop: 5}}>
-            {description}
-          </Text>
-        ) : null}
+        <DescriptionMarkup
+          description={description}
+          descriptionNumberOfLines={descriptionNumberOfLines}
+        />
 
         {FooterComponent}
 
@@ -125,4 +135,51 @@ export default function TopManga({
       </View>
     </View>
   );
+}
+
+function DescriptionMarkup({
+  description,
+  descriptionNumberOfLines,
+}: {
+  description: TopMangaDescription;
+  descriptionNumberOfLines?: number;
+}) {
+  if (!description) {
+    return null;
+  }
+
+  if (Array.isArray(description)) {
+    return (
+      <Text>
+        {description
+          .filter(notEmpty)
+          .map<React.ReactNode>((description, index) => (
+            <DescriptionMarkup
+              key={`top-manga-description-${index}`}
+              description={description}
+            />
+          ))
+          .reduce((prev, curr) => [prev, ' ・ ', curr])}
+      </Text>
+    );
+  } else if (typeof description === 'string') {
+    return (
+      <Text
+        numberOfLines={descriptionNumberOfLines}
+        ellipsizeMode="tail"
+        style={{fontSize: 12, marginTop: 5}}>
+        {description}
+      </Text>
+    );
+  } else {
+    return (
+      <Text
+        numberOfLines={descriptionNumberOfLines}
+        ellipsizeMode="tail"
+        style={{fontSize: 12, marginTop: 5}}
+        onPress={description.onPress}>
+        {description.content}
+      </Text>
+    );
+  }
 }

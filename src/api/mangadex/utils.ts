@@ -1,4 +1,5 @@
 import {BackgroundColor} from 'src/components/colors';
+import {mangaLinkInfoMap} from 'src/screens/ShowManga/ShowMangaDetails/components/AboutTab/modals/ShowMangaDetailsModal';
 import {
   Artist,
   Author,
@@ -6,6 +7,7 @@ import {
   ContentRating,
   CoverArt,
   Manga,
+  MangaRelationshipType,
   PossibleRelationship,
   PossibleRelationshipTypes,
   ReadingStatus,
@@ -26,6 +28,10 @@ export function preferredMangaTitle(manga: Manga) {
   );
 }
 
+export function preferredTagName(tag: Manga.Tag) {
+  return preferredTitle(tag.attributes.name);
+}
+
 export function preferredMangaAuthor(manga: Manga) {
   return (
     findRelationship<Author>(manga, 'author') ||
@@ -43,8 +49,8 @@ export function preferredMangaDescription(manga: Manga) {
   }
 
   return (
-    manga.attributes.description[manga.attributes.originalLanguage] ||
-    manga.attributes.description.en
+    manga.attributes.description.en ||
+    manga.attributes.description[manga.attributes.originalLanguage]
   );
 }
 
@@ -229,7 +235,7 @@ export function readingStatusInfo(readingStatus?: ReadingStatus | null): {
       };
     case ReadingStatus.Reading:
       return {
-        content: 'Reading',
+        content: 'Reading now',
         phrase: "This manga caught your eye and you're reading it now.",
         background: 'primary',
         icon: 'play',
@@ -244,4 +250,96 @@ export function readingStatusInfo(readingStatus?: ReadingStatus | null): {
         value: readingStatus,
       };
   }
+}
+
+export function mangaRelationshipTypeInfo(type: MangaRelationshipType) {
+  switch (type) {
+    case MangaRelationshipType.AdaptedFrom:
+      return {
+        content: 'Adapted from',
+      };
+    case MangaRelationshipType.AlternateStory:
+      return {
+        content: 'Alt. story',
+      };
+    case MangaRelationshipType.AlternateVersion:
+      return {
+        content: 'Alt. version',
+      };
+    case MangaRelationshipType.BasedOn:
+      return {
+        content: 'Based on',
+      };
+    case MangaRelationshipType.Colored:
+      return {
+        content: 'In color',
+      };
+    case MangaRelationshipType.Doujinshi:
+      return {
+        content: 'Doujinshi',
+      };
+    case MangaRelationshipType.MainStory:
+      return {
+        content: 'Main story',
+      };
+    case MangaRelationshipType.Monochrome:
+      return {
+        content: 'Monochrome',
+      };
+    case MangaRelationshipType.Prequel:
+      return {
+        content: 'Prequel',
+      };
+    case MangaRelationshipType.Preserialization:
+      return {
+        content: 'Pre-serialization',
+      };
+    case MangaRelationshipType.SameFranchise:
+      return {
+        content: 'Same franchize',
+      };
+    case MangaRelationshipType.Sequel:
+      return {
+        content: 'Sequel',
+      };
+    case MangaRelationshipType.Serialization:
+      return {
+        content: 'Serialization',
+      };
+    case MangaRelationshipType.SharedUniverse:
+      return {
+        content: 'Shared universe',
+      };
+    case MangaRelationshipType.SideStory:
+      return {
+        content: 'Side story',
+      };
+    case MangaRelationshipType.SpinOff:
+      return {
+        content: 'Spin-off',
+      };
+    default:
+      return {content: undefined};
+  }
+}
+
+export function getPublisher(manga: Manga) {
+  const {
+    attributes: {links},
+  } = manga;
+  if (!links?.raw) {
+    return null;
+  }
+
+  return mangaLinkInfoMap.raw.deriveName?.(links.raw) || null;
+}
+
+export function mangaRelationships(manga: Manga) {
+  const {relationships} = manga;
+
+  return relationships.filter(isMangaRelation);
+}
+
+function isMangaRelation(value: Relationship): value is Relationship<Manga> {
+  return value.type === 'manga';
 }

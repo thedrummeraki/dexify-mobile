@@ -7,7 +7,7 @@ import {
   ReadingStatusUpdateResponse,
 } from 'src/api/mangadex/types';
 import UrlBuilder from 'src/api/mangadex/types/api/url_builder';
-import {usePostRequest} from 'src/api/utils';
+import {useAuthenticatedCallback, usePostRequest} from 'src/api/utils';
 import {FullScreenModal, TextBadge} from 'src/components';
 import {useMangaDetails} from '../../../ShowMangaDetails';
 
@@ -32,9 +32,11 @@ export default function AddToLibraryModal({
     readingStatusInfo(x),
   );
 
-  const [updateReadingStatus] = usePostRequest<ReadingStatusUpdateResponse>(
+  const [callback] = usePostRequest<ReadingStatusUpdateResponse>(
     UrlBuilder.buildUrl(`/manga/${manga.id}/status`),
   );
+
+  const updateReadingStatus = useAuthenticatedCallback(callback);
 
   return (
     <FullScreenModal
@@ -44,28 +46,34 @@ export default function AddToLibraryModal({
       onDismiss={onDismiss}>
       <FlatList
         data={allReadingStatuses}
-        renderItem={({item}) => (
-          <TouchableNativeFeedback
-            onPress={() => {
-              onReadingStatusUpdate(item.value);
-              Promise.all([
-                updateReadingStatus(undefined, {status: item.value}),
-              ]);
-            }}>
-            <View
-              style={{
-                padding: 15,
+        renderItem={({item}) => {
+          const selected = readingStatus === item.value;
+
+          return (
+            <TouchableNativeFeedback
+              onPress={() => {
+                const status = selected ? null : item.value;
+
+                onReadingStatusUpdate(status);
+                Promise.all([updateReadingStatus(undefined, {status})])
+                  .then(console.log)
+                  .catch(console.error);
               }}>
-              <TextBadge
-                style={{marginLeft: -5}}
-                icon={readingStatus === item.value ? 'check' : undefined}
-                content={<Text>{item.content}</Text>}
-                background="none"
-              />
-              <Caption>{item.phrase}</Caption>
-            </View>
-          </TouchableNativeFeedback>
-        )}
+              <View
+                style={{
+                  padding: 15,
+                }}>
+                <TextBadge
+                  style={{marginLeft: -5}}
+                  icon={selected ? 'check' : undefined}
+                  content={<Text>{item.content}</Text>}
+                  background="none"
+                />
+                <Caption>{item.phrase}</Caption>
+              </View>
+            </TouchableNativeFeedback>
+          );
+        }}
       />
     </FullScreenModal>
   );

@@ -7,13 +7,16 @@ import {
   MyLibraryNavigationScreen,
   MyProfileNavigationScreen,
   FollowedMangaScreen,
+  YourLibraryScreen,
 } from './screens';
 import {NewHome} from '..';
 import {useBackgroundColor} from 'src/components/colors';
 import {useDexifyNavigation} from 'src/foundation';
 import {Linking} from 'react-native';
+import ShowSettings from '../ShowSettings';
 
-const MANGA_URL_REGEX = /https:\/\/mangadex.org\/title\/([a-zA-Z-]+)(\/\s.)?/;
+const MANGA_URL_REGEX =
+  /https:\/\/mangadex.org\/(title|manga)\/([a-zA-Z-]+)(\/\s.)?/;
 
 export default function Home() {
   const navigation = useDexifyNavigation();
@@ -43,17 +46,17 @@ export default function Home() {
 function AuthenticatedBottomNavigation() {
   const [index, setIndex] = useState(0);
   const {spicyMode} = useSettings();
-  console.log('SpikcYC', spicyMode);
 
   const background = spicyMode ? 'error' : undefined;
   const color = useBackgroundColor(background);
 
   const [routes, setRoutes] = useState([
     {key: 'main', title: 'Home', icon: 'home', color},
-    {key: 'library', title: 'Library', icon: 'library-shelves', color},
+    // {key: 'library', title: 'Library', icon: 'library-shelves', color},
     {key: 'browse', title: 'Browse...', icon: 'magnify', color},
-    {key: 'followed', title: 'Followed', icon: 'heart', color},
+    // {key: 'followed', title: 'Followed', icon: 'heart', color},
     {key: 'profile', title: 'My profile', icon: 'account', color},
+    {key: 'settings', title: 'Settings', icon: 'cog', color},
   ]);
 
   useEffect(() => {
@@ -63,9 +66,10 @@ function AuthenticatedBottomNavigation() {
   const renderScene = BottomNavigation.SceneMap({
     main: NewHome,
     browse: BrowseNavigationScreen,
-    library: MyLibraryNavigationScreen,
-    followed: FollowedMangaScreen,
-    profile: MyProfileNavigationScreen,
+    // library: MyLibraryNavigationScreen,
+    // followed: FollowedMangaScreen,
+    profile: YourLibraryScreen,
+    settings: ShowSettings,
   });
 
   return (

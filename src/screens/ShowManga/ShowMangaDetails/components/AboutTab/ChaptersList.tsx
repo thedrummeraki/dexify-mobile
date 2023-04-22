@@ -3,6 +3,7 @@ import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {
   Dimensions,
   FlatList,
+  Linking,
   TouchableNativeFeedback,
   View,
 } from 'react-native';
@@ -16,8 +17,12 @@ import {
   useTheme,
 } from 'react-native-paper';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
-import {coverImage, preferredChapterTitle} from 'src/api';
-import {Chapter, PagedResultsList} from 'src/api/mangadex/types';
+import {coverImage, findRelationship, preferredChapterTitle} from 'src/api';
+import {
+  Chapter,
+  PagedResultsList,
+  ScanlationGroup,
+} from 'src/api/mangadex/types';
 import UrlBuilder from 'src/api/mangadex/types/api/url_builder';
 import {useLazyGetRequest} from 'src/api/utils';
 import {TextBadge} from 'src/components';
@@ -30,6 +35,8 @@ import {
 } from 'src/prodivers';
 import {isNumber, localizedDateTime, pluralize} from 'src/utils';
 import {useMangaDetails} from '../../ShowMangaDetails';
+import {FormattedDisplayName, IntlProvider} from 'react-intl';
+import {formatDisplayName} from '@formatjs/intl';
 
 type FlatListProps = React.ComponentProps<typeof FlatList>;
 type Props = Pick<FlatListProps, 'ListFooterComponent' | 'ListHeaderComponent'>;
@@ -140,6 +147,9 @@ export default function ChaptersList({
         }),
       ).then(response => {
         initialized.current = response?.result === 'ok';
+        if (response?.result === 'ok') {
+          console.log(response.data.map(x => x.attributes.chapter));
+        }
       });
     }
   }, [chapterIds]);
@@ -247,18 +257,28 @@ export function ChapterItem({
   const width = Dimensions.get('window').width - 30;
   const navigation = useDexifyNavigation();
 
+  const scanlationGroup = findRelationship<ScanlationGroup>(
+    chapter,
+    'scanlation_group',
+  );
+
   const info = useContinueReadingChaptersList().find(
     info => info.id === chapter.id,
   );
   const progress = useChapterProgress(chapter.id);
-  const disabled = chapter.attributes.pages === 0;
+  const isExternal = (chapter.attributes.externalUrl?.length || 0) > 0;
+  const disabled = chapter.attributes.pages === 0 && !isExternal;
 
   const handleOnPress = useCallback(() => {
     onPress?.();
-    navigation.push('ShowChapter', {
-      id: chapter.id,
-      jumpToPage: info?.currentPage,
-    });
+    if (isExternal) {
+      Linking.openURL(chapter.attributes.externalUrl!);
+    } else {
+      navigation.push('ShowChapter', {
+        id: chapter.id,
+        jumpToPage: info?.currentPage,
+      });
+    }
   }, [navigation, chapter.id, info, onPress]);
 
   return (
@@ -289,24 +309,49 @@ export function ChapterItem({
                 {preferredChapterTitle(chapter)}
               </Text>
               <TextBadge
-                icon="clock-outline"
+                icon={
+                  isExternal
+                    ? 'open-in-new'
+                    : scanlationGroup
+                    ? 'account-group'
+                    : 'clock-outline'
+                }
                 background="none"
                 style={{marginLeft: -5, marginTop: 0}}
                 content={
-                  <Caption>
-                    Published on{' '}
-                    {localizedDateTime(
-                      chapter.attributes.publishAt,
-                      DateTime.DATE_MED,
-                    )}
-                  </Caption>
+                  scanlationGroup ? (
+                    <Caption>{scanlationGroup.attributes.name}</Caption>
+                  ) : (
+                    <Caption>
+                      Published on{' '}
+                      {localizedDateTime(
+                        chapter.attributes.publishAt,
+                        DateTime.DATE_MED,
+                      )}
+                    </Caption>
+                  )
                 }
               />
-              {chapter.attributes.pages !== undefined ? (
-                <Caption style={{marginTop: -5}}>
-                  {pluralize(chapter.attributes.pages, 'page')}
+              <View>
+                <Caption>
+                  <IntlProvider
+                    locale="en"
+                    textComponent={children => (
+                      <Caption children={children.children} />
+                    )}>
+                    <FormattedDisplayName
+                      value={chapter.attributes.translatedLanguage}
+                      type="language"
+                    />
+                  </IntlProvider>
+                  {!isExternal && chapter.attributes.pages !== undefined ? (
+                    <Caption style={{marginTop: -5}}>
+                      {' - '}
+                      {pluralize(chapter.attributes.pages, 'page')}
+                    </Caption>
+                  ) : null}
                 </Caption>
-              ) : null}
+              </View>
             </View>
             <IconButton
               icon="check"

@@ -2,6 +2,7 @@ import {useEffect} from 'react';
 import {useContentRatingFitlers} from 'src/prodivers';
 import {RequestResult, useLazyGetRequest} from '../utils';
 import {
+  ContentRating,
   EntityResponse,
   Manga,
   MangaRequestParams,
@@ -15,11 +16,20 @@ type OneManga = EntityResponse<Manga>;
 
 export function useLazyGetMangaList(
   options?: MangaRequestParams,
+  showEverything?: boolean,
 ): [
   (params?: MangaRequestParams) => Promise<ManyManga | undefined>,
   RequestResult<ManyManga>,
 ] {
-  const contentRating = useContentRatingFitlers();
+  const allContentRatings = [
+    'safe',
+    'erotica',
+    'suggestive',
+    'pornographic',
+  ] as ContentRating[];
+  const contentRating = showEverything
+    ? allContentRatings
+    : useContentRatingFitlers();
   const [get, response] = useLazyGetRequest<ManyManga>();
 
   const getManga = (otherOptions?: MangaRequestParams) => {
@@ -27,14 +37,18 @@ export function useLazyGetMangaList(
     const url = UrlBuilder.mangaList(
       Object.assign(defaultOptions, Object.assign(options || {}, otherOptions)),
     );
+    console.log(otherOptions);
     return get(url);
   };
 
   return [getManga, response];
 }
 
-export function useGetMangaList(options?: MangaRequestParams) {
-  const [getManga, response] = useLazyGetMangaList(options);
+export function useGetMangaList(
+  options?: MangaRequestParams,
+  showEverything?: boolean,
+) {
+  const [getManga, response] = useLazyGetMangaList(options, showEverything);
 
   useEffect(() => {
     getManga(options);

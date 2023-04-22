@@ -3,9 +3,9 @@ import {IconButton, useTheme} from 'react-native-paper';
 import {BasicResultsResponse} from 'src/api/mangadex/types';
 import UrlBuilder from 'src/api/mangadex/types/api/url_builder';
 import {
-  useDeleteRequest,
-  useLazyGetRequest,
-  usePostRequest,
+  useAuthenticatedDeleteRequest,
+  useAuthenticatedLazyGetRequest,
+  useAuthenticatedPostRequest,
 } from 'src/api/utils';
 import {useIsLoggedIn} from 'src/prodivers';
 import {wait} from 'src/utils';
@@ -20,14 +20,14 @@ export default function FollowMangaAction() {
 
   const {manga} = useMangaDetails();
   const [getFollowingInfo, {data, loading}] =
-    useLazyGetRequest<BasicResultsResponse>(
+    useAuthenticatedLazyGetRequest<BasicResultsResponse>(
       UrlBuilder.buildUrl(`/user/follows/manga/${manga.id}`),
     );
 
-  const [followManga] = usePostRequest<BasicResultsResponse>(
+  const [followManga] = useAuthenticatedPostRequest<BasicResultsResponse>(
     UrlBuilder.buildUrl(`/manga/${manga.id}/follow`),
   );
-  const [unfollowManga] = useDeleteRequest<BasicResultsResponse>(
+  const [unfollowManga] = useAuthenticatedDeleteRequest<BasicResultsResponse>(
     UrlBuilder.buildUrl(`/manga/${manga.id}/follow`),
   );
 

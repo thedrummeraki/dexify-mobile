@@ -9,14 +9,17 @@ import {useContinueReadingChaptersList, useIsLoggedIn} from 'src/prodivers';
 import {EmptySectionState} from './Section/components';
 import {Banner} from 'src/components';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import {currentSeason} from 'src/utils';
+import {ReadingStatus} from 'src/api/mangadex/types';
 
 interface Props {
   data: FeedData;
   refreshing: boolean;
   onRefresh: () => void;
+  onFocus: () => void;
 }
 
-export default function Feed({data, refreshing, onRefresh}: Props) {
+export default function Feed({data, refreshing, onRefresh, onFocus}: Props) {
   const {
     topManga,
     airingNow,
@@ -29,6 +32,15 @@ export default function Feed({data, refreshing, onRefresh}: Props) {
 
   const isLoggedIn = useIsLoggedIn();
   const navigation = useDexifyNavigation();
+
+  // useEffect(() => {
+  //   const remove = navigation.addListener('focus', () => {
+  //     console.log('on focus');
+  //     onFocus();
+  //   });
+
+  //   return remove;
+  // }, []);
 
   const continueReadingChapters = useContinueReadingChaptersList();
 
@@ -85,6 +97,10 @@ export default function Feed({data, refreshing, onRefresh}: Props) {
         title: 'Reading now',
         type: 'general',
         manga: readingNow,
+        viewMore: () =>
+          navigation.push('ShowReadingStatusLibrary', {
+            readingStatus: ReadingStatus.Reading,
+          }),
       }}
     />
   ) : null;
@@ -95,6 +111,11 @@ export default function Feed({data, refreshing, onRefresh}: Props) {
         title: 'Most popular titles',
         type: 'general',
         manga: popularManga,
+        viewMore: () =>
+          navigation.push('ShowMangaList', {
+            title: 'Most popular titles',
+            params: {order: {followedCount: 'desc'}, limit: 100},
+          }),
       }}
     />
   ) : null;
@@ -102,9 +123,12 @@ export default function Feed({data, refreshing, onRefresh}: Props) {
   const airingNowMarkup = airingNow ? (
     <Section
       section={{
-        title: 'Fall 2021 simulcast',
+        title: `${currentSeason({capitalize: true})} anime simulcast`,
         type: 'general',
         manga: airingNow,
+        viewMore: () => {
+          navigation.push('ShowAnimeSimulcastMangaList');
+        },
       }}
     />
   ) : null;
@@ -124,39 +148,54 @@ export default function Feed({data, refreshing, onRefresh}: Props) {
         title: 'Newest on Mangadex',
         type: 'general',
         manga: recentlyAdded,
+        viewMore: () =>
+          navigation.push('ShowMangaList', {
+            title: 'Newest on Mangadex',
+            params: {order: {createdAt: 'desc'}, limit: 100},
+          }),
       }}
     />
   ) : null;
 
   if (isLoggedIn) {
     return (
+      <>
+        {/* <LinearGradient
+          colors={['#79e3fe', '#635df8', '#42385D']}
+          style={{flex: 1}}>
+          <StatusBar />
+        </LinearGradient> */}
+
+        <ScrollView
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }>
+          {topMangaMarkup}
+          {continueReadingMarkup}
+          {readingNowMarkup}
+          {updatesMarkup}
+          {/* {randomMangaMarkup} */}
+          {airingNowMarkup}
+          {recentlyAddedMarkup}
+          {popularMangaMarkup}
+        </ScrollView>
+      </>
+    );
+  }
+
+  return (
+    <>
       <ScrollView
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }>
         {topMangaMarkup}
         {continueReadingMarkup}
-        {readingNowMarkup}
-        {updatesMarkup}
-        {randomMangaMarkup}
         {airingNowMarkup}
+        {/* {randomMangaMarkup} */}
         {recentlyAddedMarkup}
         {popularMangaMarkup}
       </ScrollView>
-    );
-  }
-
-  return (
-    <ScrollView
-      refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-      }>
-      {topMangaMarkup}
-      {continueReadingMarkup}
-      {airingNowMarkup}
-      {randomMangaMarkup}
-      {recentlyAddedMarkup}
-      {popularMangaMarkup}
-    </ScrollView>
+    </>
   );
 }

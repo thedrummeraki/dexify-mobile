@@ -9,7 +9,7 @@ import {
   ViewStyle,
   Pressable,
 } from 'react-native';
-import {Badge, Caption, Text, useTheme} from 'react-native-paper';
+import {Badge, Caption, useTheme} from 'react-native-paper';
 import SkeletonContent from 'react-native-skeleton-content-nonexpo';
 
 export interface ThumbnailDimensionsProps {
@@ -26,6 +26,7 @@ interface BorderOptions {
 
 interface BasicProps {
   imageUrl: string | string[];
+  blurRadius?: number;
   rounded?: boolean;
   border?: BorderOptions;
   TopComponent?: React.ReactElement;
@@ -103,6 +104,7 @@ function SingleImageView({
   TopComponent,
   BottomComponent,
   rounded,
+  blurRadius,
   onPress,
   onLongPress,
 }: SingleImageProps) {
@@ -120,6 +122,7 @@ function SingleImageView({
             borderRadius: rounded ? 1000 : 0,
           }}
           resizeMode="cover"
+          blurRadius={blurRadius}
         />
         <View style={{position: 'absolute', bottom: 0}}>{BottomComponent}</View>
       </View>

@@ -27,6 +27,7 @@ import {useBackgroundColor} from 'src/components/colors';
 import {useDexifyNavigation} from 'src/foundation';
 import {capitalize, onlyUnique, pluralize, useDimensions} from 'src/utils';
 import CategoriesCollectionSection from 'src/components/CategoriesCollection/CategoriesCollectionSection';
+import {FormattedDisplayName} from 'react-intl';
 
 interface Props {
   visible: boolean;
@@ -43,6 +44,7 @@ interface MapInfo {
   color: string;
   name: string;
   transform?: (value: string) => string;
+  deriveName?: (value: string) => string | undefined;
 }
 
 type MangaLinkInfoMap = {
@@ -119,8 +121,6 @@ function ModalChildren({onDismiss}: Pick<Props, 'onDismiss'>) {
     image: () => null, // disable images for now
   };
 
-  console.log(statistics);
-
   return (
     <ScrollView>
       <Banner visible={false} title="Watch out for spoilers~!">
@@ -159,24 +159,25 @@ function ModalChildren({onDismiss}: Pick<Props, 'onDismiss'>) {
             content={statistics?.rating.average?.toFixed(2) || 'N/A'}
             onPress={() => {}}
           />
-          {statistics?.follows && (
+          {statistics?.follows ? (
             <TextBadge
               icon="bookmark-check"
               content={pluralize(statistics.follows, 'follow')}
               onPress={() => {}}
             />
-          )}
-          {isAiring && (
+          ) : null}
+          {isAiring ? (
             <TextBadge
               content="Anime airing"
               icon="video"
               background="primary"
               style={{borderRadius: 10}}
+              onPress={() => {}}
             />
-          )}
-          {manga.attributes.year && (
+          ) : null}
+          {manga.attributes.year ? (
             <TextBadge content={manga.attributes.year} />
-          )}
+          ) : null}
         </View>
         <View
           style={{
@@ -215,7 +216,12 @@ function ModalChildren({onDismiss}: Pick<Props, 'onDismiss'>) {
           }}>
           <Text style={{marginRight: 6}}>Original language:</Text>
           <TextBadge
-            content={manga.attributes.originalLanguage.toLocaleUpperCase()}
+            content={
+              <FormattedDisplayName
+                value={manga.attributes.originalLanguage}
+                type="language"
+              />
+            }
           />
         </View>
         <Markdown
@@ -270,8 +276,6 @@ function ModalChildren({onDismiss}: Pick<Props, 'onDismiss'>) {
   );
 }
 
-function RelatedManga() {}
-
 function MangaExternalLinks() {
   const {manga} = useMangaDetails();
 
@@ -305,10 +309,13 @@ function MangaExternalLinks() {
             return <Chip>???</Chip>;
           }
 
-          const {name, transform} = mangaLinkInfoMap[linkKey];
+          const {name, transform, deriveName} = mangaLinkInfoMap[linkKey];
           const finalUrl = transform ? transform(url) : url;
+          const actualName = deriveName ? deriveName(url) || name : name;
 
-          return <Chip onPress={() => Linking.openURL(finalUrl)}>{name}</Chip>;
+          return (
+            <Chip onPress={() => Linking.openURL(finalUrl)}>{actualName}</Chip>
+          );
         }}
       />
     );
@@ -316,7 +323,7 @@ function MangaExternalLinks() {
   return null;
 }
 
-const mangaLinkInfoMap: MangaLinkInfoMap = {
+export const mangaLinkInfoMap: MangaLinkInfoMap = {
   al: {
     // background: "#2b2d42",
     // color: "#d9e6ff",
@@ -371,5 +378,13 @@ const mangaLinkInfoMap: MangaLinkInfoMap = {
     name: 'Novel Updates',
     transform: slug => `https://www.novelupdates.com/series/${slug}`,
   },
-  raw: {background: '', color: '', name: 'Official (original)'},
+  raw: {
+    background: '',
+    color: '',
+    name: 'Official (original)',
+    deriveName: value => {
+      const extremelyBasicRegex = /http(s)?\:\/\/([\d\w\-\_\.]+)\/?.*/;
+      return value.match(extremelyBasicRegex)?.[2];
+    },
+  },
 };

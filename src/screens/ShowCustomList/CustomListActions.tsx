@@ -2,7 +2,7 @@ import React from 'react';
 import {View} from 'react-native';
 import {Text, IconButton} from 'react-native-paper';
 import {CustomList} from 'src/api/mangadex/types';
-import {TextBadge} from 'src/components';
+import {ShareButton, TextBadge} from 'src/components';
 import {BackgroundColor} from 'src/components/colors';
 
 interface Props {
@@ -17,13 +17,18 @@ export default function CustomListActions({customList, onEditing}: Props) {
         <Text style={{marginRight: 5}}>This list is</Text>
         <CustomListVisiblityBadge customList={customList} />
       </View>
-      <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-        <View
-          style={{flexDirection: 'row', marginTop: 10, alignItems: 'center'}}>
+      <View
+        style={{
+          flexDirection: 'row',
+          marginTop: 10,
+          justifyContent: 'space-between',
+        }}>
+        <View style={{flexDirection: 'row', alignItems: 'center'}}>
           <IconButton icon="pencil-outline" onPress={() => onEditing(true)} />
           <IconButton disabled icon="book-plus" />
+          <IconButton icon="delete-forever" />
         </View>
-        <IconButton icon="delete-forever" />
+        <ShareButton resource={customList} />
       </View>
     </View>
   );

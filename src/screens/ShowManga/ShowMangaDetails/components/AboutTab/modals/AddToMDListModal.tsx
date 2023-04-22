@@ -8,6 +8,7 @@ import {
 } from 'src/api/mangadex/types';
 import UrlBuilder from 'src/api/mangadex/types/api/url_builder';
 import {
+  useAuthenticatedLazyGetRequest,
   useDeleteRequest,
   useLazyGetRequest,
   usePostRequest,
@@ -34,9 +35,10 @@ export default function AddToMDListModal(props: Props) {
 }
 
 function CustomListsListModalChildren() {
-  const [getCustomLists, {data, loading, error}] = useLazyGetRequest<
-    PagedResultsList<CustomList>
-  >(UrlBuilder.currentUserCustomLists({limit: 100}));
+  const [getCustomLists, {data, loading, error}] =
+    useAuthenticatedLazyGetRequest<PagedResultsList<CustomList>>(
+      UrlBuilder.currentUserCustomLists({limit: 100}),
+    );
 
   const {manga} = useMangaDetails();
   const [selected, setSelected] = useState<string[]>([]);

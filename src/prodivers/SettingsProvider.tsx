@@ -1,7 +1,10 @@
 import React, {PropsWithChildren, useContext, useEffect, useState} from 'react';
-import {ContentRating} from 'src/api/mangadex/types';
+import {ContentRating, MangaRequestParams} from 'src/api/mangadex/types';
 import {useSession} from '.';
 import EncryptedStorage from 'react-native-encrypted-storage';
+import {formatDisplayName} from '@formatjs/intl';
+import {DisplayNames} from 'intl';
+import {useIntl} from 'react-intl';
 
 export enum ReadingDirection {
   LtR,
@@ -29,6 +32,7 @@ export interface Settings {
   lightTheme: boolean;
   mangaScreenDisplay: MangaScreenDisplay;
   continue: ContinueSettings;
+  blurPornographicEntries: boolean;
   volumeSortOrder: 'asc' | 'desc';
   chaptersSortOrder: 'asc' | 'desc';
 }
@@ -56,6 +60,7 @@ const defaultSettings: Settings = {
   lightTheme: false,
   mangaScreenDisplay: MangaScreenDisplay.PerVolume,
   continue: {},
+  blurPornographicEntries: true,
   volumeSortOrder: 'desc',
   chaptersSortOrder: 'asc',
 };
@@ -147,6 +152,18 @@ export function useSettings() {
   return useSettingsContext().settings;
 }
 
+export function useGlobalMangaParams(): Pick<
+  MangaRequestParams,
+  'availableTranslatedLanguage' | 'contentRating'
+> {
+  const {mangaLanguages, contentRatings} = useSettings();
+
+  return {
+    availableTranslatedLanguage: mangaLanguages,
+    contentRating: contentRatings,
+  };
+}
+
 export function useContentRatingFitlers() {
   const settings = useSettings();
 
@@ -159,7 +176,7 @@ export const possibleSettingsContentRatings = [
   {value: ContentRating.safe, name: 'For everyone (safe)'},
   {value: ContentRating.suggestive, name: 'For 13+ (suggestive)'},
   {value: ContentRating.erotica, name: 'For 15+ (erotica)'},
-  // {value: ContentRating.pornographic, name: 'For 18+ (hentai/pornographic)'},
+  {value: ContentRating.pornographic, name: 'For 18+ (hentai/pornographic)'},
 ];
 
 export const possibleSettingsReadingDirections = [
@@ -175,47 +192,104 @@ export const possibleSettingsReadingDirections = [
   },
 ];
 
-export const possibleSettingsLanguages = [
-  {value: 'ar', name: 'Arabic'},
-  {value: 'bg', name: ''},
-  {value: 'bn', name: ''},
-  {value: 'ca', name: 'Catalan'},
-  {value: 'cs', name: 'Czech'},
-  {value: 'da', name: 'Danish'},
-  {value: 'de', name: 'Deutch'},
-  {value: 'el', name: ''},
-  {value: 'en', name: ''},
-  {value: 'es', name: 'Spanish (Spain)'},
-  {value: 'es-la', name: 'Spanish (Latin Am.)'},
-  {value: 'fa', name: ''},
-  {value: 'fi', name: ''},
-  {value: 'fr', name: 'French'},
-  {value: 'he', name: ''},
-  {value: 'hi', name: ''},
-  {value: 'hu', name: ''},
-  {value: 'id', name: ''},
-  {value: 'it', name: 'Italian'},
-  {value: 'ja', name: 'Japanese'},
-  {value: 'ko', name: 'Korean'},
-  {value: 'lt', name: ''},
-  {value: 'mn', name: ''},
-  {value: 'ms', name: ''},
-  {value: 'my', name: ''},
-  {value: 'ne', name: ''},
-  {value: 'nl', name: ''},
-  {value: 'no', name: ''},
-  {value: 'pl', name: ''},
-  {value: 'pt', name: 'Portugese'},
-  {value: 'pt-br', name: 'Portugese (Brazil)'},
-  {value: 'ro', name: ''},
-  {value: 'ru', name: ''},
-  {value: 'sr', name: ''},
-  {value: 'sv', name: ''},
-  {value: 'th', name: ''},
-  {value: 'tl', name: ''},
-  {value: 'tr', name: ''},
-  {value: 'uk', name: 'Ukrainian'},
-  {value: 'vi', name: 'Vietnamese'},
-  {value: 'zh', name: 'Chinese'},
-  {value: 'zh-hk', name: 'Chinese (trad.)'},
+export const possibleSettingsLocales = [
+  'ar',
+  'bg',
+  'bn',
+  'ca',
+  'cs',
+  'da',
+  'de',
+  'el',
+  'en',
+  'es',
+  'es-la',
+  'fa',
+  'fi',
+  'fr',
+  'he',
+  'hi',
+  'hu',
+  'id',
+  'it',
+  'ja',
+  'ko',
+  'lt',
+  'mn',
+  'ms',
+  'my',
+  'ne',
+  'nl',
+  'no',
+  'pl',
+  'pt',
+  'pt-br',
+  'ro',
+  'ru',
+  'sr',
+  'sv',
+  'th',
+  'tl',
+  'tr',
+  'uk',
+  'vi',
+  'zh',
+  'zh-hk',
 ];
+
+export function usePossibleSettingsLanguages() {
+  return useLanguages(possibleSettingsLocales);
+}
+
+export function useLanguages(locales: string[]) {
+  const intl = useIntl();
+  return locales.map(locale => ({
+    value: locale,
+    name: intl.formatDisplayName(locale, {type: 'language'}) || locale,
+  }));
+}
+
+// export const possibleSettingsLanguages = [
+//   {value: 'ar', name: 'Arabic'},
+//   {value: 'bg', name: ''},
+//   {value: 'bn', name: ''},
+//   {value: 'ca', name: 'Catalan'},
+//   {value: 'cs', name: 'Czech'},
+//   {value: 'da', name: 'Danish'},
+//   {value: 'de', name: 'Deutch'},
+//   {value: 'el', name: ''},
+//   {value: 'en', name: ''},
+//   {value: 'es', name: 'Spanish (Spain)'},
+//   {value: 'es-la', name: 'Spanish (Latin Am.)'},
+//   {value: 'fa', name: ''},
+//   {value: 'fi', name: ''},
+//   {value: 'fr', name: 'French'},
+//   {value: 'he', name: ''},
+//   {value: 'hi', name: ''},
+//   {value: 'hu', name: ''},
+//   {value: 'id', name: ''},
+//   {value: 'it', name: 'Italian'},
+//   {value: 'ja', name: 'Japanese'},
+//   {value: 'ko', name: 'Korean'},
+//   {value: 'lt', name: ''},
+//   {value: 'mn', name: ''},
+//   {value: 'ms', name: ''},
+//   {value: 'my', name: ''},
+//   {value: 'ne', name: ''},
+//   {value: 'nl', name: ''},
+//   {value: 'no', name: ''},
+//   {value: 'pl', name: ''},
+//   {value: 'pt', name: 'Portugese'},
+//   {value: 'pt-br', name: 'Portugese (Brazil)'},
+//   {value: 'ro', name: ''},
+//   {value: 'ru', name: ''},
+//   {value: 'sr', name: ''},
+//   {value: 'sv', name: ''},
+//   {value: 'th', name: ''},
+//   {value: 'tl', name: ''},
+//   {value: 'tr', name: ''},
+//   {value: 'uk', name: 'Ukrainian'},
+//   {value: 'vi', name: 'Vietnamese'},
+//   {value: 'zh', name: 'Chinese'},
+//   {value: 'zh-hk', name: 'Chinese (trad.)'},
+// ];
