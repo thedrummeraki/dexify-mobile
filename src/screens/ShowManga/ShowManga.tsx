@@ -1,5 +1,6 @@
 import React from 'react';
 import {useManga} from 'src/api/mangadex/hooks';
+import {Authenticated} from 'src/components';
 import {useShowMangaRoute} from 'src/foundation/Navigation';
 import ShowMangaDetails from './ShowMangaDetails';
 import ShowMangaDetailsSkeleton from './ShowMangaDetailsSkeleton';
@@ -26,7 +27,7 @@ export default function ShowManga() {
 
 function NotLoadedShowMangaDetails({id}: {id: string}) {
   const {data, loading} = useManga(id, {
-    includes: ['cover_art', 'author', 'artist', 'tag'],
+    includes: ['cover_art', 'author', 'artist', 'tag', 'manga'],
   });
 
   if (loading) {

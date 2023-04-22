@@ -1,19 +1,15 @@
 import React, {PropsWithChildren, useContext, useEffect, useState} from 'react';
 import {View} from 'react-native';
-import {
-  BasicResultsResponse,
-  CoverArt,
-  Manga,
-  PagedResultsList,
-} from 'src/api/mangadex/types';
+import {CoverArt, Manga, PagedResultsList} from 'src/api/mangadex/types';
 import {useLazyGetRequest} from 'src/api/utils';
 import {AboutTab} from './components';
 
-import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import UrlBuilder from 'src/api/mangadex/types/api/url_builder';
 import {wait} from 'src/utils';
-
-const Tab = createMaterialTopTabNavigator();
+import {useYourAnimeShow} from 'src/api/youranime/hooks';
+import {YourAnime} from 'src/api/youranime';
+import {useSettings} from 'src/prodivers';
+import {CoverSize, mangaImage} from 'src/api';
 
 interface Props {
   manga: Manga;
@@ -28,13 +24,17 @@ interface MangaDetails {
   loading: boolean;
   manga: Manga;
   isAiring?: boolean;
+  airingAnime?: YourAnime.Anime;
   aggregate?: Manga.VolumeAggregateInfo;
+  preferredLanguages: string[];
+  statistics?: Manga.Statistic;
   covers: CoverArt[];
   volumes: string[];
   volumeInfos: VolumeInfo[];
   error?: any;
   coverUrl?: string;
   onCoverUrlUpdate: (coverUrl: string) => void;
+  onPreferredLanguagesChange: (preferredLanguages: string[]) => void;
 }
 
 const ShowMangaDetailsContext = React.createContext<MangaDetails>(
@@ -57,14 +57,23 @@ export function useMangaDetails() {
 }
 
 export default function ShowMangaDetails({manga}: Props) {
+  const {chapterLanguages} = useSettings();
+  const [preferredLanguages, setPreferredLanguages] = useState<string[]>(() =>
+    manga.attributes.availableTranslatedLanguages.filter(
+      availableTranslatedLanguage =>
+        chapterLanguages.includes(availableTranslatedLanguage),
+    ),
+  );
+
   const [getAggregate, {data, loading, error}] =
-    useLazyGetRequest<Manga.Aggregate>(
-      `https://api.mangadex.org/manga/${manga.id}/aggregate?translatedLanguage[]=en`,
-    );
+    useLazyGetRequest<Manga.Aggregate>();
 
   const [getAiringInfo, {data: airingNow}] = useLazyGetRequest<{
     airing: boolean;
+    slug: string | null;
   }>(UrlBuilder.animeAiringInfo(manga.id));
+
+  const [getAnimeInfo, {data: animeInfo}] = useYourAnimeShow();
 
   const [getMangaCovers, {data: coverData, loading: coversLoading}] =
     useLazyGetRequest<PagedResultsList<CoverArt>>(
@@ -74,10 +83,22 @@ export default function ShowMangaDetails({manga}: Props) {
         order: {volume: 'desc'},
       }),
     );
-  const [coverUrl, setCoverUrl] = useState<string>();
+
+  const [getStats, {data: statsData, loading: statsLoading}] =
+    useLazyGetRequest<Manga.StatisticsResponse>(
+      UrlBuilder.mangaStatistics(manga.id),
+    );
+
+  const [coverUrl, setCoverUrl] = useState<string>(
+    mangaImage(manga, {size: CoverSize.Original}),
+  );
 
   const aggregate = data?.result === 'ok' ? data.volumes : undefined;
   const aggregateEntries = aggregate ? Object.entries(aggregate) : [];
+
+  const allStats =
+    statsData?.result === 'ok' ? statsData.statistics : undefined;
+  const stats = allStats ? allStats[manga.id] : undefined;
 
   const volumes = aggregateEntries.map(([volume, _]) => volume);
   const covers = coverData?.result === 'ok' ? coverData.data : [];
@@ -96,23 +117,41 @@ export default function ShowMangaDetails({manga}: Props) {
   );
 
   useEffect(() => {
-    wait(1).then(() => getAggregate());
-    wait(1).then(() => getMangaCovers());
-    wait(1).then(() => getAiringInfo());
+    Promise.allSettled([getMangaCovers(), getAiringInfo(), getStats()]);
   }, []);
+
+  useEffect(() => {
+    wait(1).then(() =>
+      getAggregate(
+        UrlBuilder.mangaVolumesAndChapters(manga.id, {
+          translatedLanguage: preferredLanguages,
+        }),
+      ),
+    );
+  }, [manga.id, preferredLanguages]);
+
+  useEffect(() => {
+    if (airingNow?.slug) {
+      getAnimeInfo({variables: {slug: airingNow.slug}});
+    }
+  }, [airingNow]);
 
   return (
     <ShowMangaDetailsProvider
       loading={loading || coversLoading}
       aggregate={aggregate}
+      statistics={stats}
       volumes={volumes}
       volumeInfos={volumeInfos}
       manga={manga}
       error={error}
       coverUrl={coverUrl}
       isAiring={airingNow?.airing}
+      airingAnime={animeInfo?.show}
       covers={covers}
-      onCoverUrlUpdate={setCoverUrl}>
+      onCoverUrlUpdate={setCoverUrl}
+      preferredLanguages={preferredLanguages}
+      onPreferredLanguagesChange={setPreferredLanguages}>
       <View style={{flex: 1}}>
         <AboutTab />
       </View>

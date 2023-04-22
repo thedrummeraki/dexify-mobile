@@ -6,7 +6,8 @@ interface PageImage {
 
 export interface Page {
   image: PageImage;
-  number: number;
+  number: number; // the visual identifier for the page (ie: volume number)
+  position: number; // the actual position of the page (ie: index of the page)
 }
 
 export enum ReaderActionState {

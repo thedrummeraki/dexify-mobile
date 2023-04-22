@@ -16,6 +16,7 @@ import {
 } from 'src/prodivers';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import {AuthResponse} from './mangadex/types';
+import {wait} from 'src/utils';
 
 export enum ResponseStatus {
   Pending = 0,
@@ -57,6 +58,15 @@ type SimpleRequestParams<Body> = Omit<
   RequestParams<Body>,
   'method' | 'hookUrl'
 >;
+
+type LazyRequestResponse<T, Body = any> = [
+  (
+    url?: string,
+    body?: Body,
+    callbackParams?: SimpleRequestParams<Body>,
+  ) => Promise<T | undefined>,
+  RequestResult<T>,
+];
 
 export enum AxiosRequestType {
   Get = 'GET',
@@ -133,7 +143,7 @@ export function useDeleteRequest<T>(
   return useAxiosRequest<T>(options);
 }
 
-export function useLazyGetRequest<T>(
+export function useLazyGetRequest<T, Body = any>(
   hookUrl?: string,
   params?: SimpleRequestParams<Body>,
 ) {
@@ -147,6 +157,46 @@ export function useLazyGetRequest<T>(
   );
 
   return useAxiosRequest<T>(options);
+}
+
+export function useAuthenticatedLazyGetRequest<T, Body = any>(
+  hookUrl?: string,
+  params?: SimpleRequestParams<Body>,
+): LazyRequestResponse<T> {
+  const [callback, result] = useLazyGetRequest<T>(hookUrl, params);
+  const authenticatedCallback = useAuthenticatedCallback(callback);
+
+  return [authenticatedCallback, result];
+}
+
+export function useAuthenticatedPostRequest<T, Body = any>(
+  hookUrl?: string,
+  params?: SimpleRequestParams<Body>,
+): LazyRequestResponse<T> {
+  const [callback, result] = usePostRequest<T>(hookUrl, params);
+  const authenticatedCallback = useAuthenticatedCallback(callback);
+
+  return [authenticatedCallback, result];
+}
+
+export function useAuthenticatedPutRequest<T, Body = any>(
+  hookUrl?: string,
+  params?: SimpleRequestParams<Body>,
+): LazyRequestResponse<T> {
+  const [callback, result] = usePutRequest<T>(hookUrl, params);
+  const authenticatedCallback = useAuthenticatedCallback(callback);
+
+  return [authenticatedCallback, result];
+}
+
+export function useAuthenticatedDeleteRequest<T, Body = any>(
+  hookUrl?: string,
+  params?: SimpleRequestParams<Body>,
+): LazyRequestResponse<T> {
+  const [callback, result] = useDeleteRequest<T>(hookUrl, params);
+  const authenticatedCallback = useAuthenticatedCallback(callback);
+
+  return [authenticatedCallback, result];
 }
 
 export function useGetRequest<T>(
@@ -169,24 +219,34 @@ export function useCategoryRequest<T>(category: UICategory): RequestResult<T> {
   useEffect(() => {
     const categoryUrl = url(category);
     if (categoryUrl) {
-      callback(categoryUrl).finally(() => setLoading(false));
+      wait(100).then(() =>
+        callback(categoryUrl).finally(() => setLoading(false)),
+      );
     }
   }, [category]);
 
   return {...result, loading};
 }
 
+export function useAuthenticatedCallback<T, Body = any>(
+  callback: (url?: string, body?: Body) => Promise<T | undefined>,
+) {
+  const {refreshToken} = useUpdatedSession(false);
+
+  const wrapperCallback = async (url?: string, body?: Body) => {
+    const res = await refreshToken();
+    if (!res || res?.result === 'ok') {
+      return callback(url, body);
+    }
+  };
+
+  return wrapperCallback;
+}
+
 export function useAxiosRequest<T, Body = any>(
   params: RequestParams<Body>,
-): [
-  (
-    url?: string,
-    body?: Body,
-    callbackParams?: SimpleRequestParams<Body>,
-  ) => Promise<T | undefined>,
-  RequestResult<T>,
-] {
-  const {session, refreshToken} = useUpdatedSession(false);
+): LazyRequestResponse<T> {
+  const {session} = useUpdatedSession(false);
 
   const [data, setData] = useState<T>();
   const [response, setResponse] = useState<AxiosResponse<T>>();
@@ -212,37 +272,7 @@ export function useAxiosRequest<T, Body = any>(
         : `[?${params.method}]`;
       const config: AxiosRequestConfig = {};
 
-      if (params.refreshSession || callbackParams?.refreshSession) {
-        const refreshResponse = await refreshToken(session);
-        if (refreshResponse?.result === 'ok') {
-          config.headers = {
-            Authorization: refreshResponse.token.session,
-            'x-auth-session': refreshResponse.token.session,
-            'x-auth-refresh': refreshResponse.token.refresh,
-          };
-        } else if (
-          (params.throwIfRefreshFails || callbackParams?.throwIfRefreshFails) &&
-          refreshResponse?.result === 'error'
-        ) {
-          throw new Error(`Token refresh failed for url ${url}`);
-        } else if (
-          (params.requireSession || callbackParams?.requireSession) &&
-          !session
-        ) {
-          console.warn(
-            'This request',
-            requestMethod,
-            url,
-            'may fail because we could not refresh your token',
-          );
-        } else if (session) {
-          config.headers = {
-            Authorization: session.session.value,
-            'x-auth-session': session.session.value,
-            'x-auth-refresh': session.refresh.value,
-          };
-        }
-      } else if (session) {
+      if (session) {
         // At this point, if the refreshResponse is undefined and the session
         // is present, then the session is valid.
         config.headers = {
@@ -250,8 +280,6 @@ export function useAxiosRequest<T, Body = any>(
           'x-auth-session': session.session.value,
           'x-auth-refresh': session.refresh.value,
         };
-      } else {
-        console.warn('no session');
       }
 
       const requestConfig = config || {};
@@ -284,7 +312,7 @@ export function useAxiosRequest<T, Body = any>(
         if (axios.isAxiosError(error)) {
           setError(error as AxiosError<T>);
         } else {
-          console.error(error);
+          console.error('error while fetching', url, ':', error);
         }
       } finally {
         setLoading(false);
@@ -318,4 +346,8 @@ async function request<T, Body = any>(
         ).join(', ')}]"`,
       );
   }
+}
+
+export function requestStarted(status: ResponseStatus) {
+  return status > ResponseStatus.Initiated;
 }

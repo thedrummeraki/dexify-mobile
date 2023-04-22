@@ -21,12 +21,11 @@ import {
 import {usePostRequest} from 'src/api/utils';
 import {
   possibleSettingsContentRatings,
-  possibleSettingsLanguages,
   SessionContext,
   Settings,
+  usePossibleSettingsLanguages,
   useSettingsContext,
 } from 'src/prodivers';
-import {useBackgroundColor} from 'src/components/colors';
 import CategoriesCollectionSection from 'src/components/CategoriesCollection/CategoriesCollectionSection';
 import {SimpleInputDropdown} from 'src/components';
 import {appVersion} from 'src/utils';
@@ -66,6 +65,8 @@ export function MyProfileNavigationScreen() {
     resetSettings,
     overrideSettings,
   } = useSettingsContext();
+
+  const possibleSettingsLanguages = usePossibleSettingsLanguages();
 
   // const spicyModeColor = useBackgroundColor('error');
 
@@ -126,23 +127,25 @@ export function MyProfileNavigationScreen() {
           onSelect={newValue => updateSetting('contentRatings', newValue)}
           title="Content rating filters"
           description={
-            'Please note that the ages are for guidance only. "For 18+" is not enabled by default.'
+            'Please note that the ages are for guidance only. Sexual content is not visible through this app.'
           }
         />
-        {/* <OptionsSettingsItem
-        value={settings.chapterLanguages}
-        possibleValues={possibleSettingsLanguages}
-        onSelect={newValue => updateSetting('chapterLanguages', newValue)}
-        title="Chapter language filters"
-        description="Default language used when viewing chapters. Some manga may not have chapters available in your language"
-      />
-      <OptionsSettingsItem
-        value={settings.mangaLanguages}
-        possibleValues={possibleSettingsLanguages}
-        onSelect={newValue => updateSetting('mangaLanguages', newValue)}
-        title="Manga language filters"
-        description="When set, only shows manga in the selected languages."
-      /> */}
+        <OptionsSettingsItem
+          value={settings.chapterLanguages}
+          defaultValue={defaultSettings.chapterLanguages}
+          possibleValues={possibleSettingsLanguages}
+          onSelect={newValue => updateSetting('chapterLanguages', newValue)}
+          title="Chapter language filters"
+          description="Default language used when viewing chapters. Some manga may not have chapters available in your language"
+        />
+        <OptionsSettingsItem
+          value={settings.mangaLanguages}
+          defaultValue={defaultSettings.mangaLanguages}
+          possibleValues={possibleSettingsLanguages}
+          onSelect={newValue => updateSetting('mangaLanguages', newValue)}
+          title="Manga language filters"
+          description="When set, only shows manga in the selected languages."
+        />
         <TogglableSettingsItem
           value={settings.dataSaver}
           onToggle={newValue => updateSetting('dataSaver', newValue)}

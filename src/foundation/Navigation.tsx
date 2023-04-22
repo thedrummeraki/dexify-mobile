@@ -12,11 +12,14 @@ import {
   ShowMangaList,
   ShowCustomList,
   ShowMangaByTags,
+  ShowScanlationGroup,
+  ShowSettings,
+  ShowAnimeSimulcastMangaList,
+  ShowReadingStatusLibrary,
 } from 'src/screens';
 import {RouteProp, useNavigation, useRoute} from '@react-navigation/core';
-import {Header} from '.';
 import {HeaderContext} from 'src/prodivers';
-import {Manga, MangaRequestParams} from 'src/api/mangadex/types';
+import {Manga, MangaRequestParams, ReadingStatus} from 'src/api/mangadex/types';
 
 type MangaParams = Partial<Omit<Manga, 'type' | 'id'>> & {id: string};
 
@@ -26,14 +29,18 @@ type RootStackParamList = {
   ShowMangaGallery: {manga: Manga; number?: number};
   ShowChapter: {id: string; jumpToPage?: number};
   ShowArtist: {id: string; allowHentai?: boolean};
+  ShowScanlationGroup: {id: string; allowHentai?: boolean};
   ShowMangaList: {
     title?: string;
     description?: string;
     ids?: string[];
     params?: MangaRequestParams;
   };
+  ShowAnimeSimulcastMangaList: undefined;
+  ShowReadingStatusLibrary: {readingStatus: ReadingStatus};
   ShowCustomList: {id: string};
   ShowMangaByTags: {tags: Manga.Tag[]};
+  ShowSettings: undefined;
 };
 
 export type DexifyNavigationProp = NativeStackNavigationProp<
@@ -49,15 +56,16 @@ export default function Navigation() {
   return (
     <Stack.Navigator
       initialRouteName="Home"
-      screenOptions={{
-        header: ({navigation}) => (
-          <Header
-            goBack={navigation.canGoBack() ? navigation.goBack : undefined}
-            // title={headerContext.title || options.title || route.name}
-            subtitle={headerContext.subtitle || undefined}
-          />
-        ),
-      }}>
+      // screenOptions={{
+      //   header: ({navigation}) => (
+      //     <Header
+      //       goBack={navigation.canGoBack() ? navigation.goBack : undefined}
+      //       // title={headerContext.title || options.title || route.name}
+      //       subtitle={headerContext.subtitle || undefined}
+      //     />
+      //   ),
+      // }}
+    >
       <Stack.Screen
         name="Home"
         component={Home}
@@ -83,7 +91,26 @@ export default function Navigation() {
         component={ShowArtist}
         options={{headerShown: false}}
       />
-      <Stack.Screen name="ShowMangaList" component={ShowMangaList} />
+      <Stack.Screen
+        name="ShowScanlationGroup"
+        component={ShowScanlationGroup}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="ShowMangaList"
+        component={ShowMangaList}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="ShowAnimeSimulcastMangaList"
+        component={ShowAnimeSimulcastMangaList}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="ShowReadingStatusLibrary"
+        component={ShowReadingStatusLibrary}
+        options={{headerShown: false}}
+      />
       <Stack.Screen
         name="ShowCustomList"
         component={ShowCustomList}
@@ -94,6 +121,7 @@ export default function Navigation() {
         component={ShowMangaByTags}
         options={{headerShown: false}}
       />
+      <Stack.Screen name="ShowSettings" component={ShowSettings} />
     </Stack.Navigator>
   );
 }
@@ -118,6 +146,10 @@ export function useShowArtistRoute() {
   return useRoute<RouteProp<RootStackParamList, 'ShowArtist'>>();
 }
 
+export function useShowScanlationGroupRoute() {
+  return useRoute<RouteProp<RootStackParamList, 'ShowScanlationGroup'>>();
+}
+
 export function useShowMangaListRoute() {
   return useRoute<RouteProp<RootStackParamList, 'ShowMangaList'>>();
 }
@@ -128,4 +160,8 @@ export function useShowCustomListRoute() {
 
 export function useShowMangaByTagsRoute() {
   return useRoute<RouteProp<RootStackParamList, 'ShowMangaByTags'>>();
+}
+
+export function useShowReadingStatusLibraryRoute() {
+  return useRoute<RouteProp<RootStackParamList, 'ShowReadingStatusLibrary'>>();
 }

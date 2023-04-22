@@ -8,11 +8,12 @@ import {
 } from 'src/api/mangadex/types';
 import UrlBuilder from 'src/api/mangadex/types/api/url_builder';
 import {
+  useAuthenticatedLazyGetRequest,
   useDeleteRequest,
   useLazyGetRequest,
   usePostRequest,
 } from 'src/api/utils';
-import {Banner, FullScreenModal} from 'src/components';
+import {Banner, BasicModal, FullScreenModal} from 'src/components';
 import {List} from 'src/components/List/List';
 import {pluralize, wait} from 'src/utils';
 import {useMangaDetails} from '../../../ShowMangaDetails';
@@ -24,19 +25,20 @@ interface Props {
 
 export default function AddToMDListModal(props: Props) {
   return (
-    <FullScreenModal
+    <BasicModal
       {...props}
       title="Add to MDList"
       primaryAction={{content: 'Done', onAction: props.onDismiss}}>
       <CustomListsListModalChildren />
-    </FullScreenModal>
+    </BasicModal>
   );
 }
 
 function CustomListsListModalChildren() {
-  const [getCustomLists, {data, loading, error}] = useLazyGetRequest<
-    PagedResultsList<CustomList>
-  >(UrlBuilder.currentUserCustomLists({limit: 100}));
+  const [getCustomLists, {data, loading, error}] =
+    useAuthenticatedLazyGetRequest<PagedResultsList<CustomList>>(
+      UrlBuilder.currentUserCustomLists({limit: 100}),
+    );
 
   const {manga} = useMangaDetails();
   const [selected, setSelected] = useState<string[]>([]);
@@ -65,7 +67,7 @@ function CustomListsListModalChildren() {
   );
 
   useEffect(() => {
-    wait(100).then(() => getCustomLists());
+    wait(1).then(() => getCustomLists());
   }, []);
 
   useEffect(() => {

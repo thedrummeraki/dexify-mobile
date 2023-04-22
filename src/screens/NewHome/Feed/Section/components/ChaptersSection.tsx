@@ -41,18 +41,20 @@ export default function ChaptersSection({section, hideIfEmpty = true}: Props) {
       renderItem={(item, {width, height}) => {
         const relatedManga = manga.find(
           manga => manga.id === findRelationship(item, 'manga')!.id,
-        )!;
+        );
 
         return (
           <TouchableNativeFeedback
             useForeground
             onPress={() => navigation.push('ShowChapter', {id: item.id})}
             onLongPress={() => {
-              ReactNativeHapticFeedback.trigger('soft');
-              navigation.push('ShowManga', {
-                ...relatedManga,
-                // jumpToVolume: item.attributes.volume,
-              });
+              if (relatedManga) {
+                ReactNativeHapticFeedback.trigger('soft');
+                navigation.push('ShowManga', {
+                  ...relatedManga,
+                  // jumpToVolume: item.attributes.volume,
+                });
+              }
             }}>
             <View
               style={{
@@ -61,15 +63,18 @@ export default function ChaptersSection({section, hideIfEmpty = true}: Props) {
                 height,
                 backgroundColor: surface,
               }}>
-              <View style={{position: 'absolute', opacity: 0.15}}>
-                <MangaThumbnail
-                  hideAuthor
-                  hideTitle
-                  manga={relatedManga}
-                  width={width}
-                  aspectRatio={0.8}
-                />
-              </View>
+              {relatedManga ? (
+                <View style={{position: 'absolute', opacity: 0.15}}>
+                  <MangaThumbnail
+                    hideAuthor
+                    hideTitle
+                    clickable={false}
+                    manga={relatedManga}
+                    width={width}
+                    aspectRatio={0.8}
+                  />
+                </View>
+              ) : null}
               <View
                 style={{
                   position: 'absolute',
@@ -95,17 +100,23 @@ export default function ChaptersSection({section, hideIfEmpty = true}: Props) {
               <View
                 style={{position: 'absolute', bottom: 0, left: 0, right: 0}}>
                 <TextBadge
+                  background="none"
+                  icon="clock-outline"
                   content={localizedDateTime(
                     item.attributes.publishAt,
                     DateTime.DATE_MED,
                   )}
                 />
+                {relatedManga ? (
+                  <TextBadge
+                    background="none"
+                    icon="book"
+                    content={preferredMangaTitle(relatedManga)}
+                    numberOfLines={1}
+                  />
+                ) : null}
                 <TextBadge
-                  icon="book"
-                  content={preferredMangaTitle(relatedManga)}
-                  numberOfLines={1}
-                />
-                <TextBadge
+                  background="none"
                   icon="account"
                   content={
                     findRelationship<ScanlationGroup>(item, 'scanlation_group')

@@ -1,6 +1,6 @@
 import {DateTime} from 'luxon';
 import {useEffect, useState} from 'react';
-import {Dimensions} from 'react-native';
+import {Dimensions, StatusBar} from 'react-native';
 
 export function appVersion() {
   const pkg = require('../package.json');
@@ -31,8 +31,9 @@ export function isPortrait() {
   return dim.height >= dim.width;
 }
 
-export function useDimensions() {
-  return Dimensions.get('window');
+export function useDimensions(source: 'window' | 'screen' = 'window') {
+  const heightOffset = StatusBar.currentHeight || 0;
+  return {...Dimensions.get(source), heightOffset};
 }
 
 export function useScreenOrientation(): ScreenOrientation {
@@ -153,8 +154,8 @@ export function capitalize(word: string) {
   return word.charAt(0).toUpperCase() + word.slice(1);
 }
 
-export function wait(ms: number) {
-  return new Promise(resolve => setTimeout(resolve, ms));
+export function wait<T>(ms: number) {
+  return new Promise<T>(resolve => setTimeout(resolve, ms));
 }
 
 export function max(a: number, b: number) {
@@ -220,3 +221,47 @@ export const timeAgo = (
 
   return relativeTimeInWords;
 };
+
+export function currentSeason({
+  capitalize: isCapital = true,
+}: {
+  capitalize?: boolean;
+}) {
+  const now = new Date();
+  const month = now.getMonth();
+  let season = '';
+
+  switch (month) {
+    case 1:
+    case 2:
+    case 3:
+      season = 'winter';
+      break;
+    case 4:
+    case 5:
+    case 6:
+      season = 'spring';
+      break;
+    case 7:
+    case 8:
+    case 9:
+      season = 'summer';
+      break;
+    case 10:
+    case 11:
+    case 12:
+      season = 'fall';
+      break;
+  }
+
+  return [isCapital ? capitalize(season) : season, now.getFullYear()]
+    .map(x => String(x))
+    .join(' ');
+}
+
+export function notEmpty<T>(value: T | T[] | null | undefined): value is T {
+  if (Array.isArray(value) || typeof value === 'string') {
+    return value.length > 0;
+  }
+  return value !== null && value !== undefined;
+}

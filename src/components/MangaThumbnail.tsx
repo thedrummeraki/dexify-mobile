@@ -13,22 +13,27 @@ import Thumbnail, {
   ThumbnailBadge,
   ThumbnailDimensionsProps,
 } from 'src/foundation/Thumbnail';
-import {useLibraryStatus} from 'src/prodivers';
+import {useLibraryStatus, useSettings} from 'src/prodivers';
 import {useBackgroundColor} from './colors';
 
 interface Props {
   manga: Manga;
+  showImageIfHentai?: boolean;
   showReadingStatus?: boolean;
+  subtitle?: string;
   hideTitle?: boolean;
   hideAuthor?: boolean;
   clickable?: boolean;
   coverSize?: CoverSize;
   onPress?(): void;
+  onLongPress?(): void;
 }
 
 export default function MangaThumbnail({
   manga,
   showReadingStatus,
+  showImageIfHentai,
+  subtitle,
   hideTitle,
   hideAuthor,
   clickable = true,
@@ -37,6 +42,7 @@ export default function MangaThumbnail({
   height,
   aspectRatio,
   onPress,
+  onLongPress,
 }: Props & Partial<ThumbnailDimensionsProps>) {
   const navigation = useDexifyNavigation();
   const handlePress = useCallback(() => {
@@ -45,6 +51,8 @@ export default function MangaThumbnail({
   const readingStatus = useLibraryStatus(manga);
   const isHentai =
     manga.attributes.contentRating === ContentRating.pornographic;
+
+  const {blurPornographicEntries} = useSettings();
 
   const author =
     findRelationship<Author>(manga, 'author') ||
@@ -68,6 +76,11 @@ export default function MangaThumbnail({
       </ThumbnailBadge>
     ) : null;
 
+  const allowActualImage = true || (isHentai && showImageIfHentai) || !isHentai;
+  const imageUrl = allowActualImage
+    ? mangaImage(manga, {size: coverSize})
+    : 'https://mangadex.org/avatar.png';
+
   return (
     <Thumbnail
       TopComponent={
@@ -77,15 +90,21 @@ export default function MangaThumbnail({
         </View>
       }
       hideTitle={hideTitle}
-      imageUrl={mangaImage(manga, {size: coverSize}) || '/'}
+      imageUrl={imageUrl}
+      blurRadius={blurPornographicEntries && isHentai ? 25 : undefined}
       title={preferredMangaTitle(manga)}
       subtitle={
-        hideAuthor || !authorPresent ? undefined : author?.attributes.name
+        subtitle
+          ? subtitle
+          : hideAuthor || !authorPresent
+          ? undefined
+          : author?.attributes.name
       }
       width={width || '100%'}
       height={height}
       aspectRatio={aspectRatio || 0.8}
       onPress={onPress || clickable ? handlePress : undefined}
+      onLongPress={onLongPress}
       onSubtitlePress={
         author
           ? () => navigation.navigate('ShowArtist', {id: author.id})

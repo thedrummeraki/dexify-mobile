@@ -9,7 +9,7 @@ import {
   ViewStyle,
   Pressable,
 } from 'react-native';
-import {Badge, Caption, Text, useTheme} from 'react-native-paper';
+import {Badge, Caption, useTheme} from 'react-native-paper';
 import SkeletonContent from 'react-native-skeleton-content-nonexpo';
 
 export interface ThumbnailDimensionsProps {
@@ -26,6 +26,7 @@ interface BorderOptions {
 
 interface BasicProps {
   imageUrl: string | string[];
+  blurRadius?: number;
   rounded?: boolean;
   border?: BorderOptions;
   TopComponent?: React.ReactElement;
@@ -75,24 +76,22 @@ export default function Thumbnail({
         borderColor: border.color || theme.colors.primary,
         borderStyle: border.style || 'solid',
         borderWidth: border.width || 2,
-        padding: 5,
       }
     : undefined;
   return (
     <View
-      style={Object.assign(
-        {
-          width,
-          flex: 1,
-          flexDirection: 'column',
-        },
-        borderStyle,
-      )}>
-      {Array.isArray(imageUrl) ? (
-        <MultipleImageView imageUrl={imageUrl} {...rest} />
-      ) : (
-        <SingleImageView imageUrl={imageUrl} {...rest} />
-      )}
+      style={Object.assign({
+        width,
+        flex: 1,
+        flexDirection: 'column',
+      })}>
+      <View style={borderStyle}>
+        {Array.isArray(imageUrl) ? (
+          <MultipleImageView imageUrl={imageUrl} {...rest} />
+        ) : (
+          <SingleImageView imageUrl={imageUrl} {...rest} />
+        )}
+      </View>
       <ThumbnailCaption title={title} hideTitle={hideTitle} {...rest} />
     </View>
   );
@@ -105,6 +104,7 @@ function SingleImageView({
   TopComponent,
   BottomComponent,
   rounded,
+  blurRadius,
   onPress,
   onLongPress,
 }: SingleImageProps) {
@@ -122,6 +122,7 @@ function SingleImageView({
             borderRadius: rounded ? 1000 : 0,
           }}
           resizeMode="cover"
+          blurRadius={blurRadius}
         />
         <View style={{position: 'absolute', bottom: 0}}>{BottomComponent}</View>
       </View>

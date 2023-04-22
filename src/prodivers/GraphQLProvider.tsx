@@ -4,7 +4,7 @@ import React, {PropsWithChildren} from 'react';
 export default function GraphQLProvider({children}: PropsWithChildren<{}>) {
   const cache = new InMemoryCache();
   const client = new ApolloClient({
-    uri: 'https://tanoshimu-2.herokuapp.com/graphql',
+    uri: 'https://proxy.youranime.moe/graphql',
     cache,
   });
 

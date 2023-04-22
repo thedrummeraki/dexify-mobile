@@ -1,11 +1,12 @@
 import React, {useEffect, useMemo, useRef, useState} from 'react';
 import {Image, View} from 'react-native';
 import {ActivityIndicator, Caption, Text} from 'react-native-paper';
-import {coverImage, CoverSize} from 'src/api';
+import {coverImage, CoverSize, preferredMangaTitle} from 'src/api';
 import {CoverArt, PagedResultsList} from 'src/api/mangadex/types';
 import {useGetRequest} from 'src/api/utils';
 import {useShowMangaGalleryRoute} from 'src/foundation';
-import {useDimensions} from 'src/utils';
+import {pluralize, useDimensions} from 'src/utils';
+import ReaderProvider from '../ShowChapter/ShowChapterReader/components/ReaderProvider';
 import ShowChapterReaderPagesList from '../ShowChapter/ShowChapterReader/components/ShowChapterReaderPagesList';
 import {Page} from '../ShowChapter/ShowChapterReader/types';
 
@@ -57,6 +58,7 @@ export default function ShowMangaGallery() {
             const page: Page = {
               number,
               image: {uri, width, height},
+              position: index + 1,
             };
             setPages(current => [...current, page]);
           },
@@ -64,6 +66,7 @@ export default function ShowMangaGallery() {
             const page: Page = {
               number,
               image: {uri, width: deviceWidth, height: deviceHeight},
+              position: index + 1,
             };
             setPages(current => [...current, page]);
           },
@@ -112,23 +115,13 @@ export default function ShowMangaGallery() {
   console.log({sortedPages});
 
   return (
-    // <FullScreenImageSwiper
-    //   initialPage={route.params.number}
-    //   images={sortedCovers.map(cover => ({
-    //     uri: coverImage(cover, route.params.id, {size: CoverSize.Original}),
-    //   }))}
-    //   onPageSelected={() => {}}
-    // />
-    <>
-      {/* <CloseCurrentScreenHeader title={preferredMangaTitle(manga)} /> */}
-      {/* <ScrollView>
-      <BasicList
-        data={sortedCovers}
-        aspectRatio={0.5}
-        itemStyle={{padding: 5}}
-        renderItem={cover => <Thumbnail imageUrl={coverImage(cover, manga.id)} width={coverWidth} height={coverHeight} />} />
-    </ScrollView> */}
+    <ReaderProvider
+      manga={manga}
+      title={preferredMangaTitle(manga)}
+      subtitle={pluralize(sortedPages.length, 'cover')}
+      initialPage={1}
+      pages={sortedPages}>
       <ShowChapterReaderPagesList pages={sortedPages} initialIndex={0} />
-    </>
+    </ReaderProvider>
   );
 }

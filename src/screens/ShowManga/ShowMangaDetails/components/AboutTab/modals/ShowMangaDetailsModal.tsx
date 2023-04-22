@@ -25,8 +25,9 @@ import Markdown, {
 import {useMangaDetails} from '../../../ShowMangaDetails';
 import {useBackgroundColor} from 'src/components/colors';
 import {useDexifyNavigation} from 'src/foundation';
-import {capitalize, onlyUnique, useDimensions} from 'src/utils';
+import {capitalize, onlyUnique, pluralize, useDimensions} from 'src/utils';
 import CategoriesCollectionSection from 'src/components/CategoriesCollection/CategoriesCollectionSection';
+import {FormattedDisplayName} from 'react-intl';
 
 interface Props {
   visible: boolean;
@@ -43,6 +44,7 @@ interface MapInfo {
   color: string;
   name: string;
   transform?: (value: string) => string;
+  deriveName?: (value: string) => string | undefined;
 }
 
 type MangaLinkInfoMap = {
@@ -66,8 +68,7 @@ function ModalChildren({onDismiss}: Pick<Props, 'onDismiss'>) {
   const theme = useTheme();
   const navigation = useDexifyNavigation();
   const {width} = useDimensions();
-  const {manga, isAiring} = useMangaDetails();
-  const [bannerVisible, setBannerVisible] = useState(true);
+  const {manga, isAiring, statistics} = useMangaDetails();
 
   const contentRating = contentRatingInfo(manga.attributes.contentRating);
   const contentRatingTextColor = useBackgroundColor(contentRating?.background);
@@ -85,15 +86,33 @@ function ModalChildren({onDismiss}: Pick<Props, 'onDismiss'>) {
     text: node => {
       return <Text key={node.key}>{node.content}</Text>;
     },
-    link: node => (
-      <TextBadge
-        key={node.key}
-        content={node.content}
-        background="background"
-        onPress={() => {}}
-      />
-    ),
-    hr: (node, children, parent, styles) => (
+    link: node => {
+      if (node.children.length <= 0) {
+        return null;
+      }
+
+      return (
+        <View key={node.key}>
+          {node.children.map(child => {
+            return (
+              <TextBadge
+                key={child.key}
+                style={{marginVertical: -3, marginRight: 0}}
+                textStyle={{textDecorationLine: 'underline'}}
+                content={child.content}
+                background="background"
+                onPress={() => {
+                  if (node.attributes.href) {
+                    Linking.openURL(node.attributes.href);
+                  }
+                }}
+              />
+            );
+          })}
+        </View>
+      );
+    },
+    hr: (node, _children, _parent, styles) => (
       <View
         key={node.key}
         style={{...styles._VIEW_SAFE_hr, backgroundColor: theme.colors.text}}
@@ -124,6 +143,7 @@ function ModalChildren({onDismiss}: Pick<Props, 'onDismiss'>) {
             justifyContent: 'flex-start',
             flexWrap: 'wrap',
           }}>
+          <TextBadge content={capitalize(manga.attributes.status)} />
           <TextBadge
             content={contentRating.content}
             icon={contentRating.icon}
@@ -134,17 +154,30 @@ function ModalChildren({onDismiss}: Pick<Props, 'onDismiss'>) {
               content={capitalize(manga.attributes.publicationDemographic)}
             />
           ) : null}
-          {isAiring && (
+          <TextBadge
+            icon="star"
+            content={statistics?.rating.average?.toFixed(2) || 'N/A'}
+            onPress={() => {}}
+          />
+          {statistics?.follows ? (
+            <TextBadge
+              icon="bookmark-check"
+              content={pluralize(statistics.follows, 'follow')}
+              onPress={() => {}}
+            />
+          ) : null}
+          {isAiring ? (
             <TextBadge
               content="Anime airing"
               icon="video"
               background="primary"
               style={{borderRadius: 10}}
+              onPress={() => {}}
             />
-          )}
-          {manga.attributes.year && (
+          ) : null}
+          {manga.attributes.year ? (
             <TextBadge content={manga.attributes.year} />
-          )}
+          ) : null}
         </View>
         <View
           style={{
@@ -183,11 +216,15 @@ function ModalChildren({onDismiss}: Pick<Props, 'onDismiss'>) {
           }}>
           <Text style={{marginRight: 6}}>Original language:</Text>
           <TextBadge
-            content={manga.attributes.originalLanguage.toLocaleUpperCase()}
+            content={
+              <FormattedDisplayName
+                value={manga.attributes.originalLanguage}
+                type="language"
+              />
+            }
           />
         </View>
         <Markdown
-          // markdownit={MarkdownIt({typographer: true}).disable(['image'])}
           rules={rules}
           mergeStyle
           style={StyleSheet.create({
@@ -239,8 +276,6 @@ function ModalChildren({onDismiss}: Pick<Props, 'onDismiss'>) {
   );
 }
 
-function RelatedManga() {}
-
 function MangaExternalLinks() {
   const {manga} = useMangaDetails();
 
@@ -274,10 +309,13 @@ function MangaExternalLinks() {
             return <Chip>???</Chip>;
           }
 
-          const {name, transform} = mangaLinkInfoMap[linkKey];
+          const {name, transform, deriveName} = mangaLinkInfoMap[linkKey];
           const finalUrl = transform ? transform(url) : url;
+          const actualName = deriveName ? deriveName(url) || name : name;
 
-          return <Chip onPress={() => Linking.openURL(finalUrl)}>{name}</Chip>;
+          return (
+            <Chip onPress={() => Linking.openURL(finalUrl)}>{actualName}</Chip>
+          );
         }}
       />
     );
@@ -285,7 +323,7 @@ function MangaExternalLinks() {
   return null;
 }
 
-const mangaLinkInfoMap: MangaLinkInfoMap = {
+export const mangaLinkInfoMap: MangaLinkInfoMap = {
   al: {
     // background: "#2b2d42",
     // color: "#d9e6ff",
@@ -340,5 +378,13 @@ const mangaLinkInfoMap: MangaLinkInfoMap = {
     name: 'Novel Updates',
     transform: slug => `https://www.novelupdates.com/series/${slug}`,
   },
-  raw: {background: '', color: '', name: 'Official (original)'},
+  raw: {
+    background: '',
+    color: '',
+    name: 'Official (original)',
+    deriveName: value => {
+      const extremelyBasicRegex = /http(s)?\:\/\/([\d\w\-\_\.]+)\/?.*/;
+      return value.match(extremelyBasicRegex)?.[2];
+    },
+  },
 };

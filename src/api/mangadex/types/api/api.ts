@@ -6,6 +6,7 @@ import {
   ScanlationGroup,
   User,
 } from 'src/api/mangadex/types';
+import {MangaRelationshipType} from './types';
 
 export function defaultPagedResults<T>() {
   return {
@@ -73,6 +74,7 @@ export type PossibleRelationship =
   | CoverArt
   | ScanlationGroup
   | User;
+
 export type PossibleRelationshipTypes = Pick<
   PossibleRelationship,
   'type'
@@ -82,10 +84,10 @@ export type Relationship<T = PossibleRelationship> =
   | {
       id: string;
       type: PossibleRelationshipTypes;
-      related: string;
+      related: MangaRelationshipType;
       attributes?: GenericAttributes;
     }
-  | (T & {related?: string});
+  | (T & {related?: MangaRelationshipType});
 
 export type Order<K extends keyof any> = {
   [P in K]?: 'asc' | 'desc';

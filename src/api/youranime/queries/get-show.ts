@@ -17,6 +17,7 @@ export default gql`
         guide
       }
       airingAt
+      bannerUrl
       description
       endedOn
       episodesCount
@@ -54,6 +55,7 @@ export default gql`
         value
       }
       title
+      titles
       titleRecord {
         en
         jp

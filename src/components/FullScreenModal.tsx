@@ -1,4 +1,4 @@
-import React, {PropsWithChildren} from 'react';
+import React, {ComponentProps, useEffect, useState} from 'react';
 import {View, Modal} from 'react-native';
 import {Button, useTheme} from 'react-native-paper';
 import {useDimensions} from 'src/utils';
@@ -6,34 +6,39 @@ import {CloseCurrentScreenHeader} from '.';
 
 interface ModalAction {
   content: string;
-  showCancel?: boolean;
   disabled?: boolean;
   onAction(): void;
 }
 
-interface Props {
+interface BasicProps {
   title?: string;
   visible?: boolean;
   primaryAction?: ModalAction;
+  secondaryAction?: ModalAction;
   onDismiss(): void;
 }
+
+type ModalProps = ComponentProps<typeof Modal>;
+type Props = BasicProps & ModalProps;
 
 export default function FullScreenModal({
   children,
   title,
   visible,
   primaryAction,
-  onDismiss,
-}: PropsWithChildren<Props>) {
+  secondaryAction,
+  ...modalProps
+}: Props) {
   const {width, height} = useDimensions();
   const theme = useTheme();
 
   return (
     <Modal
-      animationType={'slide'}
+      animationType="slide"
       visible={visible}
       transparent
-      onRequestClose={onDismiss}>
+      {...modalProps}
+      onRequestClose={modalProps.onDismiss}>
       <View
         style={{
           flex: 1,
@@ -46,15 +51,18 @@ export default function FullScreenModal({
           style={{
             width: width,
             height: height,
-            backgroundColor: theme.colors.background,
-            marginTop: 15,
+            backgroundColor: theme.colors.surface,
+            paddingTop: 10,
           }}>
-          <CloseCurrentScreenHeader title={title} onClose={onDismiss} />
+          <CloseCurrentScreenHeader
+            title={title}
+            onClose={modalProps.onDismiss}
+          />
           <View style={{marginBottom: 114}}>
             {visible ? children : undefined}
           </View>
         </View>
-        {primaryAction ? (
+        {primaryAction || secondaryAction ? (
           <View
             style={{
               position: 'absolute',
@@ -63,12 +71,19 @@ export default function FullScreenModal({
               right: 0,
               flexDirection: 'row-reverse',
             }}>
-            <Button onPress={primaryAction.onAction}>
-              {primaryAction.content}
-            </Button>
-            {primaryAction.showCancel ? (
-              <Button color="white" onPress={onDismiss}>
-                Cancel
+            {primaryAction ? (
+              <Button
+                onPress={primaryAction.onAction}
+                disabled={primaryAction.disabled}>
+                {primaryAction.content}
+              </Button>
+            ) : null}
+            {secondaryAction ? (
+              <Button
+                color="white"
+                onPress={secondaryAction.onAction}
+                disabled={secondaryAction.disabled}>
+                {secondaryAction.content}
               </Button>
             ) : null}
           </View>

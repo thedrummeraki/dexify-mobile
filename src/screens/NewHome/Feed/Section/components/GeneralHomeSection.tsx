@@ -30,7 +30,7 @@ export default function GeneralHomeSection({
       title={title}
       data={manga}
       dimensions={{width: 120, height: 160}}
-      // viewMore={category.viewMore}
+      viewMore={onAction ? {onAction} : undefined}
       renderItem={(item, dimensions) => (
         <MangaThumbnail
           showReadingStatus

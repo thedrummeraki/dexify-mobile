@@ -23,7 +23,7 @@ export default function CloseCurrentScreenHeader({
   return (
     <View
       style={Object.assign(
-        {height: 55, zIndex: 100, flexDirection: 'row', alignItems: 'center'},
+        {height: 65, zIndex: 100, flexDirection: 'row', alignItems: 'center'},
         style,
       )}>
       <IconButton icon={icon || 'close'} onPress={onClose || defaultOnClose} />

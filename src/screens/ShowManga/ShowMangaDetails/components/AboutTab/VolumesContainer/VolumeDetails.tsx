@@ -1,6 +1,7 @@
 import React, {useCallback, useEffect, useRef, useState} from 'react';
-import {View} from 'react-native';
-import {ActivityIndicator, Button, IconButton, Text} from 'react-native-paper';
+import {ToastAndroid, View} from 'react-native';
+import {ActivityIndicator, Button, IconButton} from 'react-native-paper';
+import {preferredChapterTitle} from 'src/api';
 import {
   BasicResultsResponse,
   Chapter,
@@ -8,18 +9,23 @@ import {
 } from 'src/api/mangadex/types';
 import UrlBuilder from 'src/api/mangadex/types/api/url_builder';
 import {
+  requestStarted,
   useDeleteRequest,
-  useGetRequest,
   useLazyGetRequest,
   usePostRequest,
 } from 'src/api/utils';
-import {CloseCurrentScreenHeader} from 'src/components';
+import {Banner, CloseCurrentScreenHeader} from 'src/components';
 import BasicList from 'src/components/BasicList';
-import {List} from 'src/components/List/List';
-import {useContentRatingFitlers} from 'src/prodivers';
-import {isNumber} from 'src/utils';
+import {useBackgroundColor} from 'src/components/colors';
+import {useSettingsContext} from 'src/prodivers';
 import {useMangaDetails, VolumeInfo} from '../../../ShowMangaDetails';
 import {ChapterItem} from '../ChaptersList';
+import LocaleSelectionModal from './LocaleSelectionModal';
+
+enum SortRule {
+  Asc = -1,
+  Desc = 1,
+}
 
 interface Props {
   volumeInfo: VolumeInfo;
@@ -30,18 +36,31 @@ interface Props {
 
 export default function VolumeDetails({volumeInfo, onCancel}: Props) {
   const {volume, chapterIds: ids} = volumeInfo;
-  const {manga} = useMangaDetails();
+  const {manga, preferredLanguages, onPreferredLanguagesChange} =
+    useMangaDetails();
   const readChaptersInitialized = useRef(false);
+  const {settings, updateSetting} = useSettingsContext();
+  const [sortRule, setSortOrder] = useState<SortRule>(
+    settings.chaptersSortOrder === 'desc' ? SortRule.Desc : SortRule.Asc,
+  );
+  const [sortButtonDisabled, setSortButtonDisabled] = useState(false);
+
   const [readChapters, setReadChapters] = useState<string[]>([]);
+  const [chapters, setChapters] = useState<Chapter[]>();
+  const [title, setTitle] = useState('...');
 
   const [page, setPage] = useState(1);
+  const [showLocalesModal, setShowLocalesModal] = useState(false);
 
-  const contentRating = useContentRatingFitlers();
+  const contentRating = [manga.attributes.contentRating]; //useContentRatingFitlers();
   const [fetchChapters, {data, loading, error}] =
     useLazyGetRequest<PagedResultsList<Chapter>>();
   const hasNextPage =
     data?.result === 'ok' && ids.length > data.offset + data.data.length;
   const hasPrevPage = data?.result === 'ok' && data.offset > 0;
+
+  const primaryColor = useBackgroundColor('primary');
+  const translateColor = preferredLanguages.length ? primaryColor : undefined;
 
   useEffect(() => {
     const limit = 100;
@@ -53,9 +72,10 @@ export default function VolumeDetails({volumeInfo, onCancel}: Props) {
         ids: paginatedIds,
         contentRating,
         order: {
-          chapter: 'asc',
+          chapter: sortRule === SortRule.Asc ? 'asc' : 'desc',
           publishAt: 'asc',
         },
+        translatedLanguage: preferredLanguages,
         limit,
         offset,
       }),
@@ -63,13 +83,30 @@ export default function VolumeDetails({volumeInfo, onCancel}: Props) {
         refreshSession: false,
         forceRefresh: false,
       },
-    );
-  }, [page]);
+    ).finally(() => {
+      setSortButtonDisabled(false);
+    });
+    getReadMarkers();
+  }, [page, sortRule, preferredLanguages]);
 
-  const {data: readMarkersData, loading: readMarkersLoading} = useGetRequest<{
-    result: 'ok';
-    data: string[];
-  }>(UrlBuilder.mangaReadMarkers(manga.id));
+  useEffect(() => {
+    updateSetting(
+      'chaptersSortOrder',
+      sortRule === SortRule.Asc ? 'asc' : 'desc',
+    );
+  }, [sortRule]);
+
+  useEffect(() => {
+    if (data?.result === 'ok') {
+      setChapters(data.data);
+    }
+  }, [data]);
+
+  const [getReadMarkers, {data: readMarkersData, status: readMarkersStatus}] =
+    useLazyGetRequest<{
+      result: 'ok';
+      data: string[];
+    }>(UrlBuilder.mangaReadMarkers(manga.id));
 
   const [markRead] = usePostRequest<BasicResultsResponse>();
   const [markUnread] = useDeleteRequest<BasicResultsResponse>();
@@ -81,12 +118,32 @@ export default function VolumeDetails({volumeInfo, onCancel}: Props) {
     [markRead],
   );
 
+  const handleMarkAsRead = (chapter: Chapter) => {
+    markAsRead(chapter).then(() => {
+      if (!readChapters.includes(chapter.id)) {
+        ToastAndroid.show(
+          `Reading "${preferredChapterTitle(chapter)}"...`,
+          ToastAndroid.SHORT,
+        );
+      }
+    });
+  };
+
   const markAsUnread = useCallback(
     (chapter: {id: string}) => {
       return markUnread(UrlBuilder.unmarkChapterAsRead(chapter));
     },
     [markUnread],
   );
+
+  const handleMarkAsUnread = (chapter: Chapter) => {
+    markAsUnread(chapter).then(() => {
+      ToastAndroid.show(
+        `No longer reading "${preferredChapterTitle(chapter)}"...`,
+        ToastAndroid.SHORT,
+      );
+    });
+  };
 
   useEffect(() => {
     if (readMarkersData?.result === 'ok' && !readChaptersInitialized.current) {
@@ -95,38 +152,13 @@ export default function VolumeDetails({volumeInfo, onCancel}: Props) {
     }
   }, [readMarkersData]);
 
-  const title =
-    volume === 'null' || volume === null ? 'No volume' : `Volume ${volume}`;
-
-  if (loading || readMarkersLoading) {
-    return (
-      <View>
-        <CloseCurrentScreenHeader
-          onClose={onCancel}
-          title={title}
-          icon="arrow-left"
-        />
-        <ActivityIndicator style={{flex: 1}} />
-        {/* <BasicList
-          loading
-          data={[]}
-          aspectRatio={1}
-          skeletonItem={<List.Item.Skeleton />}
-          skeletonLength={ids.length}
-          itemStyle={{padding: 0}}
-        /> */}
-      </View>
+  useEffect(() => {
+    setTitle(
+      volume === 'null' || volume === null ? 'No volume' : `Volume ${volume}`,
     );
-  }
+  }, [volume]);
 
-  if (error || data?.result === 'error') {
-    console.error(
-      error || (data?.result === 'error' && data.errors) || 'unknown error',
-    );
-    return <Text>Uh oh that didn't work!</Text>;
-  }
-
-  if (data) {
+  if (loading || !requestStarted(readMarkersStatus)) {
     return (
       <View>
         <View
@@ -140,10 +172,72 @@ export default function VolumeDetails({volumeInfo, onCancel}: Props) {
             title={title}
             icon="arrow-left"
           />
-          <IconButton icon="dots-vertical" onPress={() => {}} />
+          <View style={{flexShrink: 1, flexDirection: 'row'}}>
+            <IconButton disabled icon="translate" color={translateColor} />
+            <IconButton
+              disabled
+              icon={
+                sortRule === SortRule.Desc
+                  ? 'sort-descending'
+                  : 'sort-ascending'
+              }
+            />
+          </View>
+        </View>
+        <ActivityIndicator style={{flex: 1}} />
+      </View>
+    );
+  }
+
+  if (error || data?.result === 'error') {
+    console.error(
+      error || (data?.result === 'error' && data.errors) || 'unknown error',
+    );
+    return (
+      <Banner
+        background="error"
+        title="Woops!"
+        body="Something went wrong when fetch the chapters."
+      />
+    );
+  }
+
+  if (chapters?.length) {
+    return (
+      <View>
+        <View
+          style={{
+            flex: 1,
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+          }}>
+          <CloseCurrentScreenHeader
+            onClose={onCancel}
+            title={title}
+            icon="arrow-left"
+          />
+          <View style={{flexShrink: 1, flexDirection: 'row'}}>
+            <IconButton
+              icon="translate"
+              onPress={() => setShowLocalesModal(true)}
+              color={translateColor}
+            />
+            <IconButton
+              disabled={sortButtonDisabled}
+              icon={
+                sortRule === SortRule.Desc
+                  ? 'sort-descending'
+                  : 'sort-ascending'
+              }
+              onPress={() => {
+                setSortButtonDisabled(true);
+                setSortOrder(current => current * -1);
+              }}
+            />
+          </View>
         </View>
         <BasicList
-          data={data.data}
+          data={chapters}
           aspectRatio={1}
           renderItem={chapter => {
             const markedAsRead = readChapters.includes(chapter.id);
@@ -156,16 +250,19 @@ export default function VolumeDetails({volumeInfo, onCancel}: Props) {
                   // we're marking as read here, the API call is when the chapter
                   // is actually opened.
                   setReadChapters(current => [...current, chapter.id]);
+                  if (chapter.attributes.externalUrl) {
+                    handleMarkAsRead(chapter);
+                  }
                 }}
                 onLongPress={() => {
                   if (markedAsRead) {
                     setReadChapters(current =>
                       current.filter(x => !x.includes(chapter.id)),
                     );
-                    markAsUnread(chapter);
+                    handleMarkAsUnread(chapter);
                   } else {
                     setReadChapters(current => [...current, chapter.id]);
-                    markAsRead(chapter);
+                    handleMarkAsRead(chapter);
                   }
                 }}
               />
@@ -187,9 +284,59 @@ export default function VolumeDetails({volumeInfo, onCancel}: Props) {
             Next
           </Button>
         </View>
+        <LocaleSelectionModal
+          selectedLocales={preferredLanguages}
+          locales={manga.attributes.availableTranslatedLanguages}
+          visible={showLocalesModal}
+          onDismiss={() => setShowLocalesModal(false)}
+          onSubmit={onPreferredLanguagesChange}
+        />
       </View>
     );
   }
 
-  return null;
+  return (
+    <View>
+      <View
+        style={{
+          flex: 1,
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+        }}>
+        <CloseCurrentScreenHeader
+          onClose={onCancel}
+          title={title}
+          icon="arrow-left"
+        />
+        <View style={{flexShrink: 1, flexDirection: 'row'}}>
+          <IconButton
+            icon="translate"
+            color={translateColor}
+            onPress={() => setShowLocalesModal(true)}
+          />
+          <IconButton
+            disabled
+            icon={
+              sortRule === SortRule.Desc ? 'sort-descending' : 'sort-ascending'
+            }
+          />
+        </View>
+      </View>
+      <Banner
+        primaryAction={{
+          content: 'Change language',
+          onAction: () => setShowLocalesModal(true),
+        }}
+        secondaryAction={{content: 'Back', onAction: onCancel}}>
+        No chapters were found for your current language selection.
+      </Banner>
+      <LocaleSelectionModal
+        selectedLocales={preferredLanguages}
+        locales={manga.attributes.availableTranslatedLanguages}
+        visible={showLocalesModal}
+        onDismiss={() => setShowLocalesModal(false)}
+        onSubmit={onPreferredLanguagesChange}
+      />
+    </View>
+  );
 }

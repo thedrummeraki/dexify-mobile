@@ -1,11 +1,13 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
+import {View} from 'react-native';
 import {ActivityIndicator} from 'react-native-paper';
 import {Manga, PagedResultsList} from 'src/api/mangadex/types';
 import UrlBuilder from 'src/api/mangadex/types/api/url_builder';
 import {useGetRequest} from 'src/api/utils';
-import {Banner} from 'src/components';
+import {Banner, CloseCurrentScreenHeader} from 'src/components';
 import MangaCollection from 'src/components/MangaCollection';
 import {useShowMangaListRoute} from 'src/foundation';
+import {useGlobalMangaParams} from 'src/prodivers';
 
 export default function ShowMangaList() {
   const {
@@ -14,9 +16,37 @@ export default function ShowMangaList() {
   const url = useMangaListUrl();
   const {data, loading, error} = useGetRequest<PagedResultsList<Manga>>(url);
 
-  if (loading) {
-    return <ActivityIndicator style={{flex: 1}} />;
-  }
+  return (
+    <View>
+      <CloseCurrentScreenHeader title={title} />
+      <ShowMangaListDetails
+        description={description}
+        data={data}
+        loading={loading}
+        error={error}
+      />
+    </View>
+  );
+}
+
+function ShowMangaListDetails({
+  description,
+  data,
+  loading,
+  error,
+}: {
+  description?: string;
+  data?: PagedResultsList<Manga>;
+  loading: boolean;
+  error: any;
+}) {
+  const [manga, setManga] = useState<Manga[]>([]);
+
+  useEffect(() => {
+    if (data?.result === 'ok') {
+      setManga(data.data);
+    }
+  }, [data]);
 
   if (data?.result === 'error' || error) {
     return (
@@ -27,27 +57,24 @@ export default function ShowMangaList() {
     );
   }
 
-  if (data?.result === 'ok') {
-    return (
-      <MangaCollection
-        showReadingStatus
-        manga={data.data}
-        title={title}
-        description={description}
-      />
-    );
-  }
-
-  return null;
+  return (
+    <MangaCollection
+      loading={loading}
+      showReadingStatus
+      manga={manga}
+      description={description}
+    />
+  );
 }
 
 function useMangaListUrl() {
+  const defaultParams = useGlobalMangaParams();
   const {
     params: {params, ids},
   } = useShowMangaListRoute();
 
   if (!ids) {
-    return UrlBuilder.mangaList(params);
+    return UrlBuilder.mangaList({...defaultParams, ...params});
   }
 
   return UrlBuilder.mangaListForCategory({

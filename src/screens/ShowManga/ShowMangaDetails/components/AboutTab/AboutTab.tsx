@@ -1,20 +1,31 @@
-import React, {useEffect, useState} from 'react';
-import {ScrollView, View} from 'react-native';
-import {Button, Paragraph} from 'react-native-paper';
+import React, {useEffect, useRef, useState} from 'react';
+import {Linking, ScrollView, View} from 'react-native';
+import {IconButton, Paragraph} from 'react-native-paper';
 import {
   contentRatingInfo,
   findRelationship,
+  getPublisher,
+  mangaRelationships,
   preferredMangaDescription,
+  preferredMangaTitle,
 } from 'src/api';
 import {
   AllReadingStatusResponse,
   Artist,
   Author,
+  ContentRating,
   ReadingStatus,
 } from 'src/api/mangadex/types';
-import {TextBadge} from 'src/components';
+import {
+  FullScreenModal,
+  MangaRelationshipsCollection,
+  ShareButton,
+  TextBadge,
+} from 'src/components';
 import {useBackgroundColor} from 'src/components/colors';
-import TopManga from 'src/screens/NewHome/Feed/Section/components/TopManga';
+import TopManga, {
+  TopMangaDescription,
+} from 'src/screens/NewHome/Feed/Section/components/TopManga';
 import {useMangaDetails} from '../../ShowMangaDetails';
 import VolumesContainer from './VolumesContainer';
 import {useIsLoggedIn, useLibraryContext} from 'src/prodivers';
@@ -22,26 +33,31 @@ import {
   AddToLibraryModal,
   AddToMDListModal,
   ShowMangaDetailsModal,
+  AiringAnimeModal,
 } from './modals';
 import {FollowMangaAction, LibraryAction} from './actions';
 import {useLazyGetRequest} from 'src/api/utils';
 import UrlBuilder from 'src/api/mangadex/types/api/url_builder';
 import {wait} from 'src/utils';
-import {useShowMangaRoute} from 'src/foundation';
+import {useDexifyNavigation, useShowMangaRoute} from 'src/foundation';
 
 export default function AboutTab() {
-  const {manga, isAiring} = useMangaDetails();
+  const navigation = useDexifyNavigation();
+  const {manga, isAiring, statistics} = useMangaDetails();
   const loggedIn = useIsLoggedIn();
   const {
     params: {jumpToVolume},
   } = useShowMangaRoute();
 
   const {refreshReadingStatuses} = useLibraryContext();
+  const hasOpenedRelatedMangaModal = useRef(false);
 
   const [modalsState, setSetModalsState] = useState({
     addToMDList: false,
     addToLibrary: false,
     showDetails: false,
+    airingAnime: false,
+    relatedManga: false,
   });
 
   const [getReadingStatus, {data, loading}] =
@@ -62,6 +78,15 @@ export default function AboutTab() {
     wait(1).then(() => getReadingStatus());
   }, []);
 
+  // closes the related mangas modal when clicking on another manga
+  useEffect(() => {
+    if (modalsState.relatedManga && !hasOpenedRelatedMangaModal.current) {
+      hasOpenedRelatedMangaModal.current = true;
+    } else if (modalsState.relatedManga && hasOpenedRelatedMangaModal.current) {
+      setSetModalsState(current => ({...current, relatedManga: false}));
+    }
+  }, [manga, modalsState]);
+
   const author =
     findRelationship<Author>(manga, 'author') ||
     findRelationship<Artist>(manga, 'artist');
@@ -70,6 +95,8 @@ export default function AboutTab() {
 
   const contentRating = contentRatingInfo(manga.attributes.contentRating);
   const contentRatingTextColor = useBackgroundColor(contentRating?.background);
+
+  const related = mangaRelationships(manga);
 
   const basicInfoMarkup = (
     <View style={{flex: 1}}>
@@ -85,14 +112,56 @@ export default function AboutTab() {
           content={contentRating.content}
           icon={contentRating.icon}
           textStyle={{color: contentRatingTextColor}}
+          background="none"
         />
-        {isAiring && (
-          <TextBadge content="Anime airing" icon="video" background="primary" />
+        {statistics?.rating.average && (
+          <TextBadge
+            icon="star"
+            content={statistics.rating.average.toFixed(2)}
+            onPress={() => {}}
+          />
         )}
-        {manga.attributes.year && <TextBadge content={manga.attributes.year} />}
+        {isAiring && (
+          <TextBadge
+            content="Anime airing"
+            icon="video"
+            background="primary"
+            onPress={() =>
+              setSetModalsState(current => ({...current, airingAnime: true}))
+            }
+          />
+        )}
+        {manga.attributes.year && (
+          <TextBadge content={manga.attributes.year} background="none" />
+        )}
       </View>
     </View>
   );
+
+  const topMangaDescription: TopMangaDescription = [];
+  if (author) {
+    topMangaDescription.push({
+      content: author.attributes.name,
+      onPress: () => {
+        navigation.push('ShowArtist', {
+          id: author.id,
+          allowHentai:
+            manga.attributes.contentRating === ContentRating.pornographic,
+        });
+      },
+    });
+  }
+
+  // if there's no publisher link, there will not be a publisher name
+  const publisherLink = manga.attributes.links?.raw;
+  if (publisherLink) {
+    topMangaDescription.push({
+      content: getPublisher(manga)!,
+      onPress: () => {
+        Linking.openURL(publisherLink);
+      },
+    });
+  }
 
   return (
     <>
@@ -107,7 +176,7 @@ export default function AboutTab() {
       <ScrollView>
         <TopManga
           allowCloseScreen
-          description={author?.attributes.name}
+          description={topMangaDescription}
           manga={manga}
           aspectRatio={1.2}
           FooterComponent={basicInfoMarkup}
@@ -118,29 +187,42 @@ export default function AboutTab() {
             alignItems: 'center',
             marginTop: -15,
           }}>
-          <LibraryAction
-            readingStatus={readingStatus}
-            loading={loading}
-            onPress={() =>
-              setSetModalsState(current => ({
-                ...current,
-                addToLibrary: true,
-              }))
-            }
-          />
-          <FollowMangaAction />
-          <Button
-            disabled={!loggedIn}
-            icon="plus"
-            uppercase={false}
-            onPress={() =>
-              setSetModalsState(current => ({
-                ...current,
-                addToMDList: true,
-              }))
-            }>
-            ADD TO MDList
-          </Button>
+          <View style={{flexGrow: 1, flexDirection: 'row'}}>
+            <LibraryAction
+              readingStatus={readingStatus}
+              loading={loading}
+              onPress={() =>
+                setSetModalsState(current => ({
+                  ...current,
+                  addToLibrary: true,
+                }))
+              }
+            />
+            <IconButton
+              icon="playlist-plus"
+              disabled={!loggedIn}
+              onPress={() =>
+                setSetModalsState(current => ({
+                  ...current,
+                  addToMDList: true,
+                }))
+              }
+            />
+            <FollowMangaAction />
+          </View>
+          <View style={{flexShrink: 1, flexDirection: 'row'}}>
+            <IconButton
+              icon="book-open-variant"
+              disabled={related.length === 0}
+              onPress={() =>
+                setSetModalsState(current => ({
+                  ...current,
+                  relatedManga: true,
+                }))
+              }
+            />
+            <ShareButton resource={manga} title={preferredMangaTitle(manga)} />
+          </View>
         </View>
         <View style={{marginHorizontal: 15}}>
           <Paragraph numberOfLines={2}>{description}</Paragraph>
@@ -189,6 +271,21 @@ export default function AboutTab() {
           setSetModalsState(current => ({...current, showDetails: false}))
         }
       />
+      <AiringAnimeModal
+        loading={loading}
+        visible={modalsState.airingAnime}
+        onDismiss={() =>
+          setSetModalsState(current => ({...current, airingAnime: false}))
+        }
+      />
+      <FullScreenModal
+        visible={modalsState.relatedManga}
+        title="Related manga"
+        onDismiss={() => {
+          setSetModalsState(current => ({...current, relatedManga: false}));
+        }}>
+        <MangaRelationshipsCollection relatedManga={related} />
+      </FullScreenModal>
     </>
   );
 }
