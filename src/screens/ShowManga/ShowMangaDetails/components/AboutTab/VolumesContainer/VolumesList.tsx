@@ -1,7 +1,14 @@
 import React, {useEffect, useMemo, useRef, useState} from 'react';
 import {useMangaDetails, VolumeInfo} from '../../../ShowMangaDetails';
 import {Image, TouchableNativeFeedback, View} from 'react-native';
-import {Caption, IconButton, ProgressBar, Text} from 'react-native-paper';
+import {
+  Button,
+  Caption,
+  IconButton,
+  ProgressBar,
+  Text,
+  useTheme,
+} from 'react-native-paper';
 import {coverImage} from 'src/api';
 import {TextBadge} from 'src/components';
 import BasicList from 'src/components/BasicList';
@@ -34,6 +41,7 @@ export default function VolumesList({
 }: Props) {
   const successfulJumpToVolume = useRef(false);
   const navigation = useDexifyNavigation();
+  const theme = useTheme();
   const {settings, updateSetting} = useSettingsContext();
   const [showLocalesModal, setShowLocalesModal] = useState(false);
   const [sortRule, setSortOrder] = useState<SortRule>(
@@ -142,7 +150,7 @@ export default function VolumesList({
             mode="outlined"
             icon="palette"
             onPress={() => navigation.push('ShowMangaGallery', {manga})}>
-              Art
+            Covers
           </Button> */}
         </View>
       </View>
@@ -184,13 +192,18 @@ export default function VolumesList({
                 .reduce((a, b) => a + b) / reading.length
             : 0;
 
+          console.log({cover, title});
+
           return (
             <TouchableNativeFeedback
               onPress={() => {
                 onVolumeSelect(volumeInfo);
               }}
               background={TouchableNativeFeedback.Ripple('#fff', false)}>
-              <View>
+              <View
+                style={{
+                  backgroundColor: theme.colors.surface,
+                }}>
                 <Image
                   source={{
                     uri: cover

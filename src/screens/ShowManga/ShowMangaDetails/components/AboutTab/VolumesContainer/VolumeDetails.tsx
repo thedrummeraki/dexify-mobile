@@ -119,7 +119,8 @@ export default function VolumeDetails({volumeInfo, onCancel}: Props) {
   );
 
   const handleMarkAsRead = (chapter: Chapter) => {
-    markAsRead(chapter).then(() => {
+    markAsRead(chapter).then(value => {
+      console.log({value});
       if (!readChapters.includes(chapter.id)) {
         ToastAndroid.show(
           `Reading "${preferredChapterTitle(chapter)}"...`,
