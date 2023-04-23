@@ -162,24 +162,24 @@ export function contentRatingInfo(contentRating: ContentRating): {
   switch (contentRating) {
     case ContentRating.safe:
       return {
-        content: 'For everyone',
+        content: 'Safe',
         background: 'accent',
         icon: 'check-outline',
       };
     case ContentRating.suggestive:
       return {
-        content: 'For teens (13+)',
+        content: 'Suggestive',
         background: 'accent',
-        icon: 'check',
+        icon: 'alert',
       };
     case ContentRating.erotica:
       return {
-        content: 'Erotica (15+)',
+        content: 'Erotica',
         background: 'error',
         icon: 'alert-outline',
       };
     case ContentRating.pornographic:
-      return {content: 'Hentai (18+)', background: 'error', icon: 'alert'};
+      return {content: 'Hentai', background: 'error', icon: 'alert'};
   }
 }
 

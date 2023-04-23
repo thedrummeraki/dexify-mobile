@@ -53,9 +53,9 @@ function AuthenticatedBottomNavigation() {
   const [routes, setRoutes] = useState([
     {key: 'main', title: 'Home', icon: 'home', color},
     // {key: 'library', title: 'Library', icon: 'library-shelves', color},
+    {key: 'profile', title: 'Your library', icon: 'library-shelves', color},
     {key: 'browse', title: 'Browse...', icon: 'magnify', color},
     // {key: 'followed', title: 'Followed', icon: 'heart', color},
-    {key: 'profile', title: 'My profile', icon: 'account', color},
     {key: 'settings', title: 'Settings', icon: 'cog', color},
   ]);
 

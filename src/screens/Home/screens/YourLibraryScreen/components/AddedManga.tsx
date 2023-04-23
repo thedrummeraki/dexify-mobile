@@ -116,9 +116,9 @@ export default function AddedManga() {
           );
         }}
         skeletonItem={
-          <ThumbnailSkeleton width={width / 2 - 20} height={width / 2 - 20} />
+          <ThumbnailSkeleton width={width / 2 - 20} height={width / 2 + 20} />
         }
-        skeletonLength={2}
+        skeletonLength={6}
         itemStyle={{padding: 5, paddingBottom: 10}}
       />
     </ScrollView>

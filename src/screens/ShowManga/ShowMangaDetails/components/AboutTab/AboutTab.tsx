@@ -38,7 +38,7 @@ import {
 import {FollowMangaAction, LibraryAction} from './actions';
 import {useLazyGetRequest} from 'src/api/utils';
 import UrlBuilder from 'src/api/mangadex/types/api/url_builder';
-import {wait} from 'src/utils';
+import {capitalize, wait} from 'src/utils';
 import {useDexifyNavigation, useShowMangaRoute} from 'src/foundation';
 
 export default function AboutTab() {
@@ -114,6 +114,10 @@ export default function AboutTab() {
           textStyle={{color: contentRatingTextColor}}
           background="none"
         />
+        <TextBadge content={capitalize(manga.attributes.status)} />
+        {manga.attributes.year && (
+          <TextBadge content={manga.attributes.year} background="none" />
+        )}
         {statistics?.rating.average && (
           <TextBadge
             icon="star"
@@ -130,9 +134,6 @@ export default function AboutTab() {
               setSetModalsState(current => ({...current, airingAnime: true}))
             }
           />
-        )}
-        {manga.attributes.year && (
-          <TextBadge content={manga.attributes.year} background="none" />
         )}
       </View>
     </View>

@@ -292,6 +292,7 @@ export function useAxiosRequest<T, Body = any>(
       );
 
       setStatus(ResponseStatus.Initiated);
+      setLoading(true);
       setError(undefined);
       setData(undefined);
 
