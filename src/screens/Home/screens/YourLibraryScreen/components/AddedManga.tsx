@@ -30,16 +30,6 @@ export default function AddedManga() {
     useLazyGetRequest<PagedResultsList<Manga>>();
 
   const [groupedMangaInfo, setGroupedMangaInfo] = useState<GroupedMangaInfo>();
-  const mangaIds = useMemo(
-    () =>
-      Object.entries(groupedMangaInfo || {})
-        .map(([_, value]) => value.ids)
-        .flat(),
-    [groupedMangaInfo],
-  );
-
-  const loading = mangaLoading && mangaIds.length > 0;
-
   const [manga, setManga] = useState<Manga[]>([]);
 
   useEffect(() => {
@@ -63,6 +53,15 @@ export default function AddedManga() {
 
     setGroupedMangaInfo(grouped);
   }, [data]);
+
+  const mangaIds = useMemo(
+    () =>
+      Object.entries(groupedMangaInfo || {})
+        .map(([_, value]) => value.ids)
+        .flat(),
+    [groupedMangaInfo],
+  );
+  const loading = mangaLoading && mangaIds.length > 0;
 
   useEffect(() => {
     if (mangaIds?.length) {

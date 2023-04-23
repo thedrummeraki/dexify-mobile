@@ -192,8 +192,6 @@ export default function VolumesList({
                 .reduce((a, b) => a + b) / reading.length
             : 0;
 
-          console.log({cover, title});
-
           return (
             <TouchableNativeFeedback
               onPress={() => {
@@ -208,10 +206,14 @@ export default function VolumesList({
                   source={{
                     uri: cover
                       ? coverImage(cover, manga.id)
-                      : defaultCoverUrl || 'https://mangadex.org/avatar.png',
+                      : 'https://mangadex.org/avatar.png',
                   }}
                   width={itemWidth}
-                  style={{width: itemWidth, aspectRatio: 1.25, opacity: 0.4}}
+                  style={{
+                    width: itemWidth,
+                    aspectRatio: 1.25,
+                    opacity: cover ? 0.4 : 0.2,
+                  }}
                   resizeMode="cover"
                 />
                 <View

@@ -109,7 +109,6 @@ export default function VolumeDetails({volumeInfo, onCancel}: Props) {
     }>(UrlBuilder.mangaReadMarkers(manga.id));
 
   const [markRead] = usePostRequest<BasicResultsResponse>();
-  const [markUnread] = useDeleteRequest<BasicResultsResponse>();
 
   const markAsRead = useCallback(
     (chapter: {id: string}) => {
@@ -119,7 +118,9 @@ export default function VolumeDetails({volumeInfo, onCancel}: Props) {
   );
 
   const handleMarkAsRead = (chapter: Chapter) => {
-    markAsRead(chapter).then(value => {
+    markRead(UrlBuilder.markChapterAsRead(manga), {
+      chapterIdsRead: [chapter.id],
+    }).then(value => {
       console.log({value});
       if (!readChapters.includes(chapter.id)) {
         ToastAndroid.show(
@@ -130,15 +131,11 @@ export default function VolumeDetails({volumeInfo, onCancel}: Props) {
     });
   };
 
-  const markAsUnread = useCallback(
-    (chapter: {id: string}) => {
-      return markUnread(UrlBuilder.unmarkChapterAsRead(chapter));
-    },
-    [markUnread],
-  );
-
   const handleMarkAsUnread = (chapter: Chapter) => {
-    markAsUnread(chapter).then(() => {
+    markRead(UrlBuilder.markChapterAsRead(manga), {
+      chapterIdsUnread: [chapter.id],
+    }).then(value => {
+      console.log({value});
       ToastAndroid.show(
         `No longer reading "${preferredChapterTitle(chapter)}"...`,
         ToastAndroid.SHORT,

@@ -33,11 +33,13 @@ export default class UrlBuilder {
   }
 
   public static palette({imageUrl}: {imageUrl: string}) {
-    return this.buildUrl('/palette', {imageUrl: encodeURIComponent(imageUrl)});
+    return this.buildProxyUrl('/palette', {
+      imageUrl: encodeURIComponent(imageUrl),
+    });
   }
 
   public static feed(params?: FeedOptions) {
-    return this.buildUrl('/home/feed', params);
+    return this.buildProxyUrl('/home/feed', params);
   }
 
   public static mangaList(params?: Partial<MangaRequestParams>) {
@@ -118,7 +120,7 @@ export default class UrlBuilder {
   }
 
   public static markChapterAsRead(chapter: {id: string}) {
-    return this.buildUrl(`/chapter/${chapter.id}/read`);
+    return this.buildUrl(`/manga/${chapter.id}/read`);
   }
 
   public static unmarkChapterAsRead(chapter: {id: string}) {
@@ -173,8 +175,12 @@ export default class UrlBuilder {
 
   // Generic methods
 
-  public static buildUrl(path: string, params?: ParamsLike) {
+  public static buildProxyUrl(path: string, params?: ParamsLike) {
     return this.buildUrlWithHost(UrlBuilder.API_URL, path, params);
+  }
+
+  public static buildUrl(path: string, params?: ParamsLike) {
+    return this.buildUrlWithHost('https://api.mangadex.org', path, params);
   }
 
   public static buildAiringMangaUrl(path: string, params?: ParamsLike) {
