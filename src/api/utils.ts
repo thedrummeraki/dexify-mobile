@@ -276,8 +276,8 @@ export function useAxiosRequest<T, Body = any>(
         // At this point, if the refreshResponse is undefined and the session
         // is present, then the session is valid.
         config.headers = {
-          Authorization: session.session.value,
-          'x-auth-session': session.session.value,
+          Authorization: `Bearer ${session.session.value}`,
+          'x-auth-session': `Bearer ${session.session.value}`,
           'x-auth-refresh': session.refresh.value,
         };
       }
