@@ -75,7 +75,7 @@ export default function BrowseMangaResults({query}: Props) {
 
           return {
             title: preferredMangaTitle(manga),
-            subtitle: [manga.attributes.status, by?.attributes.name]
+            subtitle: [manga.attributes.status, by?.attributes?.name]
               .filter(x => x)
               .join(' - '),
             image: {width: 70, url: mangaImage(manga)},

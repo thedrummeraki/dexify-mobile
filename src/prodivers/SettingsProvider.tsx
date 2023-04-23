@@ -61,7 +61,7 @@ const defaultSettings: Settings = {
   mangaScreenDisplay: MangaScreenDisplay.PerVolume,
   continue: {},
   blurPornographicEntries: true,
-  volumeSortOrder: 'desc',
+  volumeSortOrder: 'asc',
   chaptersSortOrder: 'asc',
 };
 

@@ -1,4 +1,4 @@
-import React, {PropsWithChildren} from 'react';
+import React, {PropsWithChildren, useState} from 'react';
 import {
   View,
   TouchableNativeFeedback,
@@ -108,6 +108,9 @@ function SingleImageView({
   onPress,
   onLongPress,
 }: SingleImageProps) {
+  const theme = useTheme();
+  const [backgroundColor, setBackgroundColor] = useState<string>();
+
   return (
     <MaybeTouchableNativeFeedback onLongPress={onLongPress} onPress={onPress}>
       <View>
@@ -120,9 +123,15 @@ function SingleImageView({
             aspectRatio,
             zIndex: -1,
             borderRadius: rounded ? 1000 : 0,
+            backgroundColor,
           }}
           resizeMode="cover"
           blurRadius={blurRadius}
+          onError={({nativeEvent}) => {
+            if (nativeEvent.error) {
+              setBackgroundColor(theme.colors.surface);
+            }
+          }}
         />
         <View style={{position: 'absolute', bottom: 0}}>{BottomComponent}</View>
       </View>
@@ -153,7 +162,7 @@ function MultipleImageView({
       style: {
         top: 0,
         left: 0,
-        width: '50%',
+        width: '49%',
         aspectRatio: 1,
         position: 'absolute',
       },
@@ -163,7 +172,7 @@ function MultipleImageView({
       style: {
         top: 0,
         right: 0,
-        width: '50%',
+        width: '49%',
         aspectRatio: 1,
         position: 'absolute',
       },
@@ -173,7 +182,7 @@ function MultipleImageView({
       style: {
         bottom: 0,
         left: 0,
-        width: '50%',
+        width: '49%',
         aspectRatio: 1,
         position: 'absolute',
       },
@@ -183,7 +192,7 @@ function MultipleImageView({
       style: {
         bottom: 0,
         right: 0,
-        width: '50%',
+        width: '49%',
         aspectRatio: 1,
         position: 'absolute',
       },
@@ -194,7 +203,13 @@ function MultipleImageView({
     <MaybeTouchableNativeFeedback onLongPress={onLongPress} onPress={onPress}>
       <View style={{borderRadius: rounded ? 1000 : 0}}>
         <View style={{position: 'absolute', zIndex: 1}}>{TopComponent}</View>
-        <View style={{flex: 1, height, aspectRatio, position: 'relative'}}>
+        <View
+          style={{
+            flex: 1,
+            height,
+            aspectRatio,
+            position: 'relative',
+          }}>
           {imagesInfo.map((info, index) => {
             if (!info.imageUrl) {
               return null;

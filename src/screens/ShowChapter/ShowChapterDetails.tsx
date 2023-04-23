@@ -26,12 +26,12 @@ export default function ShowChapterDetails({
     `https://api.mangadex.org/at-home/server/${chapter.id}`,
   );
 
-  const [markRead] = usePostRequest<BasicResultsResponse>(
-    UrlBuilder.markChapterAsRead(chapter),
-  );
+  const [markRead] = usePostRequest<BasicResultsResponse>();
 
   useEffect(() => {
-    markRead();
+    markRead(UrlBuilder.markChapterAsRead(manga), {
+      chapterIdsRead: [chapter.id],
+    });
   }, []);
 
   if (loading) {

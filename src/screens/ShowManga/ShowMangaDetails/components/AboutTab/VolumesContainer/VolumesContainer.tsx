@@ -60,6 +60,7 @@ export default function VolumesContainer({jumpToVolume}: Props) {
       <VolumesList
         jumpToVolume={jumpToVolume}
         onVolumeSelect={setCurrentVolume}
+        defaultCoverUrl={defaultCoverUrl.current}
       />
     );
   }
