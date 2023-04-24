@@ -1,6 +1,6 @@
 import React, {useEffect, useRef} from 'react';
 import {FlatList, View} from 'react-native';
-import {Button, Title} from 'react-native-paper';
+import {Button, Subheading, Title} from 'react-native-paper';
 import {SecondaryAction} from 'src/categories';
 import {wait} from 'src/utils';
 import {ThumbnailSkeleton} from '../../foundation/Thumbnail';
@@ -71,7 +71,7 @@ export default function CategoriesCollectionSection<T>({
     return (
       <View style={{marginTop: 5, marginBottom: title ? 15 : 5}}>
         {title ? (
-          <Title style={{marginHorizontal: 15}}>{title}</Title>
+          <Subheading style={{marginHorizontal: 15}}>{title}</Subheading>
         ) : undefined}
         <FlatList
           horizontal={horizontal}
@@ -98,7 +98,7 @@ export default function CategoriesCollectionSection<T>({
             flexDirection: 'row',
             justifyContent: 'space-between',
           }}>
-          <Title style={{marginHorizontal: 15}}>{title}</Title>
+          <Subheading style={{marginHorizontal: 15}}>{title}</Subheading>
           {viewMore ? (
             <Button icon={viewMore.icon} onPress={viewMore.onAction}>
               {viewMore.content || 'More >'}

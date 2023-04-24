@@ -13,7 +13,9 @@ interface Props {
 
 export default function Section({section}: Props) {
   if (section.type === 'general') {
-    return <GeneralHomeSection section={section} />;
+    return (
+      <GeneralHomeSection hideIfEmpty={section.hideIfEmpty} section={section} />
+    );
   }
 
   if (section.type === 'continue-reading') {

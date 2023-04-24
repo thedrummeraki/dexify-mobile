@@ -14,6 +14,7 @@ export namespace Sections {
     type: 'general';
     title: string;
     manga: Manga[];
+    hideIfEmpty?: boolean;
     viewMore?(): void;
   }
 

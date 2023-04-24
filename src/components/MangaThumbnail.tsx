@@ -91,7 +91,11 @@ export default function MangaThumbnail({
       }
       hideTitle={hideTitle}
       imageUrl={imageUrl}
-      blurRadius={blurPornographicEntries && isHentai ? 25 : undefined}
+      blurRadius={
+        blurPornographicEntries && showImageIfHentai && isHentai
+          ? 25
+          : undefined
+      }
       title={preferredMangaTitle(manga)}
       subtitle={
         subtitle
