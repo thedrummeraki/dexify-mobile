@@ -2,8 +2,6 @@ import React, {PropsWithChildren, useContext, useEffect, useState} from 'react';
 import {ContentRating, MangaRequestParams} from 'src/api/mangadex/types';
 import {useSession} from '.';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import {formatDisplayName} from '@formatjs/intl';
-import {DisplayNames} from 'intl';
 import {useIntl} from 'react-intl';
 
 export enum ReadingDirection {
@@ -108,7 +106,7 @@ export default function SettingsProvider({children}: PropsWithChildren<{}>) {
   return (
     <SettingsContext.Provider
       value={{
-        settings: session ? settings : defaultSettings,
+        settings,
         loading,
         defaultSettings,
         setSettings: handleSettings,
@@ -137,10 +135,10 @@ async function retrieveStoredSettings(): Promise<Settings> {
 async function storeSettings(settings: Settings) {
   try {
     await EncryptedStorage.setItem('user_settings', JSON.stringify(settings));
-    return true;
+    return settings;
   } catch (error) {
     console.error(error);
-    return false;
+    return null;
   }
 }
 

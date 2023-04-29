@@ -110,7 +110,7 @@ export default function CategoriesCollectionSection<T>({
         ref={ref => (flatListRef.current = ref)}
         horizontal={horizontal}
         data={data}
-        style={{marginTop: 10}}
+        style={{marginTop: 5}}
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={{marginHorizontal: title ? 15 : 5}}
         ListFooterComponent={<View style={{margin: 10}} />}

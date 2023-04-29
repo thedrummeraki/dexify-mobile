@@ -1,5 +1,5 @@
 import React, {useEffect, useMemo, useState} from 'react';
-import {ScrollView} from 'react-native';
+import {FlatList, ScrollView, View} from 'react-native';
 import {CoverSize, mangaImage, readingStatusInfo} from 'src/api';
 import {
   AllReadingStatusResponse,
@@ -79,30 +79,50 @@ export default function AddedManga() {
     return null;
   }
 
+  if (loading) {
+    return (
+      <FlatList
+        data={Object.values(ReadingStatus)}
+        numColumns={2}
+        ItemSeparatorComponent={() => <View style={{height: 12}} />}
+        contentContainerStyle={{padding: 4}}
+        style={{marginBottom: 80}}
+        renderItem={({item: readingStatus}) => (
+          <ThumbnailSkeleton
+            width="100%"
+            height="100%"
+            padding={4}
+            aspectRatio={1}
+            title={readingStatusInfo(readingStatus).content}
+            subtitle="Loading"
+          />
+        )}
+      />
+    );
+  }
+
   return (
-    <ScrollView
-      style={{marginBottom: 80, paddingHorizontal: 5}}
-      showsVerticalScrollIndicator={false}>
-      <BasicList
-        loading={loading}
-        data={Object.values(ReadingStatus).map(id => ({id}))}
-        aspectRatio={2}
-        renderItem={item => {
-          const {id: readingStatus} = item;
+    <FlatList
+      data={Object.values(ReadingStatus)}
+      numColumns={2}
+      ItemSeparatorComponent={() => <View style={{height: 12}} />}
+      contentContainerStyle={{padding: 4}}
+      style={{marginBottom: 80}}
+      renderItem={({item: readingStatus}) => {
+        const info = groupedMangaInfo[readingStatus] || {
+          ids: [],
+          totalCount: 0,
+        };
+        const matchingManga = manga.filter(x => info.ids.includes(x.id));
+        const imageUrl =
+          matchingManga.length > 0
+            ? matchingManga.map(manga =>
+                mangaImage(manga, {size: CoverSize.Small}),
+              )
+            : 'https://mangadex.org/img/avatar.png';
 
-          const info = groupedMangaInfo[readingStatus] || {
-            ids: [],
-            totalCount: 0,
-          };
-          const matchingManga = manga.filter(x => info.ids.includes(x.id));
-          const imageUrl =
-            matchingManga.length > 0
-              ? matchingManga.map(manga =>
-                  mangaImage(manga, {size: CoverSize.Small}),
-                )
-              : 'https://mangadex.org/avatar.png';
-
-          return (
+        return (
+          <View style={{padding: 4, flex: 1}}>
             <Thumbnail
               title={readingStatusInfo(readingStatus).content}
               subtitle={pluralize(info.totalCount, 'title')}
@@ -113,14 +133,9 @@ export default function AddedManga() {
                 navigation.push('ShowReadingStatusLibrary', {readingStatus})
               }
             />
-          );
-        }}
-        skeletonItem={
-          <ThumbnailSkeleton width={width / 2 - 20} height={width / 2 + 20} />
-        }
-        skeletonLength={6}
-        itemStyle={{padding: 5, paddingBottom: 10}}
-      />
-    </ScrollView>
+          </View>
+        );
+      }}
+    />
   );
 }

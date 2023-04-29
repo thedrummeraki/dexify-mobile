@@ -2,15 +2,9 @@ import React, {ComponentProps, useCallback, useEffect, useState} from 'react';
 import {ScrollView} from 'react-native';
 import {mangaRelationshipTypeInfo} from 'src/api';
 import {useLazyGetMangaList} from 'src/api/mangadex/hooks';
-import {
-  ContentRating,
-  Manga,
-  MangaRequestParams,
-  Relationship,
-} from 'src/api/mangadex/types';
+import {Manga, MangaRequestParams, Relationship} from 'src/api/mangadex/types';
 import Banner from './Banner';
 import BasicList from './BasicList';
-import MangaCollection from './MangaCollection';
 import {MangaCollectionDisplay} from './MangaCollection/MangaCollection';
 import {MangaListItem} from './MangaCollection/MangaListItem';
 import MangaSearchFilters, {

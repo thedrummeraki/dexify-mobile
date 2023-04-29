@@ -1,34 +1,18 @@
 import React, {useEffect, useMemo, useState} from 'react';
-import {
-  RefreshControl,
-  SafeAreaView,
-  View,
-  ScrollView,
-  Keyboard,
-  FlatList,
-} from 'react-native';
+import {View, Keyboard, FlatList} from 'react-native';
 import {
   ActivityIndicator,
-  Badge,
-  Button,
   Caption,
   IconButton,
   TextInput,
   Title,
 } from 'react-native-paper';
-import {findRelationships, mangaImage} from 'src/api';
+import {findRelationships} from 'src/api';
 import {ContentRating, CustomList, Manga} from 'src/api/mangadex/types';
-import BasicList from 'src/components/BasicList';
-import {useBackgroundColor} from 'src/components/colors';
-import {List} from 'src/components/List/List';
 import {useDexifyNavigation} from 'src/foundation';
-import Thumbnail, {
-  ThumbnailBadge,
-  ThumbnailSkeleton,
-} from 'src/foundation/Thumbnail';
+import {ThumbnailSkeleton} from 'src/foundation/Thumbnail';
 import {useLibraryContext} from 'src/prodivers';
-import Section from 'src/screens/NewHome/Feed/Section/Section';
-import {pluralize, useDimensions} from 'src/utils';
+import {useDimensions} from 'src/utils';
 import CategoriesCollectionSection from 'src/components/CategoriesCollection/CategoriesCollectionSection';
 import {useLazyGetMangaList} from 'src/api/mangadex/hooks';
 import MangaThumbnail from 'src/components/MangaThumbnail';
@@ -108,6 +92,7 @@ export default function MDListsDetails({
     : 'Add a cool name to your new list.';
 
   const handleAddNewList = () => {
+    console.log('add new list');
     setAddingNewList(true);
     createCustomList!({name: newListName})
       .then(result => {
@@ -125,6 +110,7 @@ export default function MDListsDetails({
   };
 
   const handleCancel = () => {
+    console.log('cancel new list');
     if (addingNewList) {
       return;
     }
@@ -132,11 +118,11 @@ export default function MDListsDetails({
     setNewListName('');
   };
 
-  useEffect(() => {
-    const unsubscribe = Keyboard.addListener('keyboardDidHide', handleCancel);
+  // useEffect(() => {
+  //   const unsubscribe = Keyboard.addListener('keyboardDidHide', handleCancel);
 
-    return () => unsubscribe.remove();
-  }, []);
+  //   return () => unsubscribe.remove();
+  // }, []);
 
   const addNewListMarkup = (
     <View
@@ -206,11 +192,19 @@ export default function MDListsDetails({
             loading={loading}
             title={customList.attributes.name}
             data={manga}
-            renderItem={manga => (
+            dimensions={{width: 120, height: 160}}
+            viewMore={{
+              content: 'View',
+              onAction: () => {
+                navigation.push('ShowCustomList', {id: customList.id});
+              },
+            }}
+            renderItem={(manga, dimensions) => (
               <MangaThumbnail
                 manga={manga}
-                height={160}
-                width={thumbnailWidth}
+                aspectRatio={0.75}
+                width={dimensions.size || dimensions.width!}
+                height={dimensions.size || dimensions.height!}
               />
             )}
             SkeletonItem={
@@ -233,7 +227,7 @@ export default function MDListsDetails({
   //         findRelationships(customList, 'manga').length,
   //         'title',
   //       ),
-  //       image: {url: 'https://mangadex.org/avatar.png', width: 70},
+  //       image: {url: 'https://mangadex.org/img/avatar.png', width: 70},
   //     }))}
   //     onItemPress={item => navigation.push('ShowCustomList', {id: item.id})}
   //     refreshControl={

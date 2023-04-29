@@ -90,7 +90,7 @@ function CustomListVisiblityBadge({customList}: Pick<Props, 'customList'>) {
 //         marginTop: 3,
 //       }}>
 //       <Image
-//         source={{uri: 'https://mangadex.org/avatar.png'}}
+//         source={{uri: 'https://mangadex.org/img/avatar.png'}}
 //         style={{width: 20, aspectRatio: 1, borderRadius: 20, marginRight: 5}}
 //       />
 //       <Text>{user.attributes.username}</Text>

@@ -119,7 +119,7 @@ function CustomListsListModalChildren() {
           customList.attributes.visibility,
         ].join(' - ');
         const image = {
-          url: 'https://mangadex.org/avatar.png',
+          url: 'https://mangadex.org/img/avatar.png',
           width: 70,
         };
         const isSelected = selected.includes(customList.id);

@@ -30,7 +30,7 @@ export default function BrowseScanlationGroupResults({query}: Props) {
       }
       data={groups.map(group => ({
         title: group.attributes.name,
-        image: {url: 'https://mangadex.org/avatar.png', width: 70},
+        image: {url: 'https://mangadex.org/img/avatar.png', width: 70},
         onPress: () => navigation.push('ShowScanlationGroup', {id: group.id}),
       }))}
     />

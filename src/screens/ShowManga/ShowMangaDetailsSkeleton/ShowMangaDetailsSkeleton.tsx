@@ -40,7 +40,7 @@ function AboutSkeleton() {
         <ImageGradient aspectRatio={1.2} />
 
         <FastImage
-          source={{uri: 'https://mangadex.org/avatar.png'}}
+          source={{uri: 'https://mangadex.org/img/avatar.png'}}
           style={{width: '100%', aspectRatio: 1.2}}
         />
         <View

@@ -39,9 +39,7 @@ export default function ShowReadingStatusLibrary() {
       />
       <MangaSearchFilters filters={filters} onFiltersChange={setFilters}>
         <RenderContext mode="modal">
-          <ContentRatingFilter
-            visibleContentRatings={Object.values(ContentRating)}
-          />
+          <ContentRatingFilter visibleContentRatings={contentRatings} />
           <PublicationStatusFitler />
           <PublicationDemographicFilter />
           <TagsFilter />
@@ -58,7 +56,8 @@ export default function ShowReadingStatusLibrary() {
             limit: ids.length > 100 ? 100 : ids.length,
             ...filters,
           }}
-          display={MangaCollectionDisplay.List}
+          display={MangaCollectionDisplay.Images}
+          showReadingStatus={false}
         />
       ) : null}
     </>

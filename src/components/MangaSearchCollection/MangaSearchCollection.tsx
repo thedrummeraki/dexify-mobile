@@ -23,12 +23,8 @@ type Props = {
   showEverything?: boolean;
   timeout?: number;
   filterOptions?: FilterOptions;
-  display?: MangaCollectionDisplay;
   onMangaReady?(manga: Manga[]): void;
-} & Pick<
-  ComponentProps<typeof BasicList>,
-  'HeaderComponent' | 'HeaderComponentStyle'
->;
+} & ComponentProps<typeof MangaCollection>;
 
 export default function MangaSearchCollection({
   options,

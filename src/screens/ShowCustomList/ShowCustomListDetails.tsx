@@ -1,5 +1,5 @@
 import React, {useEffect, useMemo, useRef, useState} from 'react';
-import {BackHandler, RefreshControl} from 'react-native';
+import {BackHandler, RefreshControl, View} from 'react-native';
 import {TextInput} from 'react-native-paper';
 import {
   CoverSize,
@@ -48,7 +48,7 @@ export default function ShowCustomListDetails({
   const manga = data?.result === 'ok' ? data.data : [];
   const imageUrl =
     manga.length < 1
-      ? 'https://mangadex.org/avatar.png'
+      ? 'https://mangadex.org/img/avatar.png'
       : manga.length < 4
       ? mangaImage(manga[0])
       : manga.slice(0, 4).map(manga => mangaImage(manga));
@@ -64,7 +64,7 @@ export default function ShowCustomListDetails({
       )
     ) : (
       <Thumbnail
-        imageUrl="https://mangadex.org/avatar.png"
+        imageUrl="https://mangadex.org/img/avatar.png"
         width={200}
         aspectRatio={1}
       />
@@ -146,10 +146,10 @@ export default function ShowCustomListDetails({
     ) : null;
 
   return (
-    <>
+    <View style={{flex: 1}}>
       <TextInput dense style={{margin: 15, display: 'none'}} />
       <CloseCurrentScreenHeader title={customList.attributes.name} />
-      {bodyMarkup}
-    </>
+      <View>{bodyMarkup}</View>
+    </View>
   );
 }

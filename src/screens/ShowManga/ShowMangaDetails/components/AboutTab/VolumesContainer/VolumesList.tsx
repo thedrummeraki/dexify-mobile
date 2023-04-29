@@ -2,7 +2,6 @@ import React, {useEffect, useMemo, useRef, useState} from 'react';
 import {useMangaDetails, VolumeInfo} from '../../../ShowMangaDetails';
 import {Image, TouchableNativeFeedback, View} from 'react-native';
 import {
-  Button,
   Caption,
   IconButton,
   ProgressBar,
@@ -10,7 +9,6 @@ import {
   useTheme,
 } from 'react-native-paper';
 import {coverImage} from 'src/api';
-import {TextBadge} from 'src/components';
 import BasicList from 'src/components/BasicList';
 import {ThumbnailSkeleton} from 'src/foundation/Thumbnail';
 import {pluralize, useDimensions} from 'src/utils';
@@ -206,7 +204,7 @@ export default function VolumesList({
                   source={{
                     uri: cover
                       ? coverImage(cover, manga.id)
-                      : 'https://mangadex.org/avatar.png',
+                      : 'https://mangadex.org/img/avatar.png',
                   }}
                   width={itemWidth}
                   style={{

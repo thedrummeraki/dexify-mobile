@@ -145,7 +145,7 @@ export default function LibraryDetails({
             findRelationships(customList, 'manga').length,
             'title',
           ),
-          image: {url: 'https://mangadex.org/avatar.png', width: 70},
+          image: {url: 'https://mangadex.org/img/avatar.png', width: 70},
         }))}
         onItemPress={item => navigation.push('ShowCustomList', {id: item.id})}
         refreshControl={

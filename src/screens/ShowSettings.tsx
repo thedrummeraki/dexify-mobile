@@ -86,6 +86,8 @@ export default function ShowSettings() {
     overrideSettings,
   } = useSettingsContext();
 
+  console.log({settings});
+
   const possibleSettingsLanguages = usePossibleSettingsLanguages();
 
   // const spicyModeColor = useBackgroundColor('error');
@@ -119,10 +121,6 @@ export default function ShowSettings() {
       .catch(console.error);
   };
 
-  if (!session) {
-    return null;
-  }
-
   return (
     <>
       <ScrollView>
@@ -130,14 +128,20 @@ export default function ShowSettings() {
           style={{flex: 1, alignItems: 'center', marginTop: 20, margin: 15}}>
           <Image
             source={{
-              uri: `https://api.multiavatar.com/${session.username}.png`,
+              uri: `https://api.multiavatar.com/${
+                session ? session.username : 'guest'
+              }.png`,
             }}
             style={{width: 150, aspectRatio: 1, borderRadius: 150}}
           />
-          <Title>Hi there, {session.username}.</Title>
+          {session ? (
+            <Title>Hi there, {session.username}.</Title>
+          ) : (
+            <Title>Hi there.</Title>
+          )}
           <Text style={{color: theme.colors.disabled, marginBottom: 15}}>
-            Welcome back. This is where you can customize how this app behaves.
-            More to come soon!
+            This is where you can customize how this app behaves. More to come
+            soon!
           </Text>
         </View>
         <OptionsSettingsItem
@@ -162,7 +166,7 @@ export default function ShowSettings() {
           />
         ) : null}
         <OptionsSettingsItem
-          size="full"
+          size="basic"
           value={settings.mangaLanguages}
           defaultValue={defaultSettings.mangaLanguages}
           possibleValues={possibleSettingsLanguages}
@@ -185,7 +189,10 @@ export default function ShowSettings() {
         />
         <TogglableSettingsItem
           value={settings.dataSaver}
-          onToggle={newValue => updateSetting('dataSaver', newValue)}
+          onToggle={newValue => {
+            console.log({newValue});
+            updateSetting('dataSaver', newValue);
+          }}
           title="Data saver"
           description="Reduce data usage by viewing lower quality versions of chapters."
         />
@@ -232,12 +239,14 @@ export default function ShowSettings() {
           <Button mode="outlined" onPress={handleSettingsReset}>
             Use default settings
           </Button>
-          <Button
-            mode="contained"
-            onPress={handleLogout}
-            style={{marginTop: 10}}>
-            Logout
-          </Button>
+          {session ? (
+            <Button
+              mode="contained"
+              onPress={handleLogout}
+              style={{marginTop: 10}}>
+              Logout
+            </Button>
+          ) : null}
         </View>
       </ScrollView>
       <Snackbar
@@ -395,7 +404,7 @@ function OptionsSettingsItem<T>({
   );
 
   return (
-    <View style={{paddingVertical: 15}}>
+    <View style={{paddingVertical: 20}}>
       <TouchableNativeFeedback useForeground onPress={() => setModalOpen(true)}>
         <View style={{paddingHorizontal: 15}}>
           <Text
@@ -425,7 +434,14 @@ function OptionsSettingsItem<T>({
               : [{name: defaultSelectionText, value: '' as any}]
           }
           renderItem={item => {
-            return <Chip selected>{item.name || item.value}</Chip>;
+            return (
+              <TextBadge
+                disablePress
+                icon="check"
+                style={{borderColor: theme.colors.placeholder, borderWidth: 1}}
+                content={item.name || item.value}
+              />
+            );
           }}
         />
       </View>
