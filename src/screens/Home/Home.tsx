@@ -1,12 +1,10 @@
 import React, {useEffect, useState} from 'react';
-import {useHeader, useSession, useSettings} from 'src/prodivers';
+import {useSession, useSettings} from 'src/prodivers';
 import {BottomNavigation} from 'react-native-paper';
 import {
   BrowseNavigationScreen,
   LoginNavigationScreen,
-  MyLibraryNavigationScreen,
-  MyProfileNavigationScreen,
-  FollowedMangaScreen,
+  UpdatesScreen,
   YourLibraryScreen,
 } from './screens';
 import {NewHome} from '..';
@@ -53,9 +51,9 @@ function AuthenticatedBottomNavigation() {
   const [routes, setRoutes] = useState([
     {key: 'main', title: 'Home', icon: 'home', color},
     // {key: 'library', title: 'Library', icon: 'library-shelves', color},
-    {key: 'profile', title: 'Your library', icon: 'library-shelves', color},
+    {key: 'updates', title: 'Updates', icon: 'shimmer', color},
     {key: 'browse', title: 'Browse...', icon: 'magnify', color},
-    // {key: 'followed', title: 'Followed', icon: 'heart', color},
+    {key: 'profile', title: 'Your library', icon: 'library-shelves', color},
     {key: 'settings', title: 'Settings', icon: 'cog', color},
   ]);
 
@@ -68,6 +66,7 @@ function AuthenticatedBottomNavigation() {
     browse: BrowseNavigationScreen,
     // library: MyLibraryNavigationScreen,
     // followed: FollowedMangaScreen,
+    updates: UpdatesScreen,
     profile: YourLibraryScreen,
     settings: ShowSettings,
   });

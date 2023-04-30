@@ -173,6 +173,15 @@ export default class UrlBuilder {
     return this.buildAiringMangaUrl('/manga/airing');
   }
 
+  public static userFollowChaptersFeed(params?: {
+    includes?: string[] | string;
+    limit?: number;
+    offset?: number;
+    order?: Order<'readableAt'>;
+  }) {
+    return this.buildUrl('/user/follows/manga/feed', params);
+  }
+
   // Generic methods
 
   public static buildProxyUrl(path: string, params?: ParamsLike) {
