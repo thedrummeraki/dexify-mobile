@@ -19,6 +19,10 @@ The app is available in the following countries:
 
 You must be running Android 11 (API 31) or later in order to run the app.
 
-The app use [Mangadex](https://mangadex.org)'s services ([ref](https://api.mangadex.org)) to display information. Anime information is taken from [youranime.moe](https://youranime.moe) which itself comes from [Kitsu](https://kitsu.io) and [Anilist](https://anilist.co).
+## Disclaimer
+
+**This is _not_ an official Mangadex mobile client**.
+
+The app uses [Mangadex](https://mangadex.org)'s services ([ref](https://api.mangadex.org)) to display information. Anime information is taken from [youranime.moe](https://youranime.moe) which itself comes from [Kitsu](https://kitsu.io) and [Anilist](https://anilist.co).
 
 The ability to read manga on this app is provided by Mangadex where the ability to read from official is provided whenever possible. See [Mangadex](https://mangadex.org) to learn more how they manage their data.
