@@ -1,6 +1,6 @@
 {
   "name": "dexifymobile",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
@@ -50,7 +50,7 @@
     "react-native-screens": "^3.20.0",
     "react-native-skeleton-content-nonexpo": "^1.0.13",
     "react-native-tab-view": "^3.1.1",
-    "react-native-vector-icons": "^8.1.0",
+    "react-native-vector-icons": "^9.2.0",
     "react-swipeable-views-native": "^0.13.2"
   },
   "devDependencies": {

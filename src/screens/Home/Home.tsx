@@ -87,12 +87,14 @@ function UnauthenticatedBottomNavigation() {
     {key: 'main', title: 'Home', icon: 'home'},
     {key: 'browse', title: 'Browse...', icon: 'magnify'},
     {key: 'login', title: 'Log in', icon: 'login'},
+    {key: 'settings', title: 'Settings', icon: 'cog'},
   ]);
 
   const renderScene = BottomNavigation.SceneMap({
     main: NewHome,
     browse: BrowseNavigationScreen,
     login: LoginNavigationScreen,
+    settings: ShowSettings,
   });
 
   return (

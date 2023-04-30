@@ -32,7 +32,7 @@ export default function ReadingHistory() {
       renderItem={({item}) => {
         const chapterInfo = chaptersInfo.find(info => info.id === item.id);
         const mangaUrl =
-          chapterInfo?.coverUrl || 'https://mangadex.org/avatar.png';
+          chapterInfo?.coverUrl || 'https://mangadex.org/img/avatar.png';
 
         return (
           <View style={{margin: 2.5}}>

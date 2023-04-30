@@ -27,7 +27,7 @@ export default function AuthorCategoryItem({
         <Chip
           avatar={
             <Avatar.Image
-              source={{uri: 'https://mangadex.org/avatar.png'}}
+              source={{uri: 'https://mangadex.org/img/avatar.png'}}
               size={24}
             />
           }>
@@ -39,7 +39,7 @@ export default function AuthorCategoryItem({
           onPress={() => navigation.push('ShowArtist', {id: item.id})}
           avatar={
             <Avatar.Image
-              source={{uri: 'https://mangadex.org/avatar.png'}}
+              source={{uri: 'https://mangadex.org/img/avatar.png'}}
               size={24}
               key={item.id}
             />

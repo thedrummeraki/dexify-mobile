@@ -11,6 +11,7 @@ import {Artist, Author, Manga} from 'src/api/mangadex/types';
 import {useDexifyNavigation} from 'src/foundation';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Skeleton from './MangaListItemSkeleton';
+import MangaThumbnail from '../MangaThumbnail';
 
 interface Props {
   manga: Manga;
@@ -52,12 +53,16 @@ export function MangaListItem({manga, selected}: Props) {
               <Icon name="check" style={{color: '#000', fontSize: 24}} />
             </View>
           ) : (
-            <Image
-              source={{uri: mangaImage(manga, {size: CoverSize.Small})}}
-              style={{width: imageWidth, aspectRatio: 1}}
+            <MangaThumbnail
+              hideAuthor
+              hideTitle
+              manga={manga}
+              width={imageWidth}
+              aspectRatio={1}
+              coverSize={CoverSize.Small}
             />
           )}
-          <View style={{paddingVertical: 5, paddingHorizontal: 15}}>
+          <View style={{paddingVertical: 5, paddingHorizontal: 15, width}}>
             <Text
               numberOfLines={by ? 1 : 2}
               style={{width, fontWeight: selected ? 'bold' : 'normal'}}>

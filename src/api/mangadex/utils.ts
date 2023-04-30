@@ -107,7 +107,7 @@ export function mangaImage(manga: Manga, options?: {size?: CoverSize}): string {
   const cover = findRelationship<CoverArt>(manga, 'cover_art');
 
   if (!cover?.attributes) {
-    return 'https://mangadex.org/avatar.png';
+    return 'https://mangadex.org/img/avatar.png';
   }
   return coverImage(cover, manga.id, options);
 }
@@ -127,7 +127,7 @@ export function coverImage(
 export function chapterImage(chapter: Chapter): string | null {
   const {dataSaver, hash: chapterHash} = chapter.attributes;
   if (dataSaver.length === 0) {
-    return 'https://mangadex.org/avatar.png';
+    return 'https://mangadex.org/img/avatar.png';
   }
   const filename = dataSaver[0];
 

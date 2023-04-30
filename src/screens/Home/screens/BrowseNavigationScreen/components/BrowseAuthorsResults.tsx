@@ -45,7 +45,8 @@ export default function BrowseAuthorsGroupResults({query}: Props) {
           subtitle,
           image: {
             url:
-              author.attributes.imageUrl || 'https://mangadex.org/avatar.png',
+              author.attributes.imageUrl ||
+              'https://mangadex.org/img/avatar.png',
             width: 70,
             rounded: true,
           },

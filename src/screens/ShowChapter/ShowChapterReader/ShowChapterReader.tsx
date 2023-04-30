@@ -52,7 +52,7 @@ export default function ShowChapterReader({
       updateChapter({
         chapter,
         coverUrl: mangaImage(manga),
-        imageUrl: 'https://mangadex.org/avatar.png',
+        imageUrl: 'https://mangadex.org/img/avatar.png',
         mangaId: manga.id,
         mangaName: preferredMangaTitle(manga),
         page,

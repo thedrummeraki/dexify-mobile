@@ -29,7 +29,7 @@ export default function ShowArtistDetails({author}: Props) {
 
   const imageMarkup = (
     <Image
-      source={{uri: 'https://mangadex.org/avatar.png'}}
+      source={{uri: 'https://mangadex.org/img/avatar.png'}}
       style={{width: 200, height: 200, borderRadius: 200}}
     />
   );

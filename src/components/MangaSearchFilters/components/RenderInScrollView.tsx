@@ -13,7 +13,7 @@ export function RenderInScrollView({
   children,
   onModalOpen,
 }: PropsWithChildren<RenderInScrollViewProps>) {
-  const {dirty, filtersPresent, submit, makeClean} = useFiltersContext();
+  const {dirty, filtersPresent, submit, reset} = useFiltersContext();
 
   return (
     <View
@@ -35,8 +35,8 @@ export function RenderInScrollView({
           {children}
         </View>
       </ScrollView>
-      {dirty ? <IconButton icon="check" onPress={submit} /> : null}
-      {filtersPresent ? <IconButton icon="close" onPress={makeClean} /> : null}
+      {dirty ? <IconButton icon="check" onPress={() => submit()} /> : null}
+      {filtersPresent ? <IconButton icon="close" onPress={reset} /> : null}
     </View>
   );
 }

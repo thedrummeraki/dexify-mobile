@@ -25,7 +25,7 @@ export default function ScanlationGroupCategoryItem({
         <Chip
           avatar={
             <Avatar.Image
-              source={{uri: 'https://mangadex.org/avatar.png'}}
+              source={{uri: 'https://mangadex.org/img/avatar.png'}}
               size={24}
             />
           }>
@@ -36,7 +36,7 @@ export default function ScanlationGroupCategoryItem({
         <Chip
           avatar={
             <Avatar.Image
-              source={{uri: 'https://mangadex.org/avatar.png'}}
+              source={{uri: 'https://mangadex.org/img/avatar.png'}}
               size={24}
               key={item.id}
             />

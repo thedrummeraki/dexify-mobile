@@ -79,7 +79,7 @@ export default function MangaThumbnail({
   const allowActualImage = true || (isHentai && showImageIfHentai) || !isHentai;
   const imageUrl = allowActualImage
     ? mangaImage(manga, {size: coverSize})
-    : 'https://mangadex.org/avatar.png';
+    : 'https://mangadex.org/img/avatar.png';
 
   return (
     <Thumbnail
@@ -91,11 +91,7 @@ export default function MangaThumbnail({
       }
       hideTitle={hideTitle}
       imageUrl={imageUrl}
-      blurRadius={
-        blurPornographicEntries && showImageIfHentai && isHentai
-          ? 25
-          : undefined
-      }
+      blurRadius={blurPornographicEntries && isHentai ? 25 : undefined}
       title={preferredMangaTitle(manga)}
       subtitle={
         subtitle

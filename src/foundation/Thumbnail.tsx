@@ -9,13 +9,16 @@ import {
   ViewStyle,
   Pressable,
 } from 'react-native';
-import {Badge, Caption, useTheme} from 'react-native-paper';
+import {Badge, Caption, Text, useTheme} from 'react-native-paper';
 import SkeletonContent from 'react-native-skeleton-content-nonexpo';
 
 export interface ThumbnailDimensionsProps {
   width: number | string;
   height?: number | string;
+  padding?: number;
   aspectRatio?: number;
+  title?: string;
+  subtitle?: string;
 }
 
 interface BorderOptions {
@@ -117,7 +120,7 @@ function SingleImageView({
         <View style={{position: 'absolute'}}>{TopComponent}</View>
         <Image
           source={{uri: imageUrl}}
-          loadingIndicatorSource={{uri: 'https://mangadex.org/avatar.png'}}
+          loadingIndicatorSource={{uri: 'https://mangadex.org/img/avatar.png'}}
           style={{
             height,
             aspectRatio,
@@ -201,7 +204,7 @@ function MultipleImageView({
 
   return (
     <MaybeTouchableNativeFeedback onLongPress={onLongPress} onPress={onPress}>
-      <View style={{borderRadius: rounded ? 1000 : 0}}>
+      <View style={{borderRadius: rounded ? 1000 : 0, ...props}}>
         <View style={{position: 'absolute', zIndex: 1}}>{TopComponent}</View>
         <View
           style={{
@@ -220,7 +223,7 @@ function MultipleImageView({
                 key={`thumb-preview-${index}`}
                 source={{uri: info.imageUrl}}
                 loadingIndicatorSource={{
-                  uri: 'https://mangadex.org/avatar.png',
+                  uri: 'https://mangadex.org/img/avatar.png',
                 }}
                 style={info.style}
                 resizeMode="cover"
@@ -306,18 +309,28 @@ export function ThumbnailSkeleton({
   width,
   height,
   aspectRatio,
+  padding,
+  title,
+  subtitle,
 }: ThumbnailDimensionsProps) {
-  const theme = useTheme();
-
   return (
-    <SkeletonContent
-      isLoading
-      containerStyle={{width, height, aspectRatio, flex: 1}}
-      animationDirection="horizontalRight"
-      layout={[{key: 'image', width, height}]}
-      boneColor="#222"
-      highlightColor="#333333"
-    />
+    <View
+      style={Object.assign({
+        width,
+        flex: 1,
+        flexDirection: 'column',
+        padding,
+      })}>
+      <SkeletonContent
+        isLoading
+        containerStyle={{width, height, aspectRatio, flex: 1}}
+        animationDirection="horizontalRight"
+        layout={[{key: 'image', width, height}]}
+        boneColor="#222"
+        highlightColor="#333333"
+      />
+      {title ? <ThumbnailCaption title={title} subtitle={subtitle} /> : null}
+    </View>
   );
 }
 
