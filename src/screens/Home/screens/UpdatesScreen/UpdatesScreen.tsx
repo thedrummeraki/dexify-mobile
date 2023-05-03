@@ -1,21 +1,16 @@
-import React, {useEffect, useMemo, useState} from 'react';
-import {FlatList, View} from 'react-native';
-import {Subheading, Text, Title} from 'react-native-paper';
-import {
-  findRelationship,
-  preferredChapterTitle,
-  preferredMangaTitle,
-} from 'src/api';
+import React, {PropsWithChildren, useEffect, useMemo, useState} from 'react';
+import {FlatList, RefreshControl, View} from 'react-native';
+import {Text, Title, useTheme} from 'react-native-paper';
+import SkeletonContent from 'react-native-skeleton-content-nonexpo';
+import {findRelationship, preferredMangaTitle} from 'src/api';
 import {useLazyGetMangaList} from 'src/api/mangadex/hooks';
 import {Chapter, EntityResponse, Manga} from 'src/api/mangadex/types';
 import UrlBuilder from 'src/api/mangadex/types/api/url_builder';
-import {useGetRequest} from 'src/api/utils';
+import {useAuthenticatedLazyGetRequest, useGetRequest} from 'src/api/utils';
 import {Banner} from 'src/components';
-import CategoriesCollectionSection from 'src/components/CategoriesCollection/CategoriesCollectionSection';
-import MangaThumbnail from 'src/components/MangaThumbnail';
+import Skeleton from 'src/components/List/Skeleton';
 import ChaptersSection from 'src/screens/NewHome/Feed/Section/components/ChaptersSection';
-import {ChapterItem} from 'src/screens/ShowManga/ShowMangaDetails/components/AboutTab/ChaptersList';
-import {notEmpty, useDimensions} from 'src/utils';
+import MangaChaptersPreview from './components/MangaChaptersPreview';
 
 interface MangaChaptersMapping {
   manga: Manga;
@@ -23,7 +18,9 @@ interface MangaChaptersMapping {
 }
 
 export default function UpdatesScreen() {
-  const {data, loading, error} = useGetRequest<EntityResponse<Chapter>>(
+  const [getUpdates, {data, loading, error}] = useAuthenticatedLazyGetRequest<
+    EntityResponse<Chapter[]>
+  >(
     UrlBuilder.userFollowChaptersFeed({
       order: {readableAt: 'desc'},
       includes: ['user', 'scanlation_group'],
@@ -31,8 +28,18 @@ export default function UpdatesScreen() {
   );
   const [chapters, setChapters] = useState<Chapter[]>([]);
   const [mangas, setMangas] = useState<Manga[]>([]);
+  const [refreshing, setRefreshing] = useState(false);
 
-  const dimensions = useDimensions();
+  const onRefresh = () => {
+    setRefreshing(true);
+    getUpdates()
+      .catch(console.error)
+      .finally(() => setRefreshing(false));
+  };
+
+  useEffect(() => {
+    getUpdates();
+  }, []);
 
   useEffect(() => {
     if (data?.result === 'ok') {
@@ -69,35 +76,62 @@ export default function UpdatesScreen() {
 
   if (loading) {
     return (
-      <View>
-        <Title>Updates</Title>
-        <Text>Loading...</Text>
-      </View>
+      <ScreenContainer title="Updates">
+        <FlatList
+          data={Array.from({length: 10}).map(
+            (_, index) => `skeleton-item-${index}`,
+          )}
+          style={{marginBottom: 65}}
+          ItemSeparatorComponent={() => <View style={{height: 16}} />}
+          contentContainerStyle={{paddingHorizontal: 16}}
+          renderItem={() => (
+            <SkeletonContent
+              isLoading
+              containerStyle={{width: '100%', height: 100}}
+              animationDirection="horizontalRight"
+              layout={[
+                {
+                  key: 'card',
+                  width: '100%',
+                  height: 100,
+                },
+              ]}
+              boneColor="#222"
+              highlightColor="#333333"
+            />
+          )}
+        />
+      </ScreenContainer>
     );
   }
 
   if (data?.result === 'error' || error) {
     console.error(data?.result === 'error' ? data.errors : error);
     return (
-      <View>
-        <Title>Updates</Title>
+      <ScreenContainer title="Updates">
         <Banner title="Error">Could not fetch updates</Banner>
-      </View>
+      </ScreenContainer>
     );
   }
 
   if (!data?.data) {
-    return (
-      <View>
-        <Title>Updates</Title>
-      </View>
-    );
+    return <ScreenContainer title="Updates"></ScreenContainer>;
   }
 
   return (
-    <View>
+    <ScreenContainer title="Updates">
       <FlatList
         data={mangas}
+        style={{marginBottom: 65}}
+        ItemSeparatorComponent={() => <View style={{height: 16}} />}
+        contentContainerStyle={{paddingHorizontal: 16}}
+        refreshControl={
+          <RefreshControl
+            enabled
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+          />
+        }
         renderItem={({item: manga}) => {
           const matchingChapters = chapters
             .filter(
@@ -105,21 +139,25 @@ export default function UpdatesScreen() {
             )
             .sort((a, b) =>
               b.attributes.publishAt.localeCompare(a.attributes.publishAt),
-            )
-            .slice(0, 10);
+            );
 
           return (
-            <ChaptersSection
-              section={{
-                chapters: matchingChapters,
-                manga: [manga],
-                title: preferredMangaTitle(manga),
-                type: 'chapters-list',
-              }}
-            />
+            <MangaChaptersPreview manga={manga} chapters={matchingChapters} />
           );
         }}
       />
+    </ScreenContainer>
+  );
+}
+
+function ScreenContainer({
+  title,
+  children,
+}: PropsWithChildren<{title: string}>) {
+  return (
+    <View>
+      <Title style={{padding: 16}}>{title}</Title>
+      {children}
     </View>
   );
 }

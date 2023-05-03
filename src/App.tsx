@@ -4,6 +4,7 @@ import {
   NavigationContainer,
   DarkTheme as NavigationDarkTheme,
   DefaultTheme as NavigationDefaultTheme,
+  Theme as NavigationTheme,
 } from '@react-navigation/native';
 import {
   Provider as PaperProvider,
@@ -11,7 +12,7 @@ import {
   DarkTheme as PaperDarkTheme,
   DefaultTheme as PaperDefaultTheme,
   Text,
-  useTheme,
+  useTheme as usePaperTheme,
 } from 'react-native-paper';
 import merge from 'deepmerge';
 import {
@@ -26,6 +27,8 @@ import {
 import {Navigation} from './foundation';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import {StatusBar as RNStatusBar} from 'react-native';
+
+import {Theme as PaperTheme} from 'react-native-paper/src/types';
 
 export default function App() {
   return (
@@ -55,8 +58,14 @@ export default function App() {
 }
 
 function ThemeProvider({children}: PropsWithChildren<{}>) {
-  const CombinedDefaultTheme = merge(PaperDefaultTheme, NavigationDefaultTheme);
-  const CombinedDarkTheme = merge(PaperDarkTheme, NavigationDarkTheme);
+  const CombinedDefaultTheme = merge<PaperTheme, NavigationTheme>(
+    PaperDefaultTheme,
+    NavigationDefaultTheme,
+  );
+  const CombinedDarkTheme = merge<PaperTheme, NavigationTheme>(
+    PaperDarkTheme,
+    NavigationDarkTheme,
+  );
 
   const {lightTheme} = useSettings();
   const selectedTheme = lightTheme ? CombinedDefaultTheme : CombinedDarkTheme;
@@ -76,6 +85,10 @@ function ThemeProvider({children}: PropsWithChildren<{}>) {
       <NavigationContainer theme={theme}>{children}</NavigationContainer>
     </Provider>
   );
+}
+
+export function useTheme(): PaperTheme & NavigationTheme {
+  return usePaperTheme() as PaperTheme & NavigationTheme;
 }
 
 function StatusBar() {
