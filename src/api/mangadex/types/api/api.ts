@@ -6,7 +6,7 @@ import {
   ScanlationGroup,
   User,
 } from 'src/api/mangadex/types';
-import {MangaRelationshipType} from './types';
+import {MangadexSettings, MangaRelationshipType} from './types';
 
 export function defaultPagedResults<T>() {
   return {
@@ -62,6 +62,19 @@ export interface SuccessEntityResponse<T> extends BasicResultsResponse {
 }
 
 export type EntityResponse<T> = SuccessEntityResponse<T> | ErrorResponse;
+
+export interface SuccessSettingsResponse extends BasicResultsResponse {
+  result: 'ok';
+  updatedAt: string;
+  settings: MangadexSettings;
+  template: string;
+}
+
+export interface ErrorSettingsResponse extends BasicResultsResponse {
+  result: 'error';
+}
+
+export type SettingsResponse = SuccessSettingsResponse | ErrorSettingsResponse;
 
 interface GenericAttributes {
   [key: string]: string;

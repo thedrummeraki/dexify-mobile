@@ -22,7 +22,6 @@ import {
   Snackbar,
   Switch,
   Text,
-  TextInput,
   Title,
   useTheme,
 } from 'react-native-paper';
@@ -38,13 +37,11 @@ import {useBackgroundColor} from 'src/components/colors';
 import CategoriesCollectionSection from 'src/components/CategoriesCollection/CategoriesCollectionSection';
 import {
   BasicModal,
-  ChipsContainer,
   FullScreenModal,
   SimpleInputDropdown,
   TextBadge,
 } from 'src/components';
 import {appVersion} from 'src/utils';
-import {useIntl} from 'react-intl';
 import {ContentRating} from 'src/api/mangadex/types';
 
 interface BasicSettingItemProps {
@@ -65,7 +62,8 @@ interface OptionsSettingsItemProps<T> extends BasicSettingItemProps {
   value: T[];
   defaultValue: T[];
   possibleValues: {value: T; name: string; icon?: string}[];
-  defaultSelectionText: string;
+  defaultSelectionText?: string;
+  disableSearchBar?: boolean;
   size?: 'full' | 'basic';
   color?: string;
   placeholder?: string;
@@ -80,13 +78,39 @@ export default function ShowSettings() {
   const [settingsBeforeReset, setSettingsBeforeReset] = useState<Settings>();
   const {
     settings,
+    mangadexSettings,
     defaultSettings,
+    defaultMangadexSettings,
     updateSetting,
     resetSettings,
     overrideSettings,
   } = useSettingsContext();
 
-  console.log({settings});
+  const {userPreferences} = mangadexSettings;
+
+  const contentRatings = useMemo(() => {
+    let results: ContentRating[] = [];
+    if (userPreferences.showSafe) {
+      results.push(ContentRating.safe);
+    }
+    if (userPreferences.showSuggestive) {
+      results.push(ContentRating.suggestive);
+    }
+    if (userPreferences.showErotic) {
+      results.push(ContentRating.erotica);
+    }
+    if (session && userPreferences.showHentai) {
+      results.push(ContentRating.pornographic);
+    }
+
+    return results;
+  }, [
+    userPreferences.showErotic,
+    userPreferences.showHentai,
+    userPreferences.showSafe,
+    userPreferences.showSuggestive,
+    session,
+  ]);
 
   const possibleSettingsLanguages = usePossibleSettingsLanguages();
 
@@ -145,9 +169,13 @@ export default function ShowSettings() {
           </Text>
         </View>
         <OptionsSettingsItem
-          value={settings.contentRatings}
+          value={contentRatings}
           defaultValue={defaultSettings.contentRatings}
-          possibleValues={possibleSettingsContentRatings}
+          possibleValues={
+            session
+              ? possibleSettingsContentRatings
+              : possibleSettingsContentRatings.slice(0, 3)
+          }
           onSelect={newValue => updateSetting('contentRatings', newValue)}
           title="Content rating filters"
           description={
@@ -165,9 +193,9 @@ export default function ShowSettings() {
             description="Blurs 18+ (Hentai) thumbnail images when browsing the app."
           />
         ) : null}
-        <OptionsSettingsItem
+        {/* <OptionsSettingsItem
           size="basic"
-          value={settings.mangaLanguages}
+          value={mangadexSettings.userPreferences.filteredLanguages}
           defaultValue={defaultSettings.mangaLanguages}
           possibleValues={possibleSettingsLanguages}
           onSelect={newValue => updateSetting('mangaLanguages', newValue)}
@@ -175,24 +203,68 @@ export default function ShowSettings() {
           description="When set, only shows manga with chapters translated in the selected languages."
           placeholder="Filter by language..."
           defaultSelectionText="All languages"
+        /> */}
+        <OptionsSettingsItem
+          size="basic"
+          value={mangadexSettings.userPreferences.originLanguages}
+          defaultValue={defaultSettings.mangaLanguages}
+          possibleValues={possibleSettingsLanguages}
+          // onSelect={newValue => updateSetting('mangaLanguages', newValue)}
+          title="Original Language filter"
+          description="When set, only shows manga with chapters translated in the selected languages."
+          placeholder="Filter by language..."
+          defaultSelectionText="All languages"
         />
         <OptionsSettingsItem
           size="basic"
-          value={settings.chapterLanguages}
+          value={mangadexSettings.userPreferences.filteredLanguages}
           defaultValue={defaultSettings.chapterLanguages}
           possibleValues={possibleSettingsLanguages}
-          onSelect={newValue => updateSetting('chapterLanguages', newValue)}
-          title="Chapter language filters"
+          // onSelect={newValue => updateSetting('chapterLanguages', newValue)}
+          title="Chapter Language filter"
           description="Default language used when viewing chapters. Some manga may not have chapters available in your language"
           placeholder="Filter by language..."
           defaultSelectionText="All languages"
         />
+        <OptionsSettingsItem
+          size="basic"
+          value={[mangadexSettings.userPreferences.paginationCount]}
+          defaultValue={[
+            defaultMangadexSettings.userPreferences.paginationCount,
+          ]}
+          possibleValues={[16, 24, 32, 48, 64, 80, 100].map(n => ({
+            name: `${n} items`,
+            value: n,
+          }))}
+          // onSelect={newValue => updateSetting('chapterLanguages', newValue)}
+          title="Items per page"
+          description="How many items to load per page. A lower value may reduce the time taken on slower networks."
+        />
+        <OptionsSettingsItem
+          size="basic"
+          value={[mangadexSettings.userPreferences.listMultiplier]}
+          defaultValue={[
+            defaultMangadexSettings.userPreferences.listMultiplier,
+          ]}
+          possibleValues={[1, 2, 3, 4, 5].map(n => ({
+            name: `x${n}`,
+            value: n,
+          }))}
+          // onSelect={newValue => updateSetting('chapterLanguages', newValue)}
+          title="List multiplier"
+          description="Note: Chapter lists load 3 times the selected amount by default"
+        />
         <TogglableSettingsItem
-          value={settings.dataSaver}
-          onToggle={newValue => {
-            console.log({newValue});
-            updateSetting('dataSaver', newValue);
-          }}
+          value={userPreferences.mdahPort443}
+          title="Use Port 443 for MangaDex@Home"
+          description="If you are having issues loading images on a school or corporate network, this setting may help."
+        />
+        <TogglableSettingsItem
+          value={mangadexSettings.userPreferences.dataSaver}
+          // onToggle={newValue => {
+          //   console.log({newValue});
+          //   updateSetting('dataSaver', newValue);
+          // }}
           title="Data saver"
           description="Reduce data usage by viewing lower quality versions of chapters."
         />
@@ -266,7 +338,6 @@ export default function ShowSettings() {
 
 function OptionsSettingsItem<T>({
   value,
-  defaultValue,
   possibleValues,
   title,
   disabled,
@@ -274,6 +345,7 @@ function OptionsSettingsItem<T>({
   placeholder,
   color,
   defaultSelectionText,
+  disableSearchBar,
   size = 'basic',
   onSelect,
 }: OptionsSettingsItemProps<T>) {
@@ -284,12 +356,14 @@ function OptionsSettingsItem<T>({
   const [searchInput, setSearchInput] = useState('');
   const selectedBackground = useBackgroundColor('disabled');
 
+  const multipleOptions = value.length > 1;
+
   const selectedValues = useMemo(
     () =>
       possibleValues.filter(possibleValue =>
         currentSelection.includes(possibleValue.value),
       ),
-    [currentSelection],
+    [possibleValues, currentSelection],
   );
 
   const visiblePossibleValues = useMemo(() => {
@@ -312,15 +386,21 @@ function OptionsSettingsItem<T>({
 
   const handlePress = useCallback(
     (item: T) => {
-      if (currentSelection.includes(item)) {
-        setCurrentSelection(current =>
-          current.filter(currentItem => currentItem !== item),
-        );
+      if (multipleOptions) {
+        if (currentSelection.includes(item)) {
+          setCurrentSelection(current =>
+            current.filter(currentItem => currentItem !== item),
+          );
+        } else {
+          setCurrentSelection(current => [...current, item]);
+        }
       } else {
-        setCurrentSelection(current => [...current, item]);
+        if (!currentSelection.includes(item)) {
+          setCurrentSelection([item]);
+        }
       }
     },
-    [currentSelection],
+    [multipleOptions, currentSelection],
   );
 
   const modalProps = {
@@ -341,13 +421,15 @@ function OptionsSettingsItem<T>({
 
   const modalChildren = () => (
     <>
-      <Searchbar
-        value={searchInput}
-        onChangeText={setSearchInput}
-        autoCapitalize="none"
-        placeholder={placeholder}
-        style={{marginTop: 5, marginHorizontal: 5}}
-      />
+      {disableSearchBar ? (
+        <Searchbar
+          value={searchInput}
+          onChangeText={setSearchInput}
+          autoCapitalize="none"
+          placeholder={placeholder}
+          style={{marginTop: 5, marginHorizontal: 5}}
+        />
+      ) : null}
       <View
         style={{
           flexDirection: 'row',
@@ -356,27 +438,29 @@ function OptionsSettingsItem<T>({
           flexWrap: 'wrap',
           padding: 5,
         }}>
-        <CategoriesCollectionSection
-          data={
-            selectedValues.length
-              ? selectedValues
-              : [{name: defaultSelectionText, value: '' as any}]
-          }
-          renderItem={item => {
-            return (
-              <Chip
-                selected
-                style={{margin: 2}}
-                onPress={
-                  selectedValues.length
-                    ? () => handlePress(item.value)
-                    : undefined
-                }>
-                {item.name}
-              </Chip>
-            );
-          }}
-        />
+        {defaultSelectionText ? (
+          <CategoriesCollectionSection
+            data={
+              selectedValues.length
+                ? selectedValues
+                : [{name: defaultSelectionText, value: '' as any}]
+            }
+            renderItem={item => {
+              return (
+                <Chip
+                  selected
+                  style={{margin: 2}}
+                  onPress={
+                    selectedValues.length
+                      ? () => handlePress(item.value)
+                      : undefined
+                  }>
+                  {item.name}
+                </Chip>
+              );
+            }}
+          />
+        ) : null}
       </View>
       <FlatList
         data={visiblePossibleValues}

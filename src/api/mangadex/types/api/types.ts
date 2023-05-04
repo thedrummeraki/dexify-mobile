@@ -120,3 +120,40 @@ export enum MangaRelationshipType {
   AlternateStory = 'alternate_story',
   AlternateVersion = 'alternate_version',
 }
+
+export interface MangadexSettings {
+  userPreferences: SettingsUserPreferences;
+  preferedLayout: SettingsPreferedLayout;
+  metadata: SettingsMetadata;
+}
+
+interface SettingsUserPreferences {
+  filteredLanguages: string[];
+  originLanguages: [];
+  paginationCount: number;
+  listMultiplier: number;
+  showSafe: boolean;
+  showSuggestive: boolean;
+  showErotic: boolean;
+  showHentai: boolean;
+  theme: 'system' | 'slate' | 'dark' | 'light';
+  mdahPort443: boolean;
+  dataSaver: boolean;
+  groupBlacklist: string[];
+  userBlacklist: string[];
+  locale: string;
+  interfaceLocale: string;
+}
+
+interface SettingsPreferedLayout {
+  listStyle: number;
+  listStyleNoArt: number;
+  feedStyle: number;
+  oneLine: boolean;
+  bottomNavPadding: number;
+  ambient: boolean;
+}
+
+interface SettingsMetadata {
+  version: number;
+}

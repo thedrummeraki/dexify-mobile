@@ -1,8 +1,15 @@
 import React, {PropsWithChildren, useContext, useEffect, useState} from 'react';
-import {ContentRating, MangaRequestParams} from 'src/api/mangadex/types';
+import {
+  ContentRating,
+  MangadexSettings,
+  MangaRequestParams,
+  SettingsResponse,
+} from 'src/api/mangadex/types';
 import {useSession} from '.';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import {useIntl} from 'react-intl';
+import {useAuthenticatedLazyGetRequest} from 'src/api/utils';
+import UrlBuilder from 'src/api/mangadex/types/api/url_builder';
 
 export enum ReadingDirection {
   LtR,
@@ -37,8 +44,10 @@ export interface Settings {
 
 interface SettingsContextState {
   settings: Settings;
+  mangadexSettings: MangadexSettings;
   loading: boolean;
   defaultSettings: Settings;
+  defaultMangadexSettings: MangadexSettings;
   setSettings(settings: Partial<Settings>): void;
   resetSettings(): void;
   overrideSettings(settings: Settings): void;
@@ -63,9 +72,40 @@ const defaultSettings: Settings = {
   chaptersSortOrder: 'asc',
 };
 
+const defaultMangadexSettings: MangadexSettings = {
+  metadata: {version: 1},
+  preferedLayout: {
+    ambient: false,
+    bottomNavPadding: 0,
+    feedStyle: 1,
+    listStyle: 1,
+    listStyleNoArt: 1,
+    oneLine: false,
+  },
+  userPreferences: {
+    dataSaver: false,
+    filteredLanguages: [],
+    groupBlacklist: [],
+    interfaceLocale: 'en',
+    listMultiplier: 3,
+    locale: 'en',
+    mdahPort443: false,
+    originLanguages: [],
+    paginationCount: 32,
+    showErotic: false,
+    showHentai: false,
+    showSafe: true,
+    showSuggestive: true,
+    theme: 'system',
+    userBlacklist: [],
+  },
+};
+
 export const SettingsContext = React.createContext<SettingsContextState>({
   settings: defaultSettings,
+  mangadexSettings: defaultMangadexSettings,
   defaultSettings,
+  defaultMangadexSettings,
   loading: false,
   setSettings: () => console.log('setSettings: {NOOP}'),
   resetSettings: () => console.log('resetSettings: {NOOP}'),
@@ -77,6 +117,13 @@ export default function SettingsProvider({children}: PropsWithChildren<{}>) {
   const session = useSession();
   const [loading, setLoading] = useState(true);
   const [settings, setSettings] = useState<Settings>(defaultSettings);
+
+  const [mangadexSettings, setMangadexSettings] = useState<MangadexSettings>(
+    defaultMangadexSettings,
+  );
+
+  const [fetchMangadexSettings] =
+    useAuthenticatedLazyGetRequest<SettingsResponse>(UrlBuilder.settings());
 
   const handleSettings = (settings: Partial<Settings>) => {
     setSettings(current => ({...current, settings}));
@@ -100,6 +147,18 @@ export default function SettingsProvider({children}: PropsWithChildren<{}>) {
   }, []);
 
   useEffect(() => {
+    if (session) {
+      fetchMangadexSettings().then(response => {
+        if (response?.result === 'ok') {
+          setMangadexSettings(response.settings);
+        }
+      });
+    } else {
+      setMangadexSettings(defaultMangadexSettings);
+    }
+  }, [session]);
+
+  useEffect(() => {
     storeSettings(settings);
   }, [settings]);
 
@@ -107,8 +166,10 @@ export default function SettingsProvider({children}: PropsWithChildren<{}>) {
     <SettingsContext.Provider
       value={{
         settings,
+        mangadexSettings,
         loading,
         defaultSettings,
+        defaultMangadexSettings,
         setSettings: handleSettings,
         overrideSettings: setSettings,
         updateSetting,

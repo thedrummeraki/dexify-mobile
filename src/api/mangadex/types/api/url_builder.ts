@@ -10,7 +10,7 @@ import {
   VolumesAndChaptersParams,
 } from 'src/api/mangadex/types/api';
 import {UIMangaCategory} from 'src/categories';
-import {ContentRating, ReadingStatus, ScanlationGroup} from '..';
+import {ContentRating, ReadingStatus} from '..';
 
 interface FeedOptions {
   only?:
@@ -40,6 +40,10 @@ export default class UrlBuilder {
 
   public static feed(params?: FeedOptions) {
     return this.buildProxyUrl('/home/feed', params);
+  }
+
+  public static settings() {
+    return this.buildUrl('/settings');
   }
 
   public static mangaList(params?: Partial<MangaRequestParams>) {
