@@ -1,5 +1,4 @@
 import React from 'react';
-import {Chip} from 'react-native-paper';
 import {ContentRating} from 'src/api/mangadex/types';
 import {useSettings} from 'src/prodivers';
 import {useFiltersContext} from '../MangaSearchFilter';

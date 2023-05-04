@@ -1,6 +1,6 @@
 import {Order} from '.';
 import {ContentRating, MangaStatus, PublicationDemographic, TagMode} from '..';
-import {Manga} from '../manga';
+import {ReadingStatus} from '../manga';
 
 export type MangaOrder = Order<
   'createdAt' | 'updatedAt' | 'followedCount' | 'relevance'
@@ -25,6 +25,7 @@ export type MangaRequestParams = Partial<{
   createdAtSince: string;
   updatedAtSince: string;
   contentRating: ContentRating[];
+  readingStatus: ReadingStatus[];
   order: MangaOrder;
   includes: string[];
   hasAvailableChapters: '0' | '1' | 'true' | 'false';

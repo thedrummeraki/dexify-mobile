@@ -1,21 +1,14 @@
 import React, {PropsWithChildren, useEffect, useMemo, useState} from 'react';
 import {FlatList, RefreshControl, View} from 'react-native';
-import {Text, Title, useTheme} from 'react-native-paper';
+import {Title} from 'react-native-paper';
 import SkeletonContent from 'react-native-skeleton-content-nonexpo';
-import {findRelationship, preferredMangaTitle} from 'src/api';
+import {findRelationship} from 'src/api';
 import {useLazyGetMangaList} from 'src/api/mangadex/hooks';
 import {Chapter, EntityResponse, Manga} from 'src/api/mangadex/types';
 import UrlBuilder from 'src/api/mangadex/types/api/url_builder';
-import {useAuthenticatedLazyGetRequest, useGetRequest} from 'src/api/utils';
+import {useAuthenticatedLazyGetRequest} from 'src/api/utils';
 import {Banner} from 'src/components';
-import Skeleton from 'src/components/List/Skeleton';
-import ChaptersSection from 'src/screens/NewHome/Feed/Section/components/ChaptersSection';
 import MangaChaptersPreview from './components/MangaChaptersPreview';
-
-interface MangaChaptersMapping {
-  manga: Manga;
-  chapters: Chapter[];
-}
 
 export default function UpdatesScreen() {
   const [getUpdates, {data, loading, error}] = useAuthenticatedLazyGetRequest<

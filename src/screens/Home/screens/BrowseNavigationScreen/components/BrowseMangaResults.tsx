@@ -13,6 +13,7 @@ import {List} from 'src/components/List/List';
 import {
   ContentRatingFilter,
   PreviewFilters,
+  ReadingStatusFilter,
   TagsFilter,
 } from 'src/components/MangaSearchFilters';
 import {useDexifyNavigation} from 'src/foundation';

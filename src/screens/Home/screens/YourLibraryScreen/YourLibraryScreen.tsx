@@ -8,8 +8,8 @@ import ScreenChooser from './components/ScreenChooser';
 
 export enum LibraryFilter {
   Added = 'Added',
+  ChaptersFeed = 'Updates',
   Lists = 'MD Lists',
-  ChaptersFeed = 'Chapters feed',
   ReadingHistory = 'Reading history',
 }
 
@@ -48,6 +48,7 @@ export default function YourLibraryScreen() {
           renderItem={item => {
             return (
               <Chip
+                icon={item !== currentFilter ? iconForFilter(item) : undefined}
                 selected={item === currentFilter}
                 onPress={() => setCurrentFilter(item)}>
                 {item}
@@ -59,4 +60,17 @@ export default function YourLibraryScreen() {
       <ScreenChooser filter={currentFilter} />
     </View>
   );
+}
+
+function iconForFilter(filter: LibraryFilter) {
+  switch (filter) {
+    case LibraryFilter.Added:
+      return 'book-plus';
+    case LibraryFilter.ChaptersFeed:
+      return 'bell-badge';
+    case LibraryFilter.Lists:
+      return 'format-list-bulleted';
+    case LibraryFilter.ReadingHistory:
+      return 'clock';
+  }
 }

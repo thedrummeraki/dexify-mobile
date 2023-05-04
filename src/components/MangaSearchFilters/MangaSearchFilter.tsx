@@ -1,5 +1,5 @@
 import {Field, Form, useField, useForm} from '@shopify/react-form';
-import React, {useContext, useRef, useState} from 'react';
+import React, {useContext, useState} from 'react';
 import {
   Manga,
   MangaRequestParams,
@@ -59,8 +59,6 @@ export default function MangaSearchFilters({
   );
   const tags = (data?.result === 'ok' && data.data) || [];
 
-  const originalFiltersRef = useRef(filters);
-
   const [modalOpen, setModalOpen] = useState(false);
   const handleModalOpen = (open: boolean) => {
     if (onModalOpenProp) {
@@ -86,6 +84,7 @@ export default function MangaSearchFilters({
       includedTagsMode: useField(filters.includedTagsMode),
       originalLanguage: useField(filters.artists),
       publicationDemographic: useField(filters.publicationDemographic),
+      readingStatus: useField(filters.readingStatus),
       status: useField(filters.status),
       updatedAtSince: useField(filters.updatedAtSince),
       group: useField(filters.group),

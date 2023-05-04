@@ -33,10 +33,10 @@ export function BrowseNavigationScreen() {
         onFocus={() => setSearchBarFocused(true)}
         onBlur={() => setSearchBarFocused(false)}
       />
-      <View style={{marginTop: -5, paddingBottom: 115}}>
+      <View style={{paddingBottom: 115}}>
         {/* {query ? ( */}
         {/* <> */}
-        <View style={{paddingBottom: 5}}>
+        <View>
           <CategoriesCollectionSection
             data={Object.values(BrowseNavigationResource)}
             renderItem={item => {
