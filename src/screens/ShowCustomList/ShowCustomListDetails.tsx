@@ -9,7 +9,13 @@ import {
   preferredMangaTitle,
 } from 'src/api';
 import {useGetMangaList} from 'src/api/mangadex/hooks';
-import {ContentRating, CustomList} from 'src/api/mangadex/types';
+import {
+  BasicResultsResponse,
+  ContentRating,
+  CustomList,
+} from 'src/api/mangadex/types';
+import UrlBuilder from 'src/api/mangadex/types/api/url_builder';
+import {useAuthenticatedDeleteRequest} from 'src/api/utils';
 import {Banner, CloseCurrentScreenHeader} from 'src/components';
 import {List} from 'src/components/List/List';
 import {useDexifyNavigation} from 'src/foundation';
@@ -53,22 +59,12 @@ export default function ShowCustomListDetails({
       ? mangaImage(manga[0])
       : manga.slice(0, 4).map(manga => mangaImage(manga));
 
-  // const [filterQuery, setFilterQuery] = useState('');
-
-  const thumbnailMarkup =
-    ids.length > 0 ? (
-      loading || !initialized.current ? (
-        <ThumbnailSkeleton width={200} height={200} />
-      ) : (
-        <Thumbnail imageUrl={imageUrl} width={200} aspectRatio={1} />
-      )
-    ) : (
-      <Thumbnail
-        imageUrl="https://mangadex.org/img/avatar.png"
-        width={200}
-        aspectRatio={1}
-      />
+  const [deleteCustomList] =
+    useAuthenticatedDeleteRequest<BasicResultsResponse>(
+      UrlBuilder.customList(customList.id),
     );
+
+  // const [filterQuery, setFilterQuery] = useState('');
 
   useEffect(() => {
     if (!initialized.current && data?.result) {
@@ -106,44 +102,55 @@ export default function ShowCustomListDetails({
     },
   }));
 
-  const bodyMarkup =
-    ids.length || loading ? (
-      <List
-        loading={loading}
-        data={mangaAsResourceList}
-        onItemPress={item => {
-          const resource = manga.find(manga => manga.id === item.id)!;
-          navigation.push('ShowManga', resource);
-        }}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-        ListHeaderComponent={
-          <>
-            {editing ? (
-              <EditingCustomListActions
-                customList={customList}
-                onCustomListUpdate={onCustomListUpdate}
-                onEditingDone={() => setEditing(false)}
-              />
-            ) : (
-              <CustomListActions
-                customList={customList}
-                onEditing={setEditing}
-              />
-            )}
-          </>
-        }
-        itemStyle={{marginHorizontal: 10}}
-      />
-    ) : !loading ? (
-      <Banner
-        title="No manga added"
-        primaryAction={{content: 'Browse manga', onAction: () => {}}}>
-        Looks like this list doesn't any manga yet. You can added add manga to
-        this list at any time.
-      </Banner>
-    ) : null;
+  const handleCustomListDelete = () => {
+    deleteCustomList().then(response => {
+      if (response?.result === 'ok') {
+        navigation.goBack();
+      }
+    });
+  };
+
+  const headerMarkup = (
+    <>
+      {editing ? (
+        <EditingCustomListActions
+          customList={customList}
+          onCustomListUpdate={onCustomListUpdate}
+          onEditingDone={() => setEditing(false)}
+        />
+      ) : (
+        <CustomListActions
+          customList={customList}
+          onEditing={setEditing}
+          onDeleted={handleCustomListDelete}
+        />
+      )}
+    </>
+  );
+
+  const bodyMarkup = (
+    <List
+      loading={loading}
+      data={ids.length ? mangaAsResourceList : []}
+      onItemPress={item => {
+        const resource = manga.find(manga => manga.id === item.id)!;
+        navigation.push('ShowManga', resource);
+      }}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
+      ListHeaderComponent={headerMarkup}
+      ListEmptyComponent={
+        <Banner
+          title="No manga added"
+          primaryAction={{content: 'Browse manga', onAction: () => {}}}>
+          Looks like this list doesn't any manga yet. You can added add manga to
+          this list at any time.
+        </Banner>
+      }
+      itemStyle={{marginHorizontal: 10}}
+    />
+  );
 
   return (
     <View style={{flex: 1}}>

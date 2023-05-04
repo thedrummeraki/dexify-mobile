@@ -255,11 +255,7 @@ export function useAxiosRequest<T, Body = any>(
   const [status, setStatus] = useState(ResponseStatus.Pending);
 
   const callback = useCallback(
-    async (
-      callbackUrl?: string,
-      body?: Body,
-      callbackParams?: SimpleRequestParams<Body>,
-    ) => {
+    async (callbackUrl?: string, body?: Body) => {
       const url = params.hookUrl || callbackUrl;
       if (!url) {
         throw new Error(

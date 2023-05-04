@@ -8,7 +8,7 @@ import UrlBuilder from 'src/api/mangadex/types/api/url_builder';
 import {wait} from 'src/utils';
 import {useYourAnimeShow} from 'src/api/youranime/hooks';
 import {YourAnime} from 'src/api/youranime';
-import {useSettings} from 'src/prodivers';
+import {useMangadexSettings, useSettings} from 'src/prodivers';
 import {CoverSize, mangaImage} from 'src/api';
 
 interface Props {
@@ -57,11 +57,14 @@ export function useMangaDetails() {
 }
 
 export default function ShowMangaDetails({manga}: Props) {
-  const {chapterLanguages} = useSettings();
+  // const {chapterLanguages} = useSettings();
+  const {
+    userPreferences: {filteredLanguages},
+  } = useMangadexSettings();
   const [preferredLanguages, setPreferredLanguages] = useState<string[]>(() =>
     manga.attributes.availableTranslatedLanguages.filter(
       availableTranslatedLanguage =>
-        chapterLanguages.includes(availableTranslatedLanguage),
+        filteredLanguages.includes(availableTranslatedLanguage),
     ),
   );
 

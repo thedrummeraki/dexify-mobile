@@ -20,7 +20,6 @@ export function RenderInScrollView({
       style={{
         display: 'flex',
         flexDirection: 'row',
-        paddingBottom: 10,
       }}>
       {!hideOpenModalIcon ? (
         <IconButton icon="filter-variant" onPress={onModalOpen} />

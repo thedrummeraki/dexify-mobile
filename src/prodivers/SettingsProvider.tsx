@@ -1,4 +1,10 @@
-import React, {PropsWithChildren, useContext, useEffect, useState} from 'react';
+import React, {
+  PropsWithChildren,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import {
   ContentRating,
   MangadexSettings,
@@ -211,6 +217,10 @@ export function useSettings() {
   return useSettingsContext().settings;
 }
 
+export function useMangadexSettings() {
+  return useSettingsContext().mangadexSettings;
+}
+
 export function useGlobalMangaParams(): Pick<
   MangaRequestParams,
   'availableTranslatedLanguage' | 'contentRating'
@@ -224,11 +234,27 @@ export function useGlobalMangaParams(): Pick<
 }
 
 export function useContentRatingFitlers() {
-  const settings = useSettings();
+  const {
+    userPreferences: {showErotic, showHentai, showSafe, showSuggestive},
+  } = useMangadexSettings();
+  const session = useSession();
 
-  return settings.spicyMode
-    ? [ContentRating.pornographic]
-    : settings.contentRatings;
+  return useMemo(() => {
+    let results: ContentRating[] = [];
+    if (showSafe) {
+      results.push(ContentRating.safe);
+    }
+    if (showSuggestive) {
+      results.push(ContentRating.suggestive);
+    }
+    if (showErotic) {
+      results.push(ContentRating.erotica);
+    }
+    if (session && showHentai) {
+      results.push(ContentRating.pornographic);
+    }
+    return results;
+  }, [showErotic, showHentai, showSafe, showSuggestive, session]);
 }
 
 export const possibleSettingsContentRatings = [

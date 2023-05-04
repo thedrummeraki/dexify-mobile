@@ -1,6 +1,6 @@
 import React from 'react';
 import {ContentRating} from 'src/api/mangadex/types';
-import {useSettings} from 'src/prodivers';
+import {useContentRatingFitlers} from 'src/prodivers';
 import {useFiltersContext} from '../MangaSearchFilter';
 import {BasicSection} from './BasicSection';
 
@@ -11,7 +11,7 @@ interface Props {
 export function ContentRatingFilter({visibleContentRatings}: Props) {
   const {fields} = useFiltersContext();
 
-  const {contentRatings} = useSettings();
+  const contentRatings = useContentRatingFitlers();
   const values = visibleContentRatings || contentRatings;
 
   return (

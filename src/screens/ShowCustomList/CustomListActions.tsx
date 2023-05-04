@@ -8,9 +8,14 @@ import {BackgroundColor} from 'src/components/colors';
 interface Props {
   customList: CustomList;
   onEditing(editing: boolean): void;
+  onDeleted(): void;
 }
 
-export default function CustomListActions({customList, onEditing}: Props) {
+export default function CustomListActions({
+  customList,
+  onEditing,
+  onDeleted,
+}: Props) {
   return (
     <View style={{marginBottom: 20}}>
       <View style={{flexDirection: 'row', marginTop: 5, alignItems: 'center'}}>
@@ -26,7 +31,11 @@ export default function CustomListActions({customList, onEditing}: Props) {
         <View style={{flexDirection: 'row', alignItems: 'center'}}>
           <IconButton icon="pencil-outline" onPress={() => onEditing(true)} />
           <IconButton disabled icon="book-plus" />
-          <IconButton icon="delete-forever" />
+          <IconButton
+            disabled
+            icon="delete-forever"
+            onPress={() => onDeleted()}
+          />
         </View>
         <ShareButton resource={customList} />
       </View>

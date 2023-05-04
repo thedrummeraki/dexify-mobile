@@ -1,7 +1,6 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {Image, Linking, View} from 'react-native';
-import {ScrollView} from 'react-native-gesture-handler';
-import {Button, IconButton, TextInput, Title} from 'react-native-paper';
+import {Button, IconButton, Title} from 'react-native-paper';
 import {Artist, Author, ContentRating} from 'src/api/mangadex/types';
 import {CloseCurrentScreenHeader, MangaSearchCollection} from 'src/components';
 import {useShowArtistRoute} from 'src/foundation';
@@ -19,8 +18,6 @@ export default function ShowArtistDetails({author}: Props) {
     attributes: {website, twitter, pixiv, nicoVideo, youtube},
   } = author;
 
-  const [searchMangaInput, setSearchMangaInput] = useState('');
-
   const contentRating = useContentRatingFitlers();
 
   if (allowHentai && !contentRating.includes(ContentRating.pornographic)) {
@@ -34,9 +31,8 @@ export default function ShowArtistDetails({author}: Props) {
     />
   );
 
-  return (
-    <ScrollView style={{flex: 1}}>
-      <CloseCurrentScreenHeader />
+  const ListHeaderComponent = (
+    <>
       <View
         style={{
           flex: 1,
@@ -44,7 +40,7 @@ export default function ShowArtistDetails({author}: Props) {
         }}>
         {imageMarkup}
       </View>
-      <View style={{marginHorizontal: 15, marginBottom: 20}}>
+      <View style={{marginBottom: 20}}>
         <Title style={{marginTop: 15}}>{author.attributes.name}</Title>
         <View
           style={{flexDirection: 'row', marginTop: 10, alignItems: 'center'}}>
@@ -82,15 +78,14 @@ export default function ShowArtistDetails({author}: Props) {
           )}
         </View>
       </View>
+    </>
+  );
 
-      <TextInput
-        dense
-        placeholder="Search for manga..."
-        value={searchMangaInput}
-        onChangeText={setSearchMangaInput}
-        style={{marginHorizontal: 15, marginBottom: 5, display: 'none'}}
-      />
+  return (
+    <View style={{flex: 1}}>
+      <CloseCurrentScreenHeader />
       <MangaSearchCollection
+        flatListProps={{ListHeaderComponent, style: {margin: 4}}}
         options={{
           artists: [author.id],
           limit: 100,
@@ -98,6 +93,6 @@ export default function ShowArtistDetails({author}: Props) {
           order: {followedCount: 'desc'},
         }}
       />
-    </ScrollView>
+    </View>
   );
 }

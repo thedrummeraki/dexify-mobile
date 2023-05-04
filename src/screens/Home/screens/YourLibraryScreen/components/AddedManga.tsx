@@ -127,7 +127,7 @@ export default function AddedManga() {
               title={readingStatusInfo(readingStatus).content}
               subtitle={pluralize(info.totalCount, 'title')}
               imageUrl={imageUrl}
-              width={width / 2 - 20}
+              width="100%"
               aspectRatio={1}
               onPress={() =>
                 navigation.push('ShowReadingStatusLibrary', {readingStatus})

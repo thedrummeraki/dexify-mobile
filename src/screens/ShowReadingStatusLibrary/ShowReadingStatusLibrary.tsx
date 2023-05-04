@@ -7,9 +7,8 @@ import {
 } from 'src/components';
 import {MangaCollectionDisplay} from 'src/components/MangaSearchCollection/MangaSearchCollection';
 import {useShowReadingStatusLibraryRoute} from 'src/foundation';
-import {useLibraryMangaIds, useSettings} from 'src/prodivers';
-import {ContentRating, MangaRequestParams} from 'src/api/mangadex/types';
-import {Field} from '@shopify/react-form';
+import {useContentRatingFitlers, useLibraryMangaIds} from 'src/prodivers';
+import {MangaRequestParams} from 'src/api/mangadex/types';
 import {
   ContentRatingFilter,
   TagsFilter,
@@ -25,7 +24,7 @@ export default function ShowReadingStatusLibrary() {
   } = useShowReadingStatusLibraryRoute();
   const ids = useLibraryMangaIds(readingStatus) || undefined;
 
-  const {contentRatings} = useSettings();
+  const contentRatings = useContentRatingFitlers();
 
   const [filters, setFilters] = useState<MangaRequestParams>({
     ids,
@@ -58,6 +57,7 @@ export default function ShowReadingStatusLibrary() {
           }}
           display={MangaCollectionDisplay.Images}
           showReadingStatus={false}
+          flatListProps={{style: {paddingHorizontal: 8}}}
         />
       ) : null}
     </>

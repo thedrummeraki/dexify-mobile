@@ -1,9 +1,8 @@
-import React, {ComponentProps, useEffect, useState} from 'react';
+import React, {ComponentProps, useEffect} from 'react';
 import {StyleProp, TextStyle, ViewStyle} from 'react-native';
 import {useLazyGetMangaList} from 'src/api/mangadex/hooks';
 import {Manga, MangaRequestParams} from 'src/api/mangadex/types';
 import {useDebouncedValue} from 'src/utils';
-import BasicList from '../BasicList';
 import MangaCollection from '../MangaCollection';
 
 export enum MangaCollectionDisplay {

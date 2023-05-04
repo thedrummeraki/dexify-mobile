@@ -1,23 +1,30 @@
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
+import {FlatList, View} from 'react-native';
+import {Text} from 'react-native-paper';
 import {findRelationship, mangaImage, preferredMangaTitle} from 'src/api';
-import {useLazyGetMangaList} from 'src/api/mangadex/hooks';
+import {
+  useLazyGetMangaList,
+  useMangadexPagination,
+} from 'src/api/mangadex/hooks';
 import {
   Artist,
   Author,
-  ContentRating,
+  Manga,
   MangaRequestParams,
 } from 'src/api/mangadex/types';
 import {ResponseStatus} from 'src/api/utils';
-import {MangaSearchFilters, TextBadge} from 'src/components';
+import {MangaSearchFilters} from 'src/components';
 import {List} from 'src/components/List/List';
 import {
   ContentRatingFilter,
   PreviewFilters,
-  ReadingStatusFilter,
   TagsFilter,
 } from 'src/components/MangaSearchFilters';
+import MangaThumbnail from 'src/components/MangaThumbnail';
 import {useDexifyNavigation} from 'src/foundation';
-import {useSettings} from 'src/prodivers';
+import {ThumbnailSkeleton} from 'src/foundation/Thumbnail';
+import {useMangadexSettings, useSettings} from 'src/prodivers';
+import {notEmpty} from 'src/utils';
 import BrowseEmptyResults from './BrowseEmptyResults';
 
 interface Props {
@@ -28,20 +35,85 @@ export default function BrowseMangaResults({query}: Props) {
   const navigation = useDexifyNavigation();
   const [filters, setFilters] = useState<MangaRequestParams>({});
 
-  const [searchManga, {data, status}] = useLazyGetMangaList({
-    limit: 100,
+  const {limit, offset, nextPage} = useMangadexPagination([query, filters]);
+
+  const [manga, setManga] = useState<Array<Manga>>([]);
+  const [hasMoreManga, setHasMoreManga] = useState(true);
+
+  const [searchManga, {data, loading}] = useLazyGetMangaList({
     order: {relevance: 'desc'},
   });
-  const manga = data?.result === 'ok' ? data.data : [];
-  const {mangaLanguages} = useSettings();
+
+  const loadManga = (options: {
+    offset: number;
+    limit: number;
+    title: string;
+    filters: MangaRequestParams;
+  }) => {
+    if (!hasMoreManga) {
+      return;
+    }
+
+    return searchManga({
+      title: options.title,
+      limit: options.limit,
+      offset: options.offset,
+      ...options.filters,
+    });
+  };
+
+  const numColumns = 3;
 
   useEffect(() => {
-    searchManga({
-      title: query,
-      ...filters,
-      availableTranslatedLanguage: mangaLanguages,
-    });
+    console.log('updating manga list', hasMoreManga);
+    loadManga({offset, limit, title: query, filters});
+  }, [offset, limit, query, filters]);
+
+  // useEffect(() => {
+  //   searchManga({
+  //     title: query,
+  //     limit,
+  //     offset,
+  //     ...filters,
+  //   }).then(response => {
+  //     if (response?.result === 'ok') {
+  //       setHasMoreManga(response.total > offset);
+  //     }
+  //   });
+  // }, [loadManga]);
+
+  useEffect(() => {
+    setManga([]);
+    setHasMoreManga(true);
   }, [query, filters]);
+
+  useEffect(() => {
+    if (data?.result === 'ok') {
+      setHasMoreManga(data.total > offset);
+      setManga(currentManga => {
+        console.log('setting state');
+        const res = currentManga.concat(data.data);
+        console.log('ok');
+        return res;
+      });
+    }
+  }, [data]);
+
+  const skeletonMarkup =
+    loading && hasMoreManga ? (
+      <FlatList
+        numColumns={numColumns}
+        style={{marginBottom: 40}}
+        contentContainerStyle={{padding: 2}}
+        data={Array.from({length: limit}).map((_, i) => i)}
+        renderItem={() => (
+          <View style={{flex: 1 / numColumns, padding: 2}}>
+            <ThumbnailSkeleton width="100%" height={170} />
+          </View>
+        )}
+        keyExtractor={item => `skeleton-${item}`}
+      />
+    ) : undefined;
 
   return (
     <>
@@ -54,7 +126,23 @@ export default function BrowseMangaResults({query}: Props) {
           <TagsFilter />
         </MangaSearchFilters.Render>
       </MangaSearchFilters>
-      <List
+      <FlatList
+        data={manga}
+        numColumns={numColumns}
+        onEndReached={() => nextPage()}
+        onEndReachedThreshold={1}
+        style={{marginBottom: 40}}
+        contentContainerStyle={{padding: 2}}
+        ListFooterComponent={skeletonMarkup}
+        renderItem={({item}) => {
+          return (
+            <View style={{flex: 1 / numColumns, padding: 2}}>
+              <MangaThumbnail manga={item} />
+            </View>
+          );
+        }}
+      />
+      {/* <List
         style={{padding: 5, paddingTop: 0}}
         loading={
           status === ResponseStatus.Initiated ||
@@ -83,7 +171,18 @@ export default function BrowseMangaResults({query}: Props) {
             onPress: () => navigation.push('ShowManga', manga),
           };
         })}
-      />
+      /> */}
     </>
   );
+}
+
+function evenlyDistribute<T>(list: T[], numColumns: number): Array<T | null> {
+  const remainder = list.length % numColumns;
+  const result: Array<T | null> = list;
+  if (remainder > 0) {
+    const emptyItems: null[] = new Array(3 - remainder).fill(null);
+    result.push(...emptyItems);
+  }
+
+  return result;
 }

@@ -129,7 +129,7 @@ export interface MangadexSettings {
 
 interface SettingsUserPreferences {
   filteredLanguages: string[];
-  originLanguages: [];
+  originLanguages: string[];
   paginationCount: number;
   listMultiplier: number;
   showSafe: boolean;
