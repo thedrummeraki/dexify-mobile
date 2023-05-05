@@ -1,4 +1,4 @@
-import {mergeDeep} from '@apollo/client/utilities';
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, {ComponentProps, useEffect, useRef, useState} from 'react';
 import {StyleProp, TextStyle, ViewStyle} from 'react-native';
 import {
@@ -47,7 +47,6 @@ export default function MangaSearchCollection({
   searchingById,
   hideSearchFilters,
   timeout,
-  onMangaReady,
   ...otherProps
 }: Props) {
   const [get, {loading, data}] = useLazyGetMangaList(options, showEverything);
@@ -63,8 +62,10 @@ export default function MangaSearchCollection({
   const [filters, setFilters] = useState<MangaRequestParams>({
     contentRating: contentRatings,
   });
-  const {limit, offset, nextOffset, nextPage, resetPage} =
-    useMangadexPagination([options, filters]);
+  const {limit, offset, nextOffset, nextPage} = useMangadexPagination([
+    options,
+    filters,
+  ]);
 
   const canSearchForManga =
     (searchingById && (options?.ids?.length || 0) > 0) || !searchingById;
@@ -75,6 +76,7 @@ export default function MangaSearchCollection({
     searchFilters: MangaRequestParams,
     searchLimit: number,
     searchOffset: number,
+    hasMoreManga: boolean,
     searchOptions?: MangaRequestParams,
   ) => {
     if (!hasMoreManga && searchStarted.current) {
@@ -86,12 +88,6 @@ export default function MangaSearchCollection({
     }
 
     searchStarted.current = true;
-    console.log('searching by', {
-      searchOffset,
-      searchLimit,
-      ...searchOptions,
-      ...searchFilters,
-    });
     get({
       offset: searchOffset,
       limit: searchLimit,
@@ -101,28 +97,17 @@ export default function MangaSearchCollection({
   };
 
   useEffect(() => {
-    console.log(`useEffect[limit=${limit} offset=${offset}]`);
-    console.log('offset', offset, 'vs options', options);
-    searchManga(filters, limit, offset, options);
-  }, [debouncedOptions, filters, limit, offset]);
+    searchManga(filters, limit, offset, hasMoreManga, debouncedOptions);
+  }, [debouncedOptions, filters, limit, offset, hasMoreManga]);
 
   useEffect(() => {
-    console.log('useEffect[options filters]');
+    console.log({filters});
     setHasMoreManga(true);
     setManga([]);
   }, [options, filters]);
 
-  // useEffect(() => {
-  //   console.log('useEffect[manga]');
-  //   if (manga.length) {
-  //     onMangaReady?.(manga);
-  //   }
-  // }, [manga]);
-
   useEffect(() => {
-    console.log('useEffect[data]');
     if (data?.result === 'ok') {
-      console.log('total', data.total);
       setHasMoreManga(data.total > nextOffset);
       setManga(current => current.concat(data.data));
     }

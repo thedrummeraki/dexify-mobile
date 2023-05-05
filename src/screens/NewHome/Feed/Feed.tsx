@@ -19,7 +19,7 @@ interface Props {
   onFocus: () => void;
 }
 
-export default function Feed({data, refreshing, onRefresh, onFocus}: Props) {
+export default function Feed({data, refreshing, onRefresh}: Props) {
   const {
     topManga,
     airingNow,
@@ -145,13 +145,14 @@ export default function Feed({data, refreshing, onRefresh, onFocus}: Props) {
   const recentlyAddedMarkup = recentlyAdded ? (
     <Section
       section={{
-        title: 'Newest on Mangadex',
+        title: 'Recently added',
         type: 'general',
         manga: recentlyAdded,
         viewMore: () =>
           navigation.push('ShowMangaList', {
-            title: 'Newest on Mangadex',
-            params: {order: {createdAt: 'desc'}, limit: 100},
+            title: 'Recently added',
+            description: 'Newest entries added to Mangadex.',
+            params: {order: {createdAt: 'desc'}},
           }),
       }}
     />
@@ -174,7 +175,7 @@ export default function Feed({data, refreshing, onRefresh, onFocus}: Props) {
           {continueReadingMarkup}
           {readingNowMarkup}
           {updatesMarkup}
-          {/* {randomMangaMarkup} */}
+          {randomMangaMarkup}
           {airingNowMarkup}
           {recentlyAddedMarkup}
           {popularMangaMarkup}

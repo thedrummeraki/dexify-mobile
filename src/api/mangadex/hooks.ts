@@ -1,4 +1,4 @@
-import {useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import {useCallback, useEffect, useMemo, useState} from 'react';
 import {useContentRatingFitlers, useMangadexSettings} from 'src/prodivers';
 import {RequestResult, useLazyGetRequest} from '../utils';
 import {
@@ -31,8 +31,7 @@ export function useMangadexPagination(resetsWhenChanged: readonly any[]) {
     setPage(1);
   };
 
-  const nextOffset = useMemo(() => (page + 1) * limit, [page, limit]);
-  console.log({offset});
+  const nextOffset = useMemo(() => page * limit, [page, limit]);
 
   useEffect(() => {
     if (page < 1) {
@@ -74,9 +73,10 @@ export function useLazyGetMangaList(
     'suggestive',
     'pornographic',
   ] as ContentRating[];
+  const allowedContentRatings = useContentRatingFitlers();
   const contentRating = showEverything
     ? allContentRatings
-    : useContentRatingFitlers();
+    : allowedContentRatings;
   const [get, response] = useLazyGetRequest<ManyManga>();
 
   const getManga = (otherOptions?: MangaRequestParams) => {

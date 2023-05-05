@@ -1,6 +1,5 @@
 import React from 'react';
-import {View} from 'react-native';
-import {Button, Card, Paragraph, Title, useTheme} from 'react-native-paper';
+import {Button, Card, Paragraph, useTheme} from 'react-native-paper';
 import {
   contentRatingInfo,
   CoverSize,
@@ -8,10 +7,8 @@ import {
   mangaImage,
   preferredMangaDescription,
   preferredMangaTitle,
-  preferredTitle,
 } from 'src/api';
 import {Artist, Author} from 'src/api/mangadex/types';
-import MangaThumbnail from 'src/components/MangaThumbnail';
 import {useDexifyNavigation} from 'src/foundation';
 import {Sections} from '../types';
 
@@ -28,9 +25,7 @@ export default function MangaRecommendationSection({section: {manga}}: Props) {
     findRelationship<Artist>(manga, 'artist');
   const relavantInfo = [
     author ? `${author.attributes.name}` : null,
-    manga.attributes.contentRating
-      ? contentRatingInfo(manga.attributes.contentRating).content
-      : null,
+    contentRatingInfo(manga.attributes.contentRating).content,
     manga.attributes.year ? `Released in ${manga.attributes.year}` : null,
   ]
     .filter(text => text)
@@ -39,9 +34,7 @@ export default function MangaRecommendationSection({section: {manga}}: Props) {
   return (
     <Card mode="outlined" style={{margin: 15}}>
       <Card.Title title={preferredMangaTitle(manga)} subtitle={relavantInfo} />
-      <Card.Cover
-        source={{uri: mangaImage(manga, {size: CoverSize.Original})}}
-      />
+      <Card.Cover source={{uri: mangaImage(manga, {size: CoverSize.Medium})}} />
       <Card.Content>
         <Paragraph
           numberOfLines={3}
@@ -58,7 +51,7 @@ export default function MangaRecommendationSection({section: {manga}}: Props) {
         <Button onPress={() => navigation.push('ShowManga', manga)}>
           Learn more
         </Button>
-        <Button disabled>Read now</Button>
+        {/* <Button disabled>Read now</Button> */}
       </Card.Actions>
     </Card>
   );
