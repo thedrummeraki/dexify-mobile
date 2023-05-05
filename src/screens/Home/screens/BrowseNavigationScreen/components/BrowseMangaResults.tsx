@@ -1,123 +1,109 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {FlatList, View} from 'react-native';
-import {Text} from 'react-native-paper';
-import {findRelationship, mangaImage, preferredMangaTitle} from 'src/api';
 import {
   useLazyGetMangaList,
   useMangadexPagination,
 } from 'src/api/mangadex/hooks';
-import {
-  Artist,
-  Author,
-  Manga,
-  MangaRequestParams,
-} from 'src/api/mangadex/types';
-import {ResponseStatus} from 'src/api/utils';
-import {MangaSearchFilters} from 'src/components';
-import {List} from 'src/components/List/List';
+import {Manga, MangaRequestParams} from 'src/api/mangadex/types';
+import {MangaSearchCollection, MangaSearchFilters} from 'src/components';
 import {
   ContentRatingFilter,
   PreviewFilters,
   TagsFilter,
 } from 'src/components/MangaSearchFilters';
 import MangaThumbnail from 'src/components/MangaThumbnail';
-import {useDexifyNavigation} from 'src/foundation';
 import {ThumbnailSkeleton} from 'src/foundation/Thumbnail';
-import {useMangadexSettings, useSettings} from 'src/prodivers';
-import {notEmpty} from 'src/utils';
-import BrowseEmptyResults from './BrowseEmptyResults';
 
 interface Props {
   query: string;
 }
 
 export default function BrowseMangaResults({query}: Props) {
-  const navigation = useDexifyNavigation();
-  const [filters, setFilters] = useState<MangaRequestParams>({});
+  // const [filters, setFilters] = useState<MangaRequestParams>({});
 
-  const {limit, offset, nextPage} = useMangadexPagination([query, filters]);
+  // const {limit, offset, nextPage} = useMangadexPagination([query, filters]);
 
-  const [manga, setManga] = useState<Array<Manga>>([]);
-  const [hasMoreManga, setHasMoreManga] = useState(true);
+  // const [manga, setManga] = useState<Array<Manga>>([]);
+  // const [hasMoreManga, setHasMoreManga] = useState(true);
 
-  const [searchManga, {data, loading}] = useLazyGetMangaList({
-    order: {relevance: 'desc'},
-  });
+  // const [searchManga, {data, loading}] = useLazyGetMangaList({
+  //   order: {relevance: 'desc'},
+  // });
 
-  const loadManga = (options: {
-    offset: number;
-    limit: number;
-    title: string;
-    filters: MangaRequestParams;
-  }) => {
-    if (!hasMoreManga) {
-      return;
-    }
+  // const loadManga = (options: {
+  //   offset: number;
+  //   limit: number;
+  //   title: string;
+  //   filters: MangaRequestParams;
+  // }) => {
+  //   if (!hasMoreManga) {
+  //     return;
+  //   }
 
-    return searchManga({
-      title: options.title,
-      limit: options.limit,
-      offset: options.offset,
-      ...options.filters,
-    });
-  };
+  //   return searchManga({
+  //     title: options.title,
+  //     limit: options.limit,
+  //     offset: options.offset,
+  //     ...options.filters,
+  //   });
+  // };
 
-  const numColumns = 3;
-
-  useEffect(() => {
-    console.log('updating manga list', hasMoreManga);
-    loadManga({offset, limit, title: query, filters});
-  }, [offset, limit, query, filters]);
+  // const numColumns = 3;
 
   // useEffect(() => {
-  //   searchManga({
-  //     title: query,
-  //     limit,
-  //     offset,
-  //     ...filters,
-  //   }).then(response => {
-  //     if (response?.result === 'ok') {
-  //       setHasMoreManga(response.total > offset);
-  //     }
-  //   });
-  // }, [loadManga]);
+  //   console.log('updating manga list', hasMoreManga);
+  //   loadManga({offset, limit, title: query, filters});
+  // }, [offset, limit, query, filters]);
 
-  useEffect(() => {
-    setManga([]);
-    setHasMoreManga(true);
-  }, [query, filters]);
+  // // useEffect(() => {
+  // //   searchManga({
+  // //     title: query,
+  // //     limit,
+  // //     offset,
+  // //     ...filters,
+  // //   }).then(response => {
+  // //     if (response?.result === 'ok') {
+  // //       setHasMoreManga(response.total > offset);
+  // //     }
+  // //   });
+  // // }, [loadManga]);
 
-  useEffect(() => {
-    if (data?.result === 'ok') {
-      setHasMoreManga(data.total > offset);
-      setManga(currentManga => {
-        console.log('setting state');
-        const res = currentManga.concat(data.data);
-        console.log('ok');
-        return res;
-      });
-    }
-  }, [data]);
+  // useEffect(() => {
+  //   setManga([]);
+  //   setHasMoreManga(true);
+  // }, [query, filters]);
 
-  const skeletonMarkup =
-    loading && hasMoreManga ? (
-      <FlatList
-        numColumns={numColumns}
-        style={{marginBottom: 40}}
-        contentContainerStyle={{padding: 2}}
-        data={Array.from({length: limit}).map((_, i) => i)}
-        renderItem={() => (
-          <View style={{flex: 1 / numColumns, padding: 2}}>
-            <ThumbnailSkeleton width="100%" height={170} />
-          </View>
-        )}
-        keyExtractor={item => `skeleton-${item}`}
-      />
-    ) : undefined;
+  // useEffect(() => {
+  //   if (data?.result === 'ok') {
+  //     setHasMoreManga(data.total > offset);
+  //     setManga(currentManga => {
+  //       console.log('setting state');
+  //       const res = currentManga.concat(data.data);
+  //       console.log('ok');
+  //       return res;
+  //     });
+  //   }
+  // }, [data]);
+
+  // const skeletonMarkup =
+  //   loading && hasMoreManga ? (
+  //     <FlatList
+  //       numColumns={numColumns}
+  //       style={{marginBottom: 40}}
+  //       contentContainerStyle={{padding: 2}}
+  //       data={Array.from({length: limit}).map((_, i) => i)}
+  //       renderItem={() => (
+  //         <View style={{flex: 1 / numColumns, padding: 2}}>
+  //           <ThumbnailSkeleton width="100%" height={170} />
+  //         </View>
+  //       )}
+  //       keyExtractor={item => `skeleton-${item}`}
+  //     />
+  //   ) : undefined;
 
   return (
     <>
-      <MangaSearchFilters filters={filters} onFiltersChange={setFilters}>
+      {/* <MangaSearchFilters filters={filters} onFiltersChange={setFilters}>
         <MangaSearchFilters.Render mode="scroll">
           <PreviewFilters />
         </MangaSearchFilters.Render>
@@ -141,7 +127,8 @@ export default function BrowseMangaResults({query}: Props) {
             </View>
           );
         }}
-      />
+      /> */}
+      <MangaSearchCollection options={{title: query}} />
       {/* <List
         style={{padding: 5, paddingTop: 0}}
         loading={

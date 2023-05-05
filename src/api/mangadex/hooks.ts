@@ -1,4 +1,4 @@
-import {useCallback, useEffect, useState} from 'react';
+import {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {useContentRatingFitlers, useMangadexSettings} from 'src/prodivers';
 import {RequestResult, useLazyGetRequest} from '../utils';
 import {
@@ -14,7 +14,7 @@ import UrlBuilder from './types/api/url_builder';
 type ManyManga = PagedResultsList<Manga>;
 type OneManga = EntityResponse<Manga>;
 
-export function useMangadexPagination(resetsWhenChanged?: readonly any[]) {
+export function useMangadexPagination(resetsWhenChanged: readonly any[]) {
   const [page, setPage] = useState(1);
   const [offset, setOffset] = useState(0);
   const {
@@ -22,22 +22,43 @@ export function useMangadexPagination(resetsWhenChanged?: readonly any[]) {
   } = useMangadexSettings();
 
   const previousPage = useCallback(() => setPage(page => page - 1), []);
-  const nextPage = useCallback(() => setPage(page => page + 1), []);
+  const nextPage = useCallback(() => {
+    console.log('going to next page from', page, 'to', page + 1);
+    setPage(page => page + 1);
+  }, [page]);
+
+  const resetPage = () => {
+    setPage(1);
+  };
+
+  const nextOffset = useMemo(() => (page + 1) * limit, [page, limit]);
+  console.log({offset});
 
   useEffect(() => {
-    if (page < 0) {
-      setPage(0);
+    if (page < 1) {
+      setPage(1);
     } else {
       setOffset((page - 1) * limit);
+      console.log('updated offset');
     }
   }, [page, limit]);
 
+  useEffect(() => {});
+
   useEffect(() => {
-    setPage(1);
+    resetPage();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, resetsWhenChanged);
 
-  return {page, offset, limit, previousPage, nextPage};
+  return {
+    page,
+    offset,
+    limit,
+    nextOffset,
+    previousPage,
+    nextPage,
+    resetPage,
+  };
 }
 
 export function useLazyGetMangaList(
@@ -61,9 +82,8 @@ export function useLazyGetMangaList(
   const getManga = (otherOptions?: MangaRequestParams) => {
     const defaultOptions = {contentRating};
     const url = UrlBuilder.mangaList(
-      Object.assign(defaultOptions, Object.assign(options || {}, otherOptions)),
+      Object.assign(defaultOptions, {...options, ...otherOptions}),
     );
-    console.log(otherOptions);
     return get(url);
   };
 

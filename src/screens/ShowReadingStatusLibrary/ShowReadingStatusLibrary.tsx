@@ -1,22 +1,9 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {readingStatusInfo} from 'src/api';
-import {
-  CloseCurrentScreenHeader,
-  MangaSearchCollection,
-  MangaSearchFilters,
-} from 'src/components';
+import {CloseCurrentScreenHeader, MangaSearchCollection} from 'src/components';
 import {MangaCollectionDisplay} from 'src/components/MangaSearchCollection/MangaSearchCollection';
 import {useShowReadingStatusLibraryRoute} from 'src/foundation';
-import {useContentRatingFitlers, useLibraryMangaIds} from 'src/prodivers';
-import {MangaRequestParams} from 'src/api/mangadex/types';
-import {
-  ContentRatingFilter,
-  TagsFilter,
-  RenderContext,
-  PreviewFilters,
-} from 'src/components/MangaSearchFilters';
-import {PublicationStatusFitler} from 'src/components/MangaSearchFilters/components/PublicationStatusFilter';
-import {PublicationDemographicFilter} from 'src/components/MangaSearchFilters/components/PublicationDemographicFilter';
+import {useLibraryMangaIds} from 'src/prodivers';
 
 export default function ShowReadingStatusLibrary() {
   const {
@@ -24,42 +11,17 @@ export default function ShowReadingStatusLibrary() {
   } = useShowReadingStatusLibraryRoute();
   const ids = useLibraryMangaIds(readingStatus) || undefined;
 
-  const contentRatings = useContentRatingFitlers();
-
-  const [filters, setFilters] = useState<MangaRequestParams>({
-    ids,
-    contentRating: contentRatings,
-  });
-
   return (
     <>
       <CloseCurrentScreenHeader
         title={readingStatusInfo(readingStatus).content}
       />
-      <MangaSearchFilters filters={filters} onFiltersChange={setFilters}>
-        <RenderContext mode="modal">
-          <ContentRatingFilter visibleContentRatings={contentRatings} />
-          <PublicationStatusFitler />
-          <PublicationDemographicFilter />
-          <TagsFilter />
-        </RenderContext>
-        <RenderContext mode="scroll">
-          <PreviewFilters />
-        </RenderContext>
-      </MangaSearchFilters>
-      {ids?.length ? (
-        <MangaSearchCollection
-          showEverything
-          options={{
-            ids,
-            limit: ids.length > 100 ? 100 : ids.length,
-            ...filters,
-          }}
-          display={MangaCollectionDisplay.Images}
-          showReadingStatus={false}
-          flatListProps={{style: {paddingHorizontal: 8}}}
-        />
-      ) : null}
+      <MangaSearchCollection
+        searchingById
+        options={{ids}}
+        showReadingStatus={false}
+        flatListProps={{style: {paddingHorizontal: 8}}}
+      />
     </>
   );
 }

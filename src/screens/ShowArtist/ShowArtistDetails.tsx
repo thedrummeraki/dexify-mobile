@@ -85,6 +85,7 @@ export default function ShowArtistDetails({author}: Props) {
     <View style={{flex: 1}}>
       <CloseCurrentScreenHeader />
       <MangaSearchCollection
+        hideSearchFilters
         flatListProps={{ListHeaderComponent, style: {margin: 4}}}
         options={{
           artists: [author.id],

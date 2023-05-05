@@ -1,6 +1,5 @@
 import React, {ComponentProps, useCallback, useEffect, useState} from 'react';
 import {
-  Dimensions,
   FlatList,
   FlatListProps,
   StyleProp,
@@ -68,8 +67,6 @@ export default function MangaCollection({
   const [filterQuery, setFilterQuery] = useState('');
   const [filteredManga, setFilteredManga] = useState<Manga[]>([]);
 
-  const skeletonWidth = Dimensions.get('screen').width / 3 - 5 * 3;
-
   const ListHeaderComponent = flatListProps?.ListHeaderComponent;
 
   const headerMarkup =
@@ -93,7 +90,9 @@ export default function MangaCollection({
 
   const skeletonItemMarkup =
     display === MangaCollectionDisplay.Images ? (
-      <ThumbnailSkeleton height={160} width={skeletonWidth} />
+      <View style={{flex: 1 / numColumns, padding: 2}}>
+        <ThumbnailSkeleton height={170} width="100%" />
+      </View>
     ) : (
       <List.Item.Skeleton imageWidth={70} />
     );
