@@ -3,6 +3,7 @@ import React, {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 import EncryptedStorage from 'react-native-encrypted-storage';
@@ -42,7 +43,7 @@ import {
   TextBadge,
 } from 'src/components';
 import {appVersion} from 'src/utils';
-import {ContentRating} from 'src/api/mangadex/types';
+import {ContentRating, MangadexSettings} from 'src/api/mangadex/types';
 
 interface BasicSettingItemProps {
   title: string;
@@ -76,6 +77,8 @@ export default function ShowSettings() {
   const {session, setSession} = useContext(SessionContext);
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [settingsBeforeReset, setSettingsBeforeReset] = useState<Settings>();
+  const [mangadexSettingsBeforeReset, setMangadexSettingsBeforeReset] =
+    useState<MangadexSettings>();
   const {
     settings,
     mangadexSettings,
@@ -84,6 +87,8 @@ export default function ShowSettings() {
     updateSetting,
     resetSettings,
     overrideSettings,
+    overrideMangadexSetting,
+    updateUserPreferences,
   } = useSettingsContext();
 
   const {userPreferences} = mangadexSettings;
@@ -120,6 +125,7 @@ export default function ShowSettings() {
 
   const handleSettingsReset = () => {
     setSettingsBeforeReset(settings);
+    setMangadexSettingsBeforeReset(mangadexSettings);
     resetSettings();
     setSnackbarVisible(true);
   };
@@ -128,6 +134,7 @@ export default function ShowSettings() {
     const timer = setTimeout(() => {
       setSnackbarVisible(false);
       setSettingsBeforeReset(undefined);
+      setMangadexSettingsBeforeReset(undefined);
     }, 5000);
 
     return () => clearTimeout(timer);
@@ -236,6 +243,9 @@ export default function ShowSettings() {
             name: `${n} items`,
             value: n,
           }))}
+          onSelect={newValue =>
+            updateUserPreferences('paginationCount', newValue[0])
+          }
           // onSelect={newValue => updateSetting('chapterLanguages', newValue)}
           title="Items per page"
           description="How many items to load per page. A lower value may reduce the time taken on slower networks."
@@ -328,6 +338,8 @@ export default function ShowSettings() {
           label: 'Undo',
           onPress: () => {
             settingsBeforeReset && overrideSettings(settingsBeforeReset);
+            mangadexSettingsBeforeReset &&
+              overrideMangadexSetting(mangadexSettingsBeforeReset);
           },
         }}>
         Settings were reset.
@@ -335,6 +347,14 @@ export default function ShowSettings() {
     </>
   );
 }
+
+const useIsMount = () => {
+  const isMountRef = useRef(true);
+  useEffect(() => {
+    isMountRef.current = false;
+  }, []);
+  return isMountRef.current;
+};
 
 function OptionsSettingsItem<T>({
   value,
@@ -355,6 +375,7 @@ function OptionsSettingsItem<T>({
   const [modalOpen, setModalOpen] = useState(false);
   const [searchInput, setSearchInput] = useState('');
   const selectedBackground = useBackgroundColor('disabled');
+  const skipFirstRender = useIsMount();
 
   const multipleOptions = value.length > 1;
 
@@ -381,6 +402,9 @@ function OptionsSettingsItem<T>({
   }, [possibleValues, searchInput]);
 
   useEffect(() => {
+    if (skipFirstRender) {
+      return;
+    }
     onSelect?.(selected);
   }, [selected]);
 

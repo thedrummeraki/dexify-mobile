@@ -265,3 +265,7 @@ export function notEmpty<T>(value: T | T[] | null | undefined): value is T {
   }
   return value !== null && value !== undefined;
 }
+
+export function toMangadexStringDate(date: Date) {
+  return date.toISOString().split('.')[0];
+}

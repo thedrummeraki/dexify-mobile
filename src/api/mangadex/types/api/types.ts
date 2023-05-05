@@ -122,12 +122,12 @@ export enum MangaRelationshipType {
 }
 
 export interface MangadexSettings {
-  userPreferences: SettingsUserPreferences;
-  preferedLayout: SettingsPreferedLayout;
-  metadata: SettingsMetadata;
+  userPreferences: MangadexSettingsUserPreferences;
+  preferedLayout: MangadexSettingsPreferedLayout;
+  metadata: MangadexSettingsMetadata;
 }
 
-interface SettingsUserPreferences {
+export interface MangadexSettingsUserPreferences {
   filteredLanguages: string[];
   originLanguages: string[];
   paginationCount: number;
@@ -145,7 +145,7 @@ interface SettingsUserPreferences {
   interfaceLocale: string;
 }
 
-interface SettingsPreferedLayout {
+export interface MangadexSettingsPreferedLayout {
   listStyle: number;
   listStyleNoArt: number;
   feedStyle: number;
@@ -154,6 +154,6 @@ interface SettingsPreferedLayout {
   ambient: boolean;
 }
 
-interface SettingsMetadata {
+export interface MangadexSettingsMetadata {
   version: number;
 }

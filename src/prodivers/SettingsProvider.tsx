@@ -3,19 +3,25 @@ import React, {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 import {
   ContentRating,
   MangadexSettings,
+  MangadexSettingsUserPreferences,
   MangaRequestParams,
   SettingsResponse,
 } from 'src/api/mangadex/types';
 import {useSession} from '.';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import {useIntl} from 'react-intl';
-import {useAuthenticatedLazyGetRequest} from 'src/api/utils';
+import {
+  useAuthenticatedLazyGetRequest,
+  useAuthenticatedPostRequest,
+} from 'src/api/utils';
 import UrlBuilder from 'src/api/mangadex/types/api/url_builder';
+import {toMangadexStringDate} from 'src/utils';
 
 export enum ReadingDirection {
   LtR,
@@ -57,7 +63,15 @@ interface SettingsContextState {
   setSettings(settings: Partial<Settings>): void;
   resetSettings(): void;
   overrideSettings(settings: Settings): void;
+  overrideMangadexSetting(mangadexSettings: MangadexSettings): void;
   updateSetting<Key extends keyof Settings, Value extends Settings[Key]>(
+    a: Key,
+    b: Value,
+  ): void;
+  updateUserPreferences<
+    Key extends keyof MangadexSettingsUserPreferences,
+    Value extends MangadexSettingsUserPreferences[Key],
+  >(
     a: Key,
     b: Value,
   ): void;
@@ -113,16 +127,27 @@ export const SettingsContext = React.createContext<SettingsContextState>({
   defaultSettings,
   defaultMangadexSettings,
   loading: false,
+
+  // TODO: not the ugly dummy function pattern (eyes roll emoji)
   setSettings: () => console.log('setSettings: {NOOP}'),
   resetSettings: () => console.log('resetSettings: {NOOP}'),
   overrideSettings: () => console.log('overrideSettings: {NOOP}'),
+  overrideMangadexSetting: () => console.log('overrideMangadexSetting: {NOOP}'),
   updateSetting: () => console.log('updateSetting: {NOOP}'),
+  updateUserPreferences: () => console.log('updateUserPreferences: {NOOP}'),
 });
 
 export default function SettingsProvider({children}: PropsWithChildren<{}>) {
   const session = useSession();
   const [loading, setLoading] = useState(true);
   const [settings, setSettings] = useState<Settings>(defaultSettings);
+
+  const shouldUpdateSettingsToCloud = useRef(false);
+
+  const [userPreferences, setUserPreferences] =
+    useState<MangadexSettingsUserPreferences>(
+      defaultMangadexSettings.userPreferences,
+    );
 
   const [mangadexSettings, setMangadexSettings] = useState<MangadexSettings>(
     defaultMangadexSettings,
@@ -131,11 +156,26 @@ export default function SettingsProvider({children}: PropsWithChildren<{}>) {
   const [fetchMangadexSettings] =
     useAuthenticatedLazyGetRequest<SettingsResponse>(UrlBuilder.settings());
 
+  const [updateMangadexSettings] = useAuthenticatedPostRequest<{
+    settings: MangadexSettings;
+  }>(UrlBuilder.settings());
+
   const handleSettings = (settings: Partial<Settings>) => {
     setSettings(current => ({...current, settings}));
   };
 
-  const resetSettings = () => setSettings(defaultSettings);
+  const handleOverrideMangadexSetting = (
+    newMangadexSettings: MangadexSettings,
+  ) => {
+    shouldUpdateSettingsToCloud.current = true;
+    setMangadexSettings(newMangadexSettings);
+  };
+
+  const resetSettings = () => {
+    setSettings(defaultSettings);
+    shouldUpdateSettingsToCloud.current = true;
+    setMangadexSettings(defaultMangadexSettings);
+  };
 
   function updateSetting<
     Key extends keyof Settings,
@@ -146,11 +186,45 @@ export default function SettingsProvider({children}: PropsWithChildren<{}>) {
     });
   }
 
+  function updateUserPreferences<
+    Key extends keyof MangadexSettingsUserPreferences,
+    Value extends MangadexSettingsUserPreferences[Key],
+  >(key: Key, value: Value) {
+    shouldUpdateSettingsToCloud.current = true;
+    setUserPreferences(current => {
+      return {...current, [key]: value};
+    });
+  }
+
   useEffect(() => {
     retrieveStoredSettings()
       .then(setSettings)
       .finally(() => setLoading(false));
   }, []);
+
+  useEffect(() => {
+    setMangadexSettings(current => ({...current, userPreferences}));
+  }, [userPreferences]);
+
+  useEffect(() => {
+    if (shouldUpdateSettingsToCloud.current) {
+      console.log('Updating settings TO THE CLOUDDDD', mangadexSettings);
+      updateMangadexSettings(undefined, {
+        settings: mangadexSettings,
+        updatedAt: toMangadexStringDate(new Date()),
+      })
+        .then(response => {
+          if (response?.settings) {
+            console.log('Settings successfully updated on Mangadex.');
+            console.log(response);
+            shouldUpdateSettingsToCloud.current = false;
+          } else {
+            console.warn(response);
+          }
+        })
+        .catch(console.error);
+    }
+  }, [mangadexSettings]);
 
   useEffect(() => {
     if (session) {
@@ -178,8 +252,10 @@ export default function SettingsProvider({children}: PropsWithChildren<{}>) {
         defaultMangadexSettings,
         setSettings: handleSettings,
         overrideSettings: setSettings,
+        overrideMangadexSetting: handleOverrideMangadexSetting,
         updateSetting,
         resetSettings,
+        updateUserPreferences,
       }}>
       {children}
     </SettingsContext.Provider>
