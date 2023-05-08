@@ -9,6 +9,7 @@ import {
 } from 'src/api/mangadex/types';
 import UrlBuilder from 'src/api/mangadex/types/api/url_builder';
 import {useGetRequest, usePostRequest} from 'src/api/utils';
+import {useMangadexSettings} from 'src/prodivers';
 import ShowChapterReader from './ShowChapterReader';
 
 interface Props {
@@ -22,8 +23,11 @@ export default function ShowChapterDetails({
   manga,
   jumpToPage,
 }: Props) {
+  const {
+    userPreferences: {mdahPort443},
+  } = useMangadexSettings();
   const {data, loading} = useGetRequest<AtHomeResponse>(
-    `https://api.mangadex.org/at-home/server/${chapter.id}`,
+    `https://api.mangadex.org/at-home/server/${chapter.id}?forcePort443=${mdahPort443}`,
   );
 
   const [markRead] = usePostRequest<BasicResultsResponse>();

@@ -19,7 +19,6 @@ import {useAuthenticatedDeleteRequest} from 'src/api/utils';
 import {Banner, CloseCurrentScreenHeader} from 'src/components';
 import {List} from 'src/components/List/List';
 import {useDexifyNavigation} from 'src/foundation';
-import Thumbnail, {ThumbnailSkeleton} from 'src/foundation/Thumbnail';
 import CustomListActions from './CustomListActions';
 import EditingCustomListActions from './EditingCustomListActions';
 
@@ -143,7 +142,8 @@ export default function ShowCustomListDetails({
       ListEmptyComponent={
         <Banner
           title="No manga added"
-          primaryAction={{content: 'Browse manga', onAction: () => {}}}>
+          // primaryAction={{content: 'Browse manga', onAction: () => {}}}
+        >
           Looks like this list doesn't any manga yet. You can added add manga to
           this list at any time.
         </Banner>

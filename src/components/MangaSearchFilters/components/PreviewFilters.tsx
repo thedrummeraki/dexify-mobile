@@ -9,7 +9,7 @@ import {
 } from 'src/api/mangadex/types';
 import {BackgroundColor} from 'src/components/colors';
 import TextBadge from 'src/components/TextBadge';
-import {useSettings} from 'src/prodivers';
+import {useContentRatingFitlers} from 'src/prodivers';
 import {useFiltersContext} from '../MangaSearchFilter';
 import {contentRatingName} from './ContentRatingFilter';
 import {publicationDemographicName} from './PublicationDemographicFilter';
@@ -18,13 +18,7 @@ import {tagSelectionColorIconInfo} from './TagsFilter';
 
 export function PreviewFilters() {
   const {tags, fields} = useFiltersContext();
-  const {contentRatings} = useSettings();
-  const includedTags = tags.filter(tag =>
-    fields.includedTags.value?.includes(tag.id),
-  );
-  const excludedTags = tags.filter(tag =>
-    fields.excludedTags.value?.includes(tag.id),
-  );
+  const contentRatings = useContentRatingFitlers();
 
   const {included: includedTagInfo, excluded: excludedTagInfo} =
     tagSelectionColorIconInfo();
@@ -39,13 +33,13 @@ export function PreviewFilters() {
         field={fields.contentRating}
         allPossibleState={{
           values: contentRatings,
-          content: 'All content ratings',
+          content: 'Allowed content ratings',
         }}
         EmptyState={
           <TextBadge
-            content="Any content ratings"
+            content="Allowed content ratings"
             background="placeholder"
-            onPress={() => fields.contentRating.onChange(contentRatings)}
+            // onPress={() => fields.contentRating.onChange(contentRatings)}
           />
         }
         getContent={contentRatingName}

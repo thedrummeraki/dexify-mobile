@@ -30,12 +30,12 @@ export default function CustomListActions({
         }}>
         <View style={{flexDirection: 'row', alignItems: 'center'}}>
           <IconButton icon="pencil-outline" onPress={() => onEditing(true)} />
-          <IconButton disabled icon="book-plus" />
-          <IconButton
+          {/* <IconButton disabled icon="book-plus" /> */}
+          {/* <IconButton
             disabled
             icon="delete-forever"
             onPress={() => onDeleted()}
-          />
+          /> */}
         </View>
         <ShareButton resource={customList} />
       </View>

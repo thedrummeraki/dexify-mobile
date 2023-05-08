@@ -3,7 +3,7 @@ import {Image, View} from 'react-native';
 import {ActivityIndicator, Caption, Text} from 'react-native-paper';
 import {mangaImage, preferredChapterTitle, preferredMangaTitle} from 'src/api';
 import {AtHomeSuccessResponse, Chapter, Manga} from 'src/api/mangadex/types';
-import {useReadingStateContext, useSettings} from 'src/prodivers';
+import {useMangadexSettings, useReadingStateContext} from 'src/prodivers';
 import {useDimensions} from 'src/utils';
 import ReaderProvider from './components/ReaderProvider';
 import ShowChapterReaderPagesList from './components/ShowChapterReaderPagesList';
@@ -30,7 +30,9 @@ export default function ShowChapterReader({
   const [loading, setLoading] = useState(true);
   const [pages, setPages] = useState<Page[]>([]);
   const {width: deviceWidth, height: deviceHeight} = useDimensions();
-  const {dataSaver: isDataSaver} = useSettings();
+  const {
+    userPreferences: {dataSaver: isDataSaver},
+  } = useMangadexSettings();
   const {updateChapter} = useReadingStateContext();
   const totalPageCount = data.length;
   const initialIndex =

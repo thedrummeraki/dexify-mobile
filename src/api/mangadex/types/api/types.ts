@@ -127,6 +127,13 @@ export interface MangadexSettings {
   metadata: MangadexSettingsMetadata;
 }
 
+export enum MangadexTheme {
+  System = 'system',
+  Slate = 'slate',
+  Dark = 'dark',
+  Light = 'light',
+}
+
 export interface MangadexSettingsUserPreferences {
   filteredLanguages: string[];
   originLanguages: string[];
@@ -136,7 +143,7 @@ export interface MangadexSettingsUserPreferences {
   showSuggestive: boolean;
   showErotic: boolean;
   showHentai: boolean;
-  theme: 'system' | 'slate' | 'dark' | 'light';
+  theme: MangadexTheme;
   mdahPort443: boolean;
   dataSaver: boolean;
   groupBlacklist: string[];

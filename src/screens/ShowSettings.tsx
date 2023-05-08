@@ -43,7 +43,11 @@ import {
   TextBadge,
 } from 'src/components';
 import {appVersion} from 'src/utils';
-import {ContentRating, MangadexSettings} from 'src/api/mangadex/types';
+import {
+  ContentRating,
+  MangadexSettings,
+  MangadexTheme,
+} from 'src/api/mangadex/types';
 
 interface BasicSettingItemProps {
   title: string;
@@ -63,6 +67,7 @@ interface OptionsSettingsItemProps<T> extends BasicSettingItemProps {
   value: T[];
   defaultValue: T[];
   possibleValues: {value: T; name: string; icon?: string}[];
+  multiple?: boolean;
   defaultSelectionText?: string;
   disableSearchBar?: boolean;
   size?: 'full' | 'basic';
@@ -89,6 +94,7 @@ export default function ShowSettings() {
     overrideSettings,
     overrideMangadexSetting,
     updateUserPreferences,
+    updateContentRatings,
   } = useSettingsContext();
 
   const {userPreferences} = mangadexSettings;
@@ -176,6 +182,7 @@ export default function ShowSettings() {
           </Text>
         </View>
         <OptionsSettingsItem
+          multiple
           value={contentRatings}
           defaultValue={defaultSettings.contentRatings}
           possibleValues={
@@ -183,14 +190,14 @@ export default function ShowSettings() {
               ? possibleSettingsContentRatings
               : possibleSettingsContentRatings.slice(0, 3)
           }
-          onSelect={newValue => updateSetting('contentRatings', newValue)}
+          onSelect={updateContentRatings}
           title="Content rating filters"
           description={
             'Please note that the ages are for guidance only. Sexual content is not visible through this app.'
           }
           defaultSelectionText="All content ratings"
         />
-        {settings.contentRatings.includes(ContentRating.pornographic) ? (
+        {contentRatings.includes(ContentRating.pornographic) ? (
           <TogglableSettingsItem
             value={settings.blurPornographicEntries}
             onToggle={newValue =>
@@ -246,7 +253,6 @@ export default function ShowSettings() {
           onSelect={newValue =>
             updateUserPreferences('paginationCount', newValue[0])
           }
-          // onSelect={newValue => updateSetting('chapterLanguages', newValue)}
           title="Items per page"
           description="How many items to load per page. A lower value may reduce the time taken on slower networks."
         />
@@ -260,21 +266,21 @@ export default function ShowSettings() {
             name: `x${n}`,
             value: n,
           }))}
-          // onSelect={newValue => updateSetting('chapterLanguages', newValue)}
+          onSelect={newValue =>
+            updateUserPreferences('listMultiplier', newValue[0])
+          }
           title="List multiplier"
           description="Note: Chapter lists load 3 times the selected amount by default"
         />
         <TogglableSettingsItem
           value={userPreferences.mdahPort443}
+          onToggle={newValue => updateUserPreferences('mdahPort443', newValue)}
           title="Use Port 443 for MangaDex@Home"
           description="If you are having issues loading images on a school or corporate network, this setting may help."
         />
         <TogglableSettingsItem
           value={mangadexSettings.userPreferences.dataSaver}
-          // onToggle={newValue => {
-          //   console.log({newValue});
-          //   updateSetting('dataSaver', newValue);
-          // }}
+          onToggle={newValue => updateUserPreferences('dataSaver', newValue)}
           title="Data saver"
           description="Reduce data usage by viewing lower quality versions of chapters."
         />
@@ -297,15 +303,18 @@ export default function ShowSettings() {
           }
           color={spicyModeColor}
         /> */}
-        <TogglableSettingsItem
-          value={settings.lightTheme}
-          onToggle={newValue => updateSetting('lightTheme', newValue)}
-          title="[BETA] Use light theme"
-          description={
-            colorScheme === 'light'
-              ? 'This will be the theme used by default based on your current system-wide theme.'
-              : 'Dark theme not working for you? Try out our new light theme!'
-          }
+        <OptionsSettingsItem
+          value={[userPreferences.theme]}
+          possibleValues={[
+            {value: MangadexTheme.System, name: "System (your device's theme)"},
+            {value: MangadexTheme.Dark, name: 'Dark theme'},
+            {value: MangadexTheme.Light, name: 'Light theme (beta)'},
+            {value: MangadexTheme.Slate, name: 'Slate theme'},
+          ]}
+          onSelect={([newValue]) => updateUserPreferences('theme', newValue)}
+          defaultValue={[defaultMangadexSettings.userPreferences.theme]}
+          title="Theme"
+          description="The theme of the app."
         />
 
         <View style={{paddingHorizontal: 15}}>
@@ -359,6 +368,7 @@ const useIsMount = () => {
 function OptionsSettingsItem<T>({
   value,
   possibleValues,
+  multiple,
   title,
   disabled,
   description,
@@ -377,7 +387,7 @@ function OptionsSettingsItem<T>({
   const selectedBackground = useBackgroundColor('disabled');
   const skipFirstRender = useIsMount();
 
-  const multipleOptions = value.length > 1;
+  const multipleOptions = multiple || value.length > 1;
 
   const selectedValues = useMemo(
     () =>

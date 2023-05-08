@@ -24,7 +24,7 @@ export function RenderInScrollView({
       {!hideOpenModalIcon ? (
         <IconButton icon="filter-variant" onPress={onModalOpen} />
       ) : null}
-      <ScrollView horizontal>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false}>
         <View
           style={{
             display: 'flex',

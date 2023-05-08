@@ -1,5 +1,4 @@
 import React from 'react';
-import {Chip} from 'react-native-paper';
 import {PublicationDemographic} from 'src/api/mangadex/types';
 import {useFiltersContext} from '../MangaSearchFilter';
 import {BasicSection} from './BasicSection';

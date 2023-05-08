@@ -1,17 +1,10 @@
 import React from 'react';
 import {Image, StyleSheet, View} from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
-import {Button, Caption, Subheading, Text} from 'react-native-paper';
-import {
-  CoverSize,
-  findRelationship,
-  mangaImage,
-  preferredMangaAuthor,
-  preferredMangaTitle,
-} from 'src/api';
-import {Artist, Author, Chapter, Manga} from 'src/api/mangadex/types';
+import {Button, Subheading} from 'react-native-paper';
+import {CoverSize, mangaImage, preferredMangaTitle} from 'src/api';
+import {Chapter, Manga} from 'src/api/mangadex/types';
 import {useTheme} from 'src/App';
-import MangaThumbnail from 'src/components/MangaThumbnail';
+import {useDexifyNavigation} from 'src/foundation';
 import ChapterPreview from './ChapterPreview';
 
 interface Props {
@@ -26,14 +19,11 @@ export default function MangaChaptersPreview({
   visibleChaptersCount = 3,
 }: Props) {
   const theme = useTheme();
-  const author = preferredMangaAuthor(manga);
+  const navigation = useDexifyNavigation();
 
   const visibleChapters = chapters.slice(0, visibleChaptersCount);
 
-  const authorPresent = Boolean(author && author.attributes);
   const imageUrl = mangaImage(manga, {size: CoverSize.Small});
-
-  const gradientColors = useGradientColors();
 
   return (
     <View>
@@ -75,23 +65,13 @@ export default function MangaChaptersPreview({
           }}
         />
         <View style={{flexDirection: 'row-reverse'}}>
-          <Button compact>More...</Button>
+          <Button
+            compact
+            onPress={() => navigation.push('ShowManga', {...manga})}>
+            View manga
+          </Button>
         </View>
       </View>
     </View>
   );
-}
-
-function useGradientColors() {
-  const theme = useTheme();
-  const background = theme.dark ? '#000000' : '#f2f2f2';
-
-  return [
-    `${background}50`,
-    `${background}20`,
-    `${background}50`,
-    `${background}A0`,
-    `${background}D0`,
-    `${background}FF`,
-  ];
 }

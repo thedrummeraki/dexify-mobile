@@ -6,10 +6,14 @@ import {
   Sections,
 } from './HomePresenter/Section/types';
 import {FeedResponse} from './Feed/types';
-import {useAuthenticatedLazyGetRequest, useLazyGetRequest} from 'src/api/utils';
+import {useAuthenticatedLazyGetRequest} from 'src/api/utils';
 import UrlBuilder from 'src/api/mangadex/types/api/url_builder';
 import {AxiosError} from 'axios';
-import {useContentRatingFitlers, useSettings, useSettingsContext} from 'src/prodivers';
+import {
+  useContentRatingFitlers,
+  useSettings,
+  useSettingsContext,
+} from 'src/prodivers';
 
 interface FeedPresenter {
   loading: boolean;

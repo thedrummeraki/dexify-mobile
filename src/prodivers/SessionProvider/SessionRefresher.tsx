@@ -123,6 +123,8 @@ export function useUpdatedSession(refreshNow = true) {
           },
         );
 
+        console.log('token resfresh res', {response});
+
         const {data} = response;
 
         if (data?.result === 'ok') {

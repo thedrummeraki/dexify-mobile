@@ -10,6 +10,7 @@ import {
   ContentRating,
   MangadexSettings,
   MangadexSettingsUserPreferences,
+  MangadexTheme,
   MangaRequestParams,
   SettingsResponse,
 } from 'src/api/mangadex/types';
@@ -75,6 +76,7 @@ interface SettingsContextState {
     a: Key,
     b: Value,
   ): void;
+  updateContentRatings(contentRatings: ContentRating[]): void;
 }
 
 const defaultSettings: Settings = {
@@ -116,7 +118,7 @@ const defaultMangadexSettings: MangadexSettings = {
     showHentai: false,
     showSafe: true,
     showSuggestive: true,
-    theme: 'system',
+    theme: MangadexTheme.System,
     userBlacklist: [],
   },
 };
@@ -135,6 +137,7 @@ export const SettingsContext = React.createContext<SettingsContextState>({
   overrideMangadexSetting: () => console.log('overrideMangadexSetting: {NOOP}'),
   updateSetting: () => console.log('updateSetting: {NOOP}'),
   updateUserPreferences: () => console.log('updateUserPreferences: {NOOP}'),
+  updateContentRatings: () => console.log('updateContentRatings: {NOOP}'),
 });
 
 export default function SettingsProvider({children}: PropsWithChildren<{}>) {
@@ -194,6 +197,22 @@ export default function SettingsProvider({children}: PropsWithChildren<{}>) {
     setUserPreferences(current => {
       return {...current, [key]: value};
     });
+  }
+
+  function updateContentRatings(contentRatings: ContentRating[]) {
+    const showSafe = contentRatings.includes(ContentRating.safe);
+    const showSuggestive = contentRatings.includes(ContentRating.suggestive);
+    const showErotic = contentRatings.includes(ContentRating.erotica);
+    const showHentai = contentRatings.includes(ContentRating.pornographic);
+
+    shouldUpdateSettingsToCloud.current = true;
+    setUserPreferences(current => ({
+      ...current,
+      showSafe,
+      showSuggestive,
+      showErotic,
+      showHentai,
+    }));
   }
 
   useEffect(() => {
@@ -256,6 +275,7 @@ export default function SettingsProvider({children}: PropsWithChildren<{}>) {
         updateSetting,
         resetSettings,
         updateUserPreferences,
+        updateContentRatings,
       }}>
       {children}
     </SettingsContext.Provider>

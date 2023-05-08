@@ -21,14 +21,15 @@ import {
   LibraryProvider,
   SessionProvider,
   SettingsProvider,
-  useSettings,
   ReadingStateProvider,
+  useMangadexSettings,
 } from './prodivers';
 import {Navigation} from './foundation';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import {StatusBar as RNStatusBar} from 'react-native';
 
 import {Theme as PaperTheme} from 'react-native-paper/src/types';
+import {MangadexTheme} from './api/mangadex/types';
 
 export default function App() {
   return (
@@ -67,8 +68,22 @@ function ThemeProvider({children}: PropsWithChildren<{}>) {
     NavigationDarkTheme,
   );
 
-  const {lightTheme} = useSettings();
-  const selectedTheme = lightTheme ? CombinedDefaultTheme : CombinedDarkTheme;
+  // const {lightTheme} = useSettings();
+  let {
+    userPreferences: {theme: preferedTheme},
+  } = useMangadexSettings();
+
+  const {dark} = usePaperTheme();
+
+  if (preferedTheme === MangadexTheme.System) {
+    preferedTheme = dark ? MangadexTheme.Dark : MangadexTheme.Light;
+  }
+
+  const selectedTheme =
+    preferedTheme === MangadexTheme.Dark ||
+    preferedTheme === MangadexTheme.Slate
+      ? CombinedDarkTheme
+      : CombinedDefaultTheme;
 
   const theme = {
     ...selectedTheme,
