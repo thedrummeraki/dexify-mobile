@@ -130,12 +130,12 @@ export default function MangaSearchCollection({
   const mangaListMarkup = (
     <MangaCollection
       hasMoreManga={hasMoreManga}
-      loading={loading && canSearchForManga}
+      loading={(loading || otherProps.loading) && canSearchForManga}
       manga={manga}
       {...otherProps}
       flatListProps={{
         ListEmptyComponent:
-          canSearchForManga && loading ? null : (
+          canSearchForManga && (loading || otherProps.loading) ? null : (
             <Banner children="No manga titles added." />
           ),
         onEndReached: () => {

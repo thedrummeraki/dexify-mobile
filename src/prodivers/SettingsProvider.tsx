@@ -44,6 +44,7 @@ export interface Settings {
   chapterLanguages: string[]; // null means all languages
   mangaLanguages: string[];
   contentRatings: ContentRating[];
+  defaultMangaTitleLocale: string;
   dataSaver: boolean;
   spicyMode: boolean;
   readingDirection: ReadingDirection;
@@ -92,6 +93,7 @@ const defaultSettings: Settings = {
   blurPornographicEntries: true,
   volumeSortOrder: 'asc',
   chaptersSortOrder: 'asc',
+  defaultMangaTitleLocale: 'en',
 };
 
 const defaultMangadexSettings: MangadexSettings = {

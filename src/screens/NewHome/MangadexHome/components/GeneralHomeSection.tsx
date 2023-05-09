@@ -1,6 +1,7 @@
 import React from 'react';
 import CategoriesCollectionSection from 'src/components/CategoriesCollection/CategoriesCollectionSection';
 import MangaThumbnail from 'src/components/MangaThumbnail';
+import {ThumbnailSkeleton} from 'src/foundation/Thumbnail';
 import {Sections} from '../types';
 
 interface Props {
@@ -12,24 +13,19 @@ export default function GeneralHomeSection({
   section,
   hideIfEmpty = true,
 }: Props) {
-  const {title, manga, viewMore: onAction} = section;
+  const {title, manga, loading, viewMore: onAction} = section;
+  const dimensions = {width: 120, height: 160};
 
-  if (manga.length === 0 && hideIfEmpty) {
+  if ((!manga || manga.length === 0) && hideIfEmpty && !loading) {
     return null;
   }
 
   return (
-    // <CategoriesCollectionSection
-    //   data={manga}
-    //   title={title}
-    //   viewMore={onAction ? {onAction} : undefined}
-    //   renderItem={manga => <MangaThumbnail manga={manga} />}
-    // />
-
     <CategoriesCollectionSection
+      loading={loading}
       title={title}
-      data={manga}
-      dimensions={{width: 120, height: 160}}
+      data={manga || []}
+      dimensions={dimensions}
       viewMore={onAction ? {onAction} : undefined}
       renderItem={(item, dimensions) => (
         <MangaThumbnail
@@ -40,6 +36,8 @@ export default function GeneralHomeSection({
           height={dimensions.size || dimensions.height!}
         />
       )}
+      skeletonLength={10}
+      SkeletonItem={<ThumbnailSkeleton height={160} width={120} />}
     />
   );
 }

@@ -1,4 +1,6 @@
+import {useCallback} from 'react';
 import {BackgroundColor} from 'src/components/colors';
+import {useMangadexSettings} from 'src/prodivers';
 import {mangaLinkInfoMap} from 'src/screens/ShowManga/ShowMangaDetails/components/AboutTab/modals/ShowMangaDetailsModal';
 import {
   Artist,
@@ -19,6 +21,13 @@ export enum CoverSize {
   Original = '',
   Medium = '.512.jpg',
   Small = '.256.jpg',
+}
+
+export function usePreferedMangaTitle() {
+  const {
+    userPreferences: {interfaceLocale},
+  } = useMangadexSettings();
+  const callback = useCallback((manga: Manga) => {}, []);
 }
 
 export function preferredMangaTitle(manga: Manga) {

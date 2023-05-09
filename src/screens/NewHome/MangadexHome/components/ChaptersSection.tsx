@@ -23,17 +23,18 @@ interface Props {
 
 export default function ChaptersSection({section, hideIfEmpty = true}: Props) {
   const navigation = useDexifyNavigation();
-  const {title, chapters, manga, viewMore: onAction} = section;
+  const {title, chapters, manga, loading, viewMore: onAction} = section;
   const {
     colors: {surface},
   } = useTheme();
 
-  if (chapters.length === 0 && hideIfEmpty) {
+  if (chapters.length === 0 && hideIfEmpty && !loading) {
     return null;
   }
 
   return (
     <CategoriesCollectionSection
+      loading={loading}
       title={title}
       data={chapters}
       viewMore={onAction ? {onAction} : undefined}
@@ -103,7 +104,7 @@ export default function ChaptersSection({section, hideIfEmpty = true}: Props) {
                   background="none"
                   icon="clock-outline"
                   content={localizedDateTime(
-                    item.attributes.publishAt,
+                    item.attributes.readableAt,
                     DateTime.DATE_MED,
                   )}
                 />

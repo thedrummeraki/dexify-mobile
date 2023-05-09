@@ -53,7 +53,14 @@ export type ChapterRequestParams = Partial<{
   createdAtSince: string;
   updatedAtSince: string;
   publishAtSince: string;
-  order: Order<'createdAt' | 'updatedAt' | 'publishAt' | 'volume' | 'chapter'>;
+  order: Order<
+    | 'createdAt'
+    | 'updatedAt'
+    | 'publishAt'
+    | 'readableAt'
+    | 'volume'
+    | 'chapter'
+  >;
   includes: string[];
   limit: number;
   offset: number;

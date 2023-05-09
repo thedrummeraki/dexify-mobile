@@ -29,6 +29,19 @@ export function PreviewFilters() {
 
   return (
     <>
+      <ShowFields field={fields.status} getContent={statusName} />
+      <ShowFields
+        field={fields.includedTags}
+        getContent={getTagName}
+        getIcon={() => includedTagInfo.icon}
+        getBackground={() => includedTagInfo.background}
+      />
+      <ShowFields
+        field={fields.excludedTags}
+        getContent={getTagName}
+        getIcon={() => excludedTagInfo.icon}
+        getBackground={() => excludedTagInfo.background}
+      />
       <ShowFields
         field={fields.contentRating}
         allPossibleState={{
@@ -58,19 +71,6 @@ export function PreviewFilters() {
         }
         getContent={publicationDemographicName}
         getBackground={() => 'placeholder'}
-      />
-      <ShowFields field={fields.status} getContent={statusName} />
-      <ShowFields
-        field={fields.includedTags}
-        getContent={getTagName}
-        getIcon={() => includedTagInfo.icon}
-        getBackground={() => includedTagInfo.background}
-      />
-      <ShowFields
-        field={fields.excludedTags}
-        getContent={getTagName}
-        getIcon={() => excludedTagInfo.icon}
-        getBackground={() => excludedTagInfo.background}
       />
       {/* <ShowFields
         values={includedTags}

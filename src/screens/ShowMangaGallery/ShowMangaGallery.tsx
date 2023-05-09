@@ -112,8 +112,6 @@ export default function ShowMangaGallery() {
     page.number > other.number ? 1 : -1,
   );
 
-  console.log({sortedPages});
-
   return (
     <ReaderProvider
       manga={manga}

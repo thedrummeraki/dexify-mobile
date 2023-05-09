@@ -12,7 +12,6 @@ import {
   Image,
   ScrollView,
   TouchableNativeFeedback,
-  useColorScheme,
   View,
 } from 'react-native';
 import {
@@ -78,7 +77,6 @@ interface OptionsSettingsItemProps<T> extends BasicSettingItemProps {
 
 export default function ShowSettings() {
   const theme = useTheme();
-  const colorScheme = useColorScheme();
   const {session, setSession} = useContext(SessionContext);
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [settingsBeforeReset, setSettingsBeforeReset] = useState<Settings>();
@@ -283,6 +281,14 @@ export default function ShowSettings() {
           onToggle={newValue => updateUserPreferences('dataSaver', newValue)}
           title="Data saver"
           description="Reduce data usage by viewing lower quality versions of chapters."
+        />
+        <OptionsSettingsItem
+          value={[settings.defaultMangaTitleLocale]}
+          defaultValue={[defaultSettings.defaultMangaTitleLocale]}
+          possibleValues={possibleSettingsLanguages}
+          title="Default Manga title"
+          description="Displays manga in this language by default if available. Defaults to English."
+          defaultSelectionText="en"
         />
         {/* <OptionsSettingsItem
         value={settings.chapterLanguages}
@@ -549,7 +555,12 @@ function OptionsSettingsItem<T>({
               ? possibleValues.filter(possibleValue =>
                   selected.includes(possibleValue.value),
                 )
-              : [{name: defaultSelectionText, value: '' as any}]
+              : [
+                  {
+                    name: defaultSelectionText || 'default value',
+                    value: '' as any,
+                  },
+                ]
           }
           renderItem={item => {
             return (

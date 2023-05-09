@@ -90,7 +90,8 @@ export default function ShowChapterReaderHeader({visible}: Props) {
           />
           <View style={{flex: 1, height: '100%'}}>
             <Subheading
-              style={{marginTop: 5, paddingVertical: 0, marginVertical: 0}}>
+              style={{marginTop: 5, paddingVertical: 0, marginVertical: 0}}
+              numberOfLines={1}>
               {title}
             </Subheading>
             {subtitle ? (

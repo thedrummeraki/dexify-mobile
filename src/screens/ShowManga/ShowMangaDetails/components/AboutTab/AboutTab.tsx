@@ -25,7 +25,7 @@ import {
 import {useBackgroundColor} from 'src/components/colors';
 import TopManga, {
   TopMangaDescription,
-} from 'src/screens/NewHome/Feed/Section/components/TopManga';
+} from 'src/screens/NewHome/MangadexHome/components/TopManga';
 import {useMangaDetails} from '../../ShowMangaDetails';
 import VolumesContainer from './VolumesContainer';
 import {useIsLoggedIn, useLibraryContext} from 'src/prodivers';

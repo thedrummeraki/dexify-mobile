@@ -12,14 +12,16 @@ export namespace Sections {
   }
   export interface GeneralHome extends BasicHome {
     type: 'general';
+    loading?: boolean;
     title: string;
-    manga: Manga[];
+    manga?: Manga[];
     hideIfEmpty?: boolean;
     viewMore?(): void;
   }
 
   export interface Chapters extends BasicHome {
     type: 'chapters-list';
+    loading?: boolean;
     title: string;
     chapters: Chapter[];
     manga: Manga[];

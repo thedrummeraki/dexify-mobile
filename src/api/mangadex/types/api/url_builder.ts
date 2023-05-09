@@ -42,6 +42,10 @@ export default class UrlBuilder {
     return this.buildProxyUrl('/home/feed', params);
   }
 
+  public static randomManga(params?: ParamsLike) {
+    return this.buildUrl('/manga/random', params);
+  }
+
   public static settings() {
     return this.buildUrl('/settings');
   }
